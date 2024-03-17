@@ -16,10 +16,7 @@ public class CorsConfig implements WebMvcConfigurer {
                         "http://localhost:4200",
                         "http://localhost:4201",
                         "http://localhost:8080",
-                        "https://do-an2-admin.vercel.app",
-                        "https://doan02-fe-admin-production.up.railway.app",
-                        "https://pescue-shop.vercel.app",
-                        "https://doan02-be-production.up.railway.app")
+                        "https://kltn-pescue-production.up.railway.app")
                 .allowedMethods("*")
                 .allowedHeaders("*")
                 .exposedHeaders(
