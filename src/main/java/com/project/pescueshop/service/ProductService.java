@@ -104,7 +104,7 @@ public class ProductService extends BaseService {
 
     public List<String> uploadProductImages(String productId, final List<MultipartFile> images){
         List<String> imagesUrl = new ArrayList<>();
-        images.forEach(image -> imagesUrl.add(fileUploadService.uploadFile(image, "product/", productId + "_" + System.currentTimeMillis())));
+        images.forEach(image -> imagesUrl.add(fileUploadService.uploadFile(image, "product/", productId)));
 
         return imagesUrl;
     }

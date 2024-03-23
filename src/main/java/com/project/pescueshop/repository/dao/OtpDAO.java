@@ -1,7 +1,7 @@
 package com.project.pescueshop.repository.dao;
 
 import com.project.pescueshop.model.entity.Otp;
-import com.project.pescueshop.repository.OtpRepository;
+import com.project.pescueshop.repository.inteface.OtpRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 

@@ -2,12 +2,10 @@ package com.project.pescueshop.repository.dao;
 
 import com.project.pescueshop.model.dto.InvoiceItemDTO;
 import com.project.pescueshop.model.dto.InvoiceListResultDTO;
-import com.project.pescueshop.model.dto.ProductDashboardResult;
 import com.project.pescueshop.model.entity.*;
-import com.project.pescueshop.repository.InvoiceItemRepository;
-import com.project.pescueshop.repository.InvoiceRepository;
+import com.project.pescueshop.repository.inteface.InvoiceItemRepository;
+import com.project.pescueshop.repository.inteface.InvoiceRepository;
 import com.project.pescueshop.repository.mapper.InvoiceItemMapper;
-import com.project.pescueshop.util.Util;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.stereotype.Repository;

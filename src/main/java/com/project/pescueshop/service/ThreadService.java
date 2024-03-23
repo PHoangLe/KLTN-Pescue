@@ -10,7 +10,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -27,6 +29,8 @@ public class ThreadService extends BaseService {
     private final CartService cartService;
     private final ChatRoomService chatRoomService;
     private final ViewAuditLogDAO viewAuditLogDAO;
+    private final MerchantService merchantService;
+    private final FileUploadService fileUploadService;
     private final PaymentService paymentService;
     private final EmailService emailService;
     private final InvoiceService invoiceService;
@@ -42,6 +46,8 @@ public class ThreadService extends BaseService {
             @Lazy OtpService otpService,
             @Lazy PaymentService paymentService,
             @Lazy EmailService emailService,
+            @Lazy MerchantService merchantService,
+            @Lazy FileUploadService fileUploadService,
             @Lazy InvoiceService invoiceService,
             @Lazy ChatRoomService chatRoomService,
             @Lazy ViewAuditLogDAO viewAuditLogDAO) {
@@ -50,6 +56,8 @@ public class ThreadService extends BaseService {
         this.ratingService = ratingService;
         this.productService = productService;
         this.cartService = cartService;
+        this.merchantService = merchantService;
+        this.fileUploadService = fileUploadService;
         this.chatRoomService = chatRoomService;
         this.otpService = otpService;
         this.paymentService = paymentService;
@@ -146,9 +154,9 @@ public class ThreadService extends BaseService {
             List<RatingResultDTO> ratingList = ratingFuture.get();
             dto.setRatingList(ratingList);
 
-            System.out.println(auditId.get());
+            log.trace(auditId.get());
         } catch (InterruptedException | ExecutionException e) {
-            System.out.println(e.getMessage());
+            log.trace(e.getMessage());
             e.printStackTrace();
         }
     }
@@ -190,6 +198,41 @@ public class ThreadService extends BaseService {
         }
         catch (Exception e){
             log.trace(e.getMessage());
+        }
+    }
+
+    private List<String> uploadMerchantRelatedDocuments(String merchantId, final List<MultipartFile> images){
+        List<String> imagesUrl = new ArrayList<>();
+        images.forEach(image -> imagesUrl.add(fileUploadService.uploadFile(image, "merchant/", merchantId)));
+
+        return imagesUrl;
+    }
+    private String uploadMerchantAvatar(String merchantId, MultipartFile avatar){
+        return fileUploadService.uploadFile(avatar, "merchant_avatar/", merchantId);
+    }
+
+    private String uploadMerchantCover(String merchantId, MultipartFile avatar){
+        return fileUploadService.uploadFile(avatar, "merchant_cover/", merchantId);
+    }
+
+    public void uploadMerchantFiles(Merchant merchant, List<MultipartFile> relatedDocuments, MultipartFile coverFile, MultipartFile avatarFile) {
+        ExecutorService executorService = Executors.newFixedThreadPool(3);
+
+        Future<List<String>> relatedDocumentsFuture = executorService.submit(() -> uploadMerchantRelatedDocuments(merchant.getMerchantId(), relatedDocuments));
+        Future<String> coverFileFuture = executorService.submit(() -> uploadMerchantCover(merchant.getMerchantId(), coverFile));
+        Future<String> avatarFileFuture = executorService.submit(() -> uploadMerchantAvatar(merchant.getMerchantId(), avatarFile));
+
+        executorService.shutdown();
+
+        try {
+            List<String> relatedDocumentsUrl = relatedDocumentsFuture.get();
+            merchant.setRelatedDocuments(relatedDocumentsUrl);
+            merchant.setMerchantCover(coverFileFuture.get());
+            merchant.setMerchantAvatar(avatarFileFuture.get());
+
+        } catch (InterruptedException | ExecutionException e) {
+            log.trace(e.getMessage());
+            e.printStackTrace();
         }
     }
 }

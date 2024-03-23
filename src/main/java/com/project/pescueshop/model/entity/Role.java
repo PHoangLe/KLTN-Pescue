@@ -1,7 +1,6 @@
 package com.project.pescueshop.model.entity;
 
 import com.project.pescueshop.model.annotation.Name;
-import com.project.pescueshop.repository.RoleRepository;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

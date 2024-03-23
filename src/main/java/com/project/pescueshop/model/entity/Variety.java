@@ -23,6 +23,7 @@ public class Variety {
     @GenericGenerator(name = "CustomIdGenerator", strategy = "com.project.pescueshop.util.CustomIdGenerator")
     private String varietyId;
     private String productId;
+    private String merchantId;
     private String name;
     private long price;
     @ManyToMany(cascade = CascadeType.MERGE, fetch = FetchType.EAGER)

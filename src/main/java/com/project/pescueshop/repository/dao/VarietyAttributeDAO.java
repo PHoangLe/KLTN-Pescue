@@ -1,7 +1,7 @@
 package com.project.pescueshop.repository.dao;
 
 import com.project.pescueshop.model.entity.VarietyAttribute;
-import com.project.pescueshop.repository.VarietyAttributeRepository;
+import com.project.pescueshop.repository.inteface.VarietyAttributeRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;

@@ -3,12 +3,11 @@ package com.project.pescueshop.repository.dao;
 import com.project.pescueshop.model.dto.CartItemDTO;
 import com.project.pescueshop.model.entity.CartItem;
 import com.project.pescueshop.model.entity.Invoice;
-import com.project.pescueshop.repository.CartItemRepository;
+import com.project.pescueshop.repository.inteface.CartItemRepository;
 import com.project.pescueshop.repository.mapper.CartItemMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 

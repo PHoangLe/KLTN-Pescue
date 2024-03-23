@@ -1,23 +1,19 @@
 package com.project.pescueshop.service;
 
 
-import com.project.pescueshop.model.dto.ProductDTO;
 import com.project.pescueshop.model.dto.VarietyDTO;
 import com.project.pescueshop.model.entity.Product;
 import com.project.pescueshop.model.entity.Variety;
 import com.project.pescueshop.model.entity.VarietyAttribute;
-import com.project.pescueshop.repository.VarietyAttributeRepository;
-import com.project.pescueshop.repository.VarietyRepository;
+import com.project.pescueshop.repository.inteface.VarietyAttributeRepository;
+import com.project.pescueshop.repository.inteface.VarietyRepository;
 import com.project.pescueshop.util.constant.EnumStatus;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;

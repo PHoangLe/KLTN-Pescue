@@ -5,7 +5,7 @@ import com.project.pescueshop.model.dto.general.ResponseDTO;
 import com.project.pescueshop.model.exception.FriendlyException;
 import com.project.pescueshop.model.exception.UnauthenticatedException;
 import com.project.pescueshop.model.entity.ErrorLog;
-import com.project.pescueshop.repository.ErrorLogRepository;
+import com.project.pescueshop.repository.inteface.ErrorLogRepository;
 import com.project.pescueshop.service.AuthenticationService;
 import com.project.pescueshop.util.constant.EnumResponseCode;
 import lombok.RequiredArgsConstructor;

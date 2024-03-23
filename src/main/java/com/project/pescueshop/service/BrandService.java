@@ -1,14 +1,13 @@
 package com.project.pescueshop.service;
 
 import com.project.pescueshop.model.entity.Brand;
-import com.project.pescueshop.repository.BrandRepository;
+import com.project.pescueshop.repository.inteface.BrandRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -36,6 +35,6 @@ public class BrandService extends BaseService {
     }
 
     public String uploadBrandImages(String brandId, final MultipartFile image){
-        return fileUploadService.uploadFile(image, "brand/", brandId + "_" + System.currentTimeMillis());
+        return fileUploadService.uploadFile(image, "brand/", brandId);
     }
 }

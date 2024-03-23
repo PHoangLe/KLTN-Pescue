@@ -1,4 +1,4 @@
-package com.project.pescueshop.repository;
+package com.project.pescueshop.repository.inteface;
 
 import com.project.pescueshop.model.entity.Role;
 import org.springframework.data.jpa.repository.JpaRepository;

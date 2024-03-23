@@ -2,13 +2,11 @@ package com.project.pescueshop.repository.dao;
 
 import com.project.pescueshop.model.dto.ProductDashboardResult;
 import com.project.pescueshop.model.entity.Product;
-import com.project.pescueshop.repository.ProductRepository;
+import com.project.pescueshop.repository.inteface.ProductRepository;
 import com.project.pescueshop.util.Util;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.stereotype.Repository;
 

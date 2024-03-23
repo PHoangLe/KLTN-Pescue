@@ -26,6 +26,7 @@ public class Product {
     @GeneratedValue(generator = "CustomIdGenerator")
     @GenericGenerator(name = "CustomIdGenerator", strategy = "com.project.pescueshop.util.CustomIdGenerator")
     private String productId;
+    private String merchantId;
     private String name;
     @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
     @JoinColumn(name = "subCategoryId", referencedColumnName = "subCategoryId")

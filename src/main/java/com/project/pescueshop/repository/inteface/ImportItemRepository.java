@@ -1,4 +1,4 @@
-package com.project.pescueshop.repository;
+package com.project.pescueshop.repository.inteface;
 
 import com.project.pescueshop.model.entity.ImportItem;
 import com.project.pescueshop.model.entity.Product;

@@ -1,10 +1,9 @@
 package com.project.pescueshop.repository.dao;
 
 import com.project.pescueshop.model.entity.Voucher;
-import com.project.pescueshop.repository.VoucherRepository;
+import com.project.pescueshop.repository.inteface.VoucherRepository;
 import com.project.pescueshop.util.constant.EnumStatus;
 import lombok.RequiredArgsConstructor;
-import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;

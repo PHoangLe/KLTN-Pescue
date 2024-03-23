@@ -4,15 +4,11 @@ import com.project.pescueshop.model.dto.AuthenticationDTO;
 import com.project.pescueshop.model.dto.RegisterDTO;
 import com.project.pescueshop.model.dto.general.ResponseDTO;
 import com.project.pescueshop.model.dto.UserDTO;
-import com.project.pescueshop.model.entity.Role;
-import com.project.pescueshop.model.entity.User;
 import com.project.pescueshop.model.exception.FriendlyException;
-import com.project.pescueshop.repository.RoleRepository;
 import com.project.pescueshop.service.AuthenticationService;
 import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController

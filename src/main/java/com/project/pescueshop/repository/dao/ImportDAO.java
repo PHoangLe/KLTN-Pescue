@@ -1,13 +1,11 @@
 package com.project.pescueshop.repository.dao;
 
-import com.project.pescueshop.model.dto.CartItemDTO;
 import com.project.pescueshop.model.dto.ImportItemGroupDTO;
 import com.project.pescueshop.model.dto.ImportItemListDTO;
 import com.project.pescueshop.model.entity.ImportInvoice;
 import com.project.pescueshop.model.entity.ImportItem;
-import com.project.pescueshop.model.entity.Invoice;
-import com.project.pescueshop.repository.ImportInvoiceRepository;
-import com.project.pescueshop.repository.ImportItemRepository;
+import com.project.pescueshop.repository.inteface.ImportInvoiceRepository;
+import com.project.pescueshop.repository.inteface.ImportItemRepository;
 import com.project.pescueshop.repository.mapper.ImportItemGroupListMapper;
 import com.project.pescueshop.repository.mapper.ImportItemListMapper;
 import lombok.RequiredArgsConstructor;
