@@ -34,6 +34,5 @@ public class Merchant {
     @ElementCollection
     private List<String> relatedDocuments;
     private Boolean isLiveable;
-    private Boolean isApproved;
     private Boolean isSuspended;
 }

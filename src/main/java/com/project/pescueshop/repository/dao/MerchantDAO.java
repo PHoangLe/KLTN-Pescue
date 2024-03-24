@@ -13,4 +13,12 @@ public class MerchantDAO extends BaseDAO{
     public void saveAndFlushMerchant(Merchant merchant){
         merchantRepository.save(merchant);
     }
+
+    public Merchant getMerchantById(String merchantId) {
+        return merchantRepository.findByMerchantId(merchantId);
+    }
+
+    public Merchant getMerchantByUserId(String userId) {
+        return merchantRepository.findByUserId(userId);
+    }
 }

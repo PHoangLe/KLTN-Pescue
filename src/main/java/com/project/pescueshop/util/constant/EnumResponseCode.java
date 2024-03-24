@@ -54,7 +54,12 @@ public enum EnumResponseCode {
     VOUCHER_NOT_FOUND("6_1_f", "Voucher not found"),
     //</editor-fold>
     //<editor-fold desc="7-PAYMENT">
-    NO_ITEM_TO_CHECKOUT("7_1_f", "No item to checkout");
+    NO_ITEM_TO_CHECKOUT("7_1_f", "No item to checkout"),
+    //</editor-fold>
+    //<editor-fold desc="8-PAYMENT">
+    MERCHANT_NOT_FOUND("8_1_f", "Merchant not found"),
+    MERCHANT_ALREADY_SUSPENDED("8_2_f", "Merchant already suspended"),
+    MERCHANT_SUSPENDED("8_2_f", "Merchant suspended");
     //</editor-fold>
 
     private static final Map<String, EnumResponseCode> BY_STATUS_CODE = new HashMap<>();

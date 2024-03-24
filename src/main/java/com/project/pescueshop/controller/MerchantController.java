@@ -1,9 +1,6 @@
 package com.project.pescueshop.controller;
 
-import com.project.pescueshop.model.dto.CreateMerchantRequest;
-import com.project.pescueshop.model.dto.InvoiceItemDTO;
-import com.project.pescueshop.model.dto.MerchantDTO;
-import com.project.pescueshop.model.dto.ProductDTO;
+import com.project.pescueshop.model.dto.*;
 import com.project.pescueshop.model.dto.general.ResponseDTO;
 import com.project.pescueshop.model.entity.User;
 import com.project.pescueshop.model.exception.FriendlyException;
@@ -31,7 +28,7 @@ public class MerchantController {
     @PostMapping("")
     @PreAuthorize("hasAuthority('ROLE_CUSTOMER')")
     @SecurityRequirement(name = "Bearer Authentication")
-    public ResponseEntity<ResponseDTO<MerchantDTO>> createNewMerchant(@RequestPart CreateMerchantRequest createMerchantRequest,
+    public ResponseEntity<ResponseDTO<MerchantDTO>> merchantRegistry(@RequestPart CreateMerchantRequest createMerchantRequest,
                                                                       @RequestPart("relatedDocuments") MultipartFile[] relatedDocumentsFile,
                                                                       @RequestPart("avatar") MultipartFile avatarFile,
                                                                       @RequestPart("coverImage") MultipartFile coverImageFile) throws FriendlyException {
@@ -39,7 +36,25 @@ public class MerchantController {
 
         MerchantDTO merchantDTO = merchantService.createNewMerchantRequest(user, createMerchantRequest, relatedDocumentsFile, avatarFile, coverImageFile);
 
-        ResponseDTO<MerchantDTO> result = new ResponseDTO<>(EnumResponseCode.SUCCESS, merchantDTO, "merchant");
+        ResponseDTO<MerchantDTO> result = new ResponseDTO<>(EnumResponseCode.SUCCESS, merchantDTO);
+        return ResponseEntity.ok(result);
+    }
+
+    @PutMapping("/{merchantId}")
+    @PreAuthorize("hasAuthority('ROLE_MERCHANT')")
+    @SecurityRequirement(name = "Bearer Authentication")
+    public ResponseEntity<ResponseDTO<MerchantDTO>> getMerchantInfo(@PathVariable(required = false) String merchantId) throws FriendlyException {
+        MerchantDTO merchantDTO = merchantService.getMerchantInfo(merchantId);
+        ResponseDTO<MerchantDTO> result = new ResponseDTO<>(EnumResponseCode.SUCCESS, merchantDTO);
+        return ResponseEntity.ok(result);
+    }
+
+    @PutMapping("/suspend/{merchantId}")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    @SecurityRequirement(name = "Bearer Authentication")
+    public ResponseEntity<ResponseDTO<String>> createNewMerchant(@PathVariable String merchantId) throws FriendlyException {
+        merchantService.suspendMerchant(merchantId);
+        ResponseDTO<String> result = new ResponseDTO<>(EnumResponseCode.SUCCESS, "Success", "message");
         return ResponseEntity.ok(result);
     }
 }

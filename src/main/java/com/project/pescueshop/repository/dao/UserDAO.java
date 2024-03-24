@@ -51,4 +51,12 @@ public class UserDAO extends BaseDAO{
     public User findUserByUserId(String userId) {
         return userRepository.findById(userId).orElse(null);
     }
+
+    public void addUserRole(String userId, String roleId){
+        userRepository.addUserRole(userId, roleId);
+    }
+
+    public void removeUserRole(String userId, String roleId){
+        userRepository.removeUserRole(userId, roleId);
+    }
 }

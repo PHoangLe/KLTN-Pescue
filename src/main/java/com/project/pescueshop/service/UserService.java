@@ -9,6 +9,7 @@ import com.project.pescueshop.model.entity.User;
 import com.project.pescueshop.model.exception.FriendlyException;
 import com.project.pescueshop.repository.dao.UserDAO;
 import com.project.pescueshop.util.constant.EnumResponseCode;
+import com.project.pescueshop.util.constant.EnumRoleId;
 import com.project.pescueshop.util.constant.EnumStatus;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -102,5 +103,27 @@ public class UserService extends BaseService {
         userDAO.saveAndFlushUser(user);
 
         return new UserDTO(user);
+    }
+
+
+
+    public void addUserRole(String userId, EnumRoleId roleId) throws FriendlyException {
+        User user = findById(userId);
+
+        if (user == null){
+            throw new FriendlyException(EnumResponseCode.ACCOUNT_NOT_FOUND);
+        }
+
+        userDAO.addUserRole(userId, roleId.toString());
+    }
+
+    public void removeUserRole(String userId, EnumRoleId roleId) throws FriendlyException {
+        User user = findById(userId);
+
+        if (user == null){
+            throw new FriendlyException(EnumResponseCode.ACCOUNT_NOT_FOUND);
+        }
+
+        userDAO.removeUserRole(userId, roleId.toString());
     }
 }
