@@ -1,9 +1,12 @@
 package com.project.pescueshop.repository.dao;
 
 import com.project.pescueshop.model.dto.ProductDashboardResult;
+import com.project.pescueshop.model.dto.ProductListDTO;
 import com.project.pescueshop.model.entity.Product;
 import com.project.pescueshop.repository.inteface.ProductRepository;
+import com.project.pescueshop.repository.mapper.ListProductMapper;
 import com.project.pescueshop.util.Util;
+import jakarta.servlet.http.PushBuilder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -17,6 +20,7 @@ import java.util.List;
 @Repository
 public class ProductDAO extends BaseDAO{
     private final ProductRepository productRepository;
+    private final ListProductMapper listProductMapper;
 
     public void deleteAttribute(String productId, String attributeId){
         String sql = "SELECT delete_product_attribute(:p_productId, :p_attributeId);";
@@ -96,5 +100,23 @@ public class ProductDAO extends BaseDAO{
 
     public List<Product> findAll() {
         return productRepository.findAll();
+    }
+
+    public List<ProductListDTO> getListProduct(String categoryId, String subCategoryId, String brandId, String merchantId, Long minPrice, Long maxPrice, Integer page, Integer size){
+        Pageable pageable = PageRequest.of(page, size);
+
+        String sql = "SELECT * FROM get_products(:p_brand_id, :p_category_id, :p_sub_category_id, :p_min_price, :p_max_price, :p_merchant_id, :p_page_number, :p_page_size);";
+
+        MapSqlParameterSource parameters = new MapSqlParameterSource()
+                .addValue("p_brand_id", brandId)
+                .addValue("p_category_id", categoryId)
+                .addValue("p_sub_category_id", subCategoryId)
+                .addValue("p_min_price", minPrice)
+                .addValue("p_max_price", maxPrice)
+                .addValue("p_merchant_id", merchantId)
+                .addValue("p_page_number", page)
+                .addValue("p_page_size", size);
+
+        return jdbcTemplate.query(sql, parameters, listProductMapper);
     }
 }

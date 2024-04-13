@@ -28,12 +28,12 @@ public class Product {
     private String productId;
     private String merchantId;
     private String name;
-    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
     @JoinColumn(name = "subCategoryId", referencedColumnName = "subCategoryId")
     private SubCategory subCategory;
     private long price;
     private String petType;
-    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
     @JoinColumn(name = "brandId", referencedColumnName = "brandId")
     private Brand brand;
     private String detail;

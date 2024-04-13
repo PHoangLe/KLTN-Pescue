@@ -2,6 +2,7 @@ package com.project.pescueshop.service;
 
 import com.project.pescueshop.model.dto.ProductDTO;
 import com.project.pescueshop.model.dto.ProductDashboardResult;
+import com.project.pescueshop.model.dto.ProductListDTO;
 import com.project.pescueshop.model.entity.*;
 import com.project.pescueshop.model.exception.FriendlyException;
 import com.project.pescueshop.repository.dao.ProductDAO;
@@ -208,5 +209,9 @@ public class ProductService extends BaseService {
 
     public List<Product> getProductByCategoryId(String categoryId) {
         return productDAO.getProductByCategoryId(categoryId);
+    }
+
+    public List<ProductListDTO> getListProduct(String categoryId, String subCategoryId, String brandId, String merchantId, Long minPrice, Long maxPrice, Integer page, Integer size){
+        return productDAO.getListProduct(categoryId, subCategoryId, brandId, merchantId, minPrice, maxPrice, page, size);
     }
 }

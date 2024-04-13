@@ -98,6 +98,10 @@ public class MerchantService extends BaseService {
         return merchantDAO.getMerchantById(merchantId);
     }
 
+    public Merchant getMerchantByUserId(String userId) {
+        return merchantDAO.getMerchantByUserId(userId);
+    }
+
     public MerchantDTO getMerchantInfo(String merchantId) throws FriendlyException {
         Merchant merchant = null;
 

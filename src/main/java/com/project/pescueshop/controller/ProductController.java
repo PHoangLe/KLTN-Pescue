@@ -158,10 +158,14 @@ public class ProductController {
     }
 
     @GetMapping("")
-    public ResponseEntity<ResponseDTO<List<Product>>> findAllProduct() {
-        List<Product> productList = productService.findAllProduct();
+    public ResponseEntity<ResponseDTO<List<ProductListDTO>>> findAllProduct(
+            @RequestParam(required = false) Integer page, @RequestParam(required = false) Integer size,
+            @RequestParam(required = false) String categoryId, @RequestParam(required = false) String subCategoryId,
+            @RequestParam(required = false) String brandId, @RequestParam(required = false) String merchantId,
+            @RequestParam(required = false) Long minPrice, @RequestParam(required = false) Long maxPrice) {
+        List<ProductListDTO> productList = productService.getListProduct(categoryId, subCategoryId, brandId, merchantId, minPrice, maxPrice, page, size);
 
-        ResponseDTO<List<Product>> result = new ResponseDTO<>(EnumResponseCode.SUCCESS, productList, "productList");
+        ResponseDTO<List<ProductListDTO>> result = new ResponseDTO<>(EnumResponseCode.SUCCESS, productList, "productList");
 
         return ResponseEntity.ok(result);
     }
@@ -221,7 +225,7 @@ public class ProductController {
     }
 
     @PostMapping("/add-attribute/{productId}")
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    @PreAuthorize("hasAuthority('ROLE_MERCHANT')")
     @SecurityRequirement(name = "Bearer Authentication")
     public ResponseEntity<ResponseDTO<ProductDTO>> addAttribute(@RequestBody VarietyAttribute attribute, @PathVariable String productId) throws FriendlyException, InterruptedException {
         productService.addVarietyAttribute(attribute, productId);
@@ -231,7 +235,7 @@ public class ProductController {
     }
 
     @DeleteMapping("/delete-attribute/{productId}/{attributeId}")
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    @PreAuthorize("hasAuthority('ROLE_MERCHANT')")
     @SecurityRequirement(name = "Bearer Authentication")
     public ResponseEntity<ResponseDTO<ProductDTO>> deleteAttribute(@PathVariable String attributeId, @PathVariable String productId) {
         productService.deleteAttribute(attributeId, productId);

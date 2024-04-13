@@ -4,6 +4,7 @@ import com.project.pescueshop.model.dto.AuthenticationDTO;
 import com.project.pescueshop.model.dto.RegisterDTO;
 import com.project.pescueshop.model.dto.general.ResponseDTO;
 import com.project.pescueshop.model.dto.UserDTO;
+import com.project.pescueshop.model.entity.Merchant;
 import com.project.pescueshop.model.entity.User;
 import com.project.pescueshop.model.exception.FriendlyException;
 import com.project.pescueshop.model.exception.UnauthenticatedException;
@@ -31,7 +32,7 @@ public class AuthenticationService {
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
     private final PasswordEncoder passwordEncoder;
-    private final CartService cartService;
+    private final MerchantService merchantService;
     private final ThreadService threadService;
 
     public static User getCurrentLoggedInUser() throws FriendlyException {
@@ -41,6 +42,15 @@ public class AuthenticationService {
             throw new FriendlyException(EnumResponseCode.NOT_LOGGED_IN);
 
         return principal;
+    }
+
+    public Merchant getCurrentMerchant() throws FriendlyException {
+        User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        if (principal == null)
+            throw new FriendlyException(EnumResponseCode.NOT_LOGGED_IN);
+
+        return merchantService.getMerchantById(principal.getUserId());
     }
 
     public ResponseEntity<ResponseDTO<UserDTO>> userRegister(RegisterDTO request) throws FriendlyException {
