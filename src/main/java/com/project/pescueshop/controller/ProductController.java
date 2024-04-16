@@ -108,7 +108,7 @@ public class ProductController {
 
     //<editor-fold desc="Variety">
     @GetMapping("/variety/attributes")
-    public ResponseEntity<ResponseDTO<Map<String, List<VarietyAttribute>>>> findAllAttribute() throws FriendlyException {
+    public ResponseEntity<ResponseDTO<Map<String, List<VarietyAttribute>>>> findAllAttribute() {
         Map<String, List<VarietyAttribute>> varietyAttribute = varietyService.findAllVarietyAttribute();
 
         ResponseDTO<Map<String, List<VarietyAttribute>>> result = new ResponseDTO<>(EnumResponseCode.SUCCESS, varietyAttribute, "productList");
@@ -117,9 +117,16 @@ public class ProductController {
     }
 
     @PostMapping("/variety")
-    public ResponseEntity<ResponseDTO<VarietyDTO>> addVariety(@RequestBody VarietyDTO dto) throws FriendlyException {
+    public ResponseEntity<ResponseDTO<VarietyDTO>> addVariety(@RequestBody VarietyDTO dto) {
         VarietyDTO varietyDTO = varietyService.addOrUpdateVariety(dto);
         ResponseDTO<VarietyDTO> result = new ResponseDTO<>(EnumResponseCode.SUCCESS, varietyDTO, "product");
+        return ResponseEntity.ok(result);
+    }
+
+    @PutMapping("/variety/measurement")
+    public ResponseEntity<ResponseDTO<String>> updateVarietyMeasurement(@RequestBody List<UpdateVarietyMeasurementRequest> request) throws FriendlyException {
+        varietyService.updateVarietyMeasurement(request);
+        ResponseDTO<String> result = new ResponseDTO<>(EnumResponseCode.SUCCESS);
         return ResponseEntity.ok(result);
     }
     //</editor-fold>
@@ -128,8 +135,8 @@ public class ProductController {
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @SecurityRequirement(name = "Bearer Authentication")
     @PostMapping("")
-    public ResponseEntity<ResponseDTO<ProductDTO>> addProduct(@RequestPart ProductDTO productDTO, @RequestPart("images") MultipartFile[] images) throws InterruptedException {
-        productDTO = productService.addProduct(productDTO, images);
+    public ResponseEntity<ResponseDTO<ProductDTO>> addProduct(@RequestPart ProductDTO productDTO, @RequestPart("images") MultipartFile[] images, @RequestParam(defaultValue = "false") boolean isSameMeasurement) throws InterruptedException {
+        productDTO = productService.addProduct(productDTO, images, isSameMeasurement);
 
         ResponseDTO<ProductDTO> result = new ResponseDTO<>(EnumResponseCode.SUCCESS, productDTO);
         System.out.println(System.currentTimeMillis());

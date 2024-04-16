@@ -17,6 +17,7 @@ import java.util.List;
 public class ProductDTO {
     private String productId;
     private String name;
+    private String merchantId;
     private String subCategoryId;
     private SubCategory subCategory;
     private long price;
@@ -30,11 +31,16 @@ public class ProductDTO {
     private Integer avgRating;
     private List<VarietyDTO> varieties;
     private String status;
+    private Double width;
+    private Double height;
+    private Double length;
+    private Double weight;
     private List<VarietyAttribute> varietyAttributeList;
     private List<RatingResultDTO> ratingList;
 
     public ProductDTO(Product product){
         this.productId = product.getProductId();
+        this.merchantId = product.getMerchantId();
         this.name = product.getName();
         this.subCategory = product.getSubCategory();
         this.price = product.getPrice();
@@ -42,6 +48,10 @@ public class ProductDTO {
         this.brand = product.getBrand();
         this.detail = product.getDetail();
         this.description = product.getDescription();
+        this.width = product.getWidth();
+        this.height = product.getHeight();
+        this.length = product.getLength();
+        this.weight = product.getWeight();
         this.avgRating = product.getAvgRating();
         this.images = product.getImages();
         this.status = product.getStatus();

@@ -38,6 +38,14 @@ public class Product {
     private Brand brand;
     private String detail;
     private String description;
+    @Transient
+    private Double width;
+    @Transient
+    private Double height;
+    @Transient
+    private Double length;
+    @Transient
+    private Double weight;
     private Integer avgRating;
     private String status;
     @ElementCollection

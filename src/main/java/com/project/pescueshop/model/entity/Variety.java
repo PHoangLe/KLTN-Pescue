@@ -8,6 +8,7 @@ import org.hibernate.annotations.GenericGenerator;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.DoubleUnaryOperator;
 
 @Getter
 @Setter
@@ -34,6 +35,10 @@ public class Variety {
     )
     private List<VarietyAttribute> varietyAttributes;
     private String status;
+    private Double width = 0.0d;
+    private Double height = 0.0d;
+    private Double length = 0.0d;
+    private Double weight = 0.0d;
     private Integer stockAmount = 0;
 
     public Variety(VarietyDTO dto){
