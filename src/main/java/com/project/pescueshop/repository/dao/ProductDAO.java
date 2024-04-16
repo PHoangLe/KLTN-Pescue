@@ -13,6 +13,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.stereotype.Repository;
 
+import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -103,19 +104,17 @@ public class ProductDAO extends BaseDAO{
     }
 
     public List<ProductListDTO> getListProduct(String categoryId, String subCategoryId, String brandId, String merchantId, Long minPrice, Long maxPrice, Integer page, Integer size){
-        Pageable pageable = PageRequest.of(page, size);
-
         String sql = "SELECT * FROM get_products(:p_brand_id, :p_category_id, :p_sub_category_id, :p_min_price, :p_max_price, :p_merchant_id, :p_page_number, :p_page_size);";
 
         MapSqlParameterSource parameters = new MapSqlParameterSource()
-                .addValue("p_brand_id", brandId)
-                .addValue("p_category_id", categoryId)
-                .addValue("p_sub_category_id", subCategoryId)
-                .addValue("p_min_price", minPrice)
-                .addValue("p_max_price", maxPrice)
-                .addValue("p_merchant_id", merchantId)
-                .addValue("p_page_number", page)
-                .addValue("p_page_size", size);
+                .addValue("p_brand_id", brandId, Types.VARCHAR)
+                .addValue("p_category_id", categoryId, Types.VARCHAR)
+                .addValue("p_sub_category_id", subCategoryId, Types.VARCHAR)
+                .addValue("p_min_price", minPrice, Types.BIGINT)
+                .addValue("p_max_price", maxPrice, Types.BIGINT)
+                .addValue("p_merchant_id", merchantId, Types.VARCHAR)
+                .addValue("p_page_number", page, Types.INTEGER)
+                .addValue("p_page_size", size, Types.INTEGER);
 
         return jdbcTemplate.query(sql, parameters, listProductMapper);
     }

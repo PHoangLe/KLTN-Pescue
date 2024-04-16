@@ -17,7 +17,7 @@ public class ListProductMapper implements RowMapper<ProductListDTO> {
                 .productId(rs.getString("product_id"))
                 .name(rs.getString("name"))
                 .price(rs.getLong("price"))
-                .image(rs.getString("image"))
+                .image(rs.getString("product_image"))
                 .description(rs.getString("description"))
                 .avgRating(rs.getInt("avg_rating"))
                 .build();
