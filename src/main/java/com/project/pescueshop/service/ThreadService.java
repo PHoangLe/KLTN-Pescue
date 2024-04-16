@@ -66,14 +66,14 @@ public class ThreadService extends BaseService {
         this.viewAuditLogDAO = viewAuditLogDAO;
     }
 
-    public void addVarietyByAttribute(Product product, List<VarietyAttribute> existingAttributes, VarietyAttribute newAttribute) {
+    public void addVarietyByAttribute(Product product, List<VarietyAttribute> existingAttributes, VarietyAttribute newAttribute, boolean isSameMeasurement) {
         if (existingAttributes == null || existingAttributes.isEmpty()) {
             return;
         }
 
         for (VarietyAttribute varietyAttribute : existingAttributes) {
             try {
-                Thread thread = new Thread(() -> processAddVarietyByAttribute(product, varietyAttribute, newAttribute));
+                Thread thread = new Thread(() -> processAddVarietyByAttribute(product, varietyAttribute, newAttribute, isSameMeasurement));
                 thread.start();
             }
             catch (Exception e){
@@ -85,18 +85,18 @@ public class ThreadService extends BaseService {
         }
     }
 
-    public void addVarietyByAttribute(Product product, List<VarietyAttribute> colorAttributeList, List<VarietyAttribute> sizeAttributeList) {
+    public void addVarietyByAttribute(Product product, List<VarietyAttribute> colorAttributeList, List<VarietyAttribute> sizeAttributeList, boolean isSameMeasurement) {
         if (colorAttributeList == null || colorAttributeList.isEmpty()) {
             return;
         }
 
         for (VarietyAttribute colorAttribute : colorAttributeList) {
-            Thread thread = new Thread(() -> addVarietyByAttribute(product, sizeAttributeList, colorAttribute));
+            Thread thread = new Thread(() -> addVarietyByAttribute(product, sizeAttributeList, colorAttribute, isSameMeasurement));
             thread.start();
         }
     }
 
-    private void processAddVarietyByAttribute(Product product, VarietyAttribute existingAttribute, VarietyAttribute newAttribute) {
+    private void processAddVarietyByAttribute(Product product, VarietyAttribute existingAttribute, VarietyAttribute newAttribute, boolean isSameMeasurement) {
         Variety variety = new Variety();
         variety.addAttribute(newAttribute);
         variety.setName(product.getName());
@@ -105,6 +105,14 @@ public class ThreadService extends BaseService {
         variety.setStatus(EnumStatus.ACTIVE.getValue());
         variety.setPrice(product.getPrice());
         variety.setStockAmount(0);
+
+        if (isSameMeasurement) {
+            variety.setWidth(product.getWidth());
+            variety.setHeight(product.getHeight());
+            variety.setLength(product.getLength());
+            variety.setWeight(product.getWeight());
+        }
+
         varietyService.addOrUpdateVariety(variety);
     }
 

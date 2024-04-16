@@ -50,7 +50,7 @@ public class ProductService extends BaseService {
         return dto;
     }
 
-    public ProductDTO addProduct(ProductDTO productDTO, MultipartFile[] images) {
+    public ProductDTO addProduct(ProductDTO productDTO, MultipartFile[] images, boolean isSameMeasurement) {
         List<MultipartFile> imagesList = Arrays.stream(images).toList();
         EnumPetType petType = EnumPetType.getById(productDTO.getPetTypeId());
         productDTO.setPetType(petType.getValue());
@@ -65,7 +65,7 @@ public class ProductService extends BaseService {
 
         CompletableFuture.runAsync(() -> {
             try {
-                addDefaultVariety(product, productDTO.getVarietyAttributeList());
+                addDefaultVariety(product, productDTO.getVarietyAttributeList(), isSameMeasurement);
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
@@ -74,7 +74,7 @@ public class ProductService extends BaseService {
         return transformProductToDTO(product);
     }
 
-    private void addDefaultVariety(Product product, List<VarietyAttribute> varietyAttributeList) throws InterruptedException {
+    private void addDefaultVariety(Product product, List<VarietyAttribute> varietyAttributeList, boolean isSameMeasurement) throws InterruptedException {
         if (product == null)
             return;
 
@@ -85,6 +85,14 @@ public class ProductService extends BaseService {
             variety.setPrice(product.getPrice());
             variety.setStatus(product.getStatus());
             variety.setStockAmount(0);
+
+            if (isSameMeasurement) {
+                variety.setWidth(product.getWidth());
+                variety.setHeight(product.getHeight());
+                variety.setLength(product.getLength());
+                variety.setWeight(product.getWeight());
+            }
+
             varietyService.addOrUpdateVariety(variety);
         }
         else {
@@ -94,7 +102,7 @@ public class ProductService extends BaseService {
             List<VarietyAttribute> sizeAttribute = varietiesAttributeMap.getOrDefault("SIZE", new ArrayList<>());
             List<VarietyAttribute> colorAttribute = varietiesAttributeMap.getOrDefault("COLOR", new ArrayList<>());
 
-            varietyService.addVarietyByListAttribute(product, sizeAttribute, colorAttribute);
+            varietyService.addVarietyByListAttribute(product, sizeAttribute, colorAttribute, isSameMeasurement);
         }
 
     }
@@ -145,7 +153,7 @@ public class ProductService extends BaseService {
             varieties.add(variety);
         }
         else {
-            threadService.addVarietyByAttribute(product, varietyAttributeList, newAttribute);
+            threadService.addVarietyByAttribute(product, varietyAttributeList, newAttribute, false);
         }
     }
 
