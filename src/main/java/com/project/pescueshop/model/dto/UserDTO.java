@@ -20,6 +20,7 @@ import java.util.List;
 public class UserDTO {
     private String userId;
     private String userEmail;
+    private String merchantId;
     @JsonIgnore
     private String userPassword;
     private String userFirstName;
