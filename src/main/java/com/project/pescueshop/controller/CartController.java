@@ -3,6 +3,7 @@ package com.project.pescueshop.controller;
 import com.project.pescueshop.model.dto.CartDTO;
 import com.project.pescueshop.model.dto.CartItemDTO;
 import com.project.pescueshop.model.dto.AddOrUpdateCartItemDTO;
+import com.project.pescueshop.model.dto.MerchantGroupCartItem;
 import com.project.pescueshop.model.dto.general.ResponseDTO;
 import com.project.pescueshop.model.entity.CartItem;
 import com.project.pescueshop.model.entity.User;
@@ -30,10 +31,10 @@ public class CartController {
     @GetMapping("")
     @PreAuthorize("hasAuthority('ROLE_CUSTOMER')")
     @SecurityRequirement(name = "Bearer Authentication")
-    public ResponseEntity<ResponseDTO<List<CartItemDTO>>> getCart() throws FriendlyException {
+    public ResponseEntity<ResponseDTO<List<MerchantGroupCartItem>>> getCart() throws FriendlyException {
         User user = AuthenticationService.getCurrentLoggedInUser();
-        List<CartItemDTO> itemList = cartService.getCartItemByUserId(user.getUserId());
-        ResponseDTO<List<CartItemDTO>> result;
+        List<MerchantGroupCartItem> itemList = cartService.getCartItemByUserId(user.getUserId());
+        ResponseDTO<List<MerchantGroupCartItem>> result;
         if (itemList == null) {
              result = new ResponseDTO<>(EnumResponseCode.CART_NOT_FOUND);
         }
@@ -46,13 +47,11 @@ public class CartController {
     @GetMapping("/un-authenticate")
     public ResponseEntity<ResponseDTO<CartDTO>> getCartUnAuthenticate(@RequestParam(required = false) String cartId) throws FriendlyException {
         CartDTO itemList = cartService.getUnAuthenticatedCart(cartId);
-        ResponseDTO<CartDTO> result;
-        if (itemList == null) {
-            result = new ResponseDTO<>(EnumResponseCode.CART_NOT_FOUND);
-        }
-        else {
-            result = new ResponseDTO<>(EnumResponseCode.SUCCESS, itemList, "cart");
-        }
+
+        EnumResponseCode responseCode = (itemList == null) ? EnumResponseCode.CART_NOT_FOUND : EnumResponseCode.SUCCESS;
+
+        ResponseDTO<CartDTO> result = new ResponseDTO<>(responseCode, itemList, "cart");
+
         return ResponseEntity.ok(result);
     }
 

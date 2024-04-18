@@ -50,7 +50,7 @@ public class ControllerExceptionHandler {
                 .client(request.getRemoteUser())
                 .build());
 
-        log.trace(ExceptionUtils.getStackTrace(ex));
+        log.error(ExceptionUtils.getStackTrace(ex));
 
         return ResponseEntity.ok(new ResponseDTO<>(EnumResponseCode.SYSTEM_ERROR, new ErrorLogDTO(errorLog)));
     }

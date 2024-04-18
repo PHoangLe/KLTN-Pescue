@@ -18,8 +18,11 @@ import java.util.List;
 public class ProductListDTO {
     private String productId;
     private String name;
+    private String categoryName;
+    private String brandName;
     private long price;
     private String image;
     private String description;
     private Integer avgRating;
+    private Long totalRecord;
 }

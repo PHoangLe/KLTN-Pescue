@@ -84,23 +84,25 @@ public class AuthenticationService {
         try{
             User user = userService.findByEmail(request.getUserEmail());
 
-            if (user != null) {
-                EnumStatus status = EnumStatus.getByValue(user.getStatus());
+            if (user == null){
+                throw new UnauthenticatedException(EnumResponseCode.ACCOUNT_NOT_FOUND, request.getUserEmail());
+            }
 
-                switch (status) {
-                    case INACTIVE -> {
-                        throw new UnauthenticatedException(EnumResponseCode.ACCOUNT_INACTIVE, request.getUserEmail());
-                    }
-                    case LOCKED -> {
-                        throw new UnauthenticatedException(EnumResponseCode.ACCOUNT_LOCKED, request.getUserEmail());
-                    }
-                    case DELETED -> {
-                        throw new UnauthenticatedException(EnumResponseCode.ACCOUNT_NOT_FOUND, request.getUserEmail());
-                    }
+            EnumStatus status = EnumStatus.getByValue(user.getStatus());
+
+            switch (status) {
+                case INACTIVE -> {
+                    throw new UnauthenticatedException(EnumResponseCode.ACCOUNT_INACTIVE, request.getUserEmail());
+                }
+                case LOCKED -> {
+                    throw new UnauthenticatedException(EnumResponseCode.ACCOUNT_LOCKED, request.getUserEmail());
+                }
+                case DELETED -> {
+                    throw new UnauthenticatedException(EnumResponseCode.ACCOUNT_NOT_FOUND, request.getUserEmail());
                 }
             }
 
-            Authentication authentication =  authenticationManager.authenticate(
+            authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
                             request.getUserEmail(),
                             request.getUserPassword()
@@ -110,7 +112,15 @@ public class AuthenticationService {
             var jwtToken = jwtService.generateJwtToken(user);
             log.trace("Successfully authenticate user: " + request.getUserEmail());
 
-            ResponseDTO<UserDTO> response = new ResponseDTO<>(EnumResponseCode.AUTHENTICATE_SUCCESSFUL, new UserDTO(user, jwtToken));
+            UserDTO userDTO = new UserDTO(user, jwtToken);
+
+            if (isMerchant(user)){
+                userDTO.setMerchantId(merchantService.getMerchantByUserId(user.getUserId()).getMerchantId());
+            }
+
+            ResponseDTO<UserDTO> response = new ResponseDTO<>(EnumResponseCode.AUTHENTICATE_SUCCESSFUL, userDTO);
+
+
             return ResponseEntity.ok(response);
         }
         catch (AuthenticationException e){
@@ -139,5 +149,9 @@ public class AuthenticationService {
 
         ResponseDTO<UserDTO> response = new ResponseDTO<>(EnumResponseCode.AUTHENTICATE_SUCCESSFUL, new UserDTO(user, jwtToken));
         return ResponseEntity.ok(response);
+    }
+
+    public boolean isMerchant(User user){
+        return user.getUserRoles().stream().anyMatch(role -> role.getRoleName().equals("ROLE_MERCHANT"));
     }
 }

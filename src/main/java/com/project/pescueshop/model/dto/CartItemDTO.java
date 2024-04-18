@@ -25,4 +25,8 @@ public class CartItemDTO {
     private String image;
     private Integer stockAmount;
     private List<String> listAttributeName;
+    private String merchantId;
+    private String merchantName;
+    private String merchantAvatar;
+    private String merchantLocation;
 }

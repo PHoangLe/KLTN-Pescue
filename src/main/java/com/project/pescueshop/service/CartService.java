@@ -3,6 +3,7 @@ package com.project.pescueshop.service;
 import com.project.pescueshop.model.dto.CartDTO;
 import com.project.pescueshop.model.dto.CartItemDTO;
 import com.project.pescueshop.model.dto.AddOrUpdateCartItemDTO;
+import com.project.pescueshop.model.dto.MerchantGroupCartItem;
 import com.project.pescueshop.model.entity.*;
 import com.project.pescueshop.model.exception.FriendlyException;
 import com.project.pescueshop.repository.inteface.CartItemRepository;
@@ -15,6 +16,7 @@ import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -42,12 +44,29 @@ public class CartService{
         return cartRepository.findById(cartId).orElse(null);
     }
 
-    public List<CartItemDTO> getCartItemByUserId(String userId){
-        return cartDAO.getCartItems(userId, null);
+    public List<MerchantGroupCartItem> getCartItemByUserId(String userId){
+        return getCartItems(userId, null);
     }
 
-    public List<CartItemDTO> getCartItemByCartId(String cartId) {
-        return cartDAO.getCartItems(null, cartId);
+    public List<MerchantGroupCartItem> getCartItemByCartId(String cartId) {
+        return getCartItems(null, cartId);
+    }
+
+    public List<MerchantGroupCartItem> getCartItems(String userId, String cartId){
+        List<CartItemDTO> cartItems = cartDAO.getCartItems(userId, cartId);
+
+        return cartItems.stream()
+                .collect(Collectors.groupingBy(CartItemDTO::getMerchantId))
+                .entrySet()
+                .stream()
+                .map(entry -> MerchantGroupCartItem.builder()
+                        .merchantId(entry.getKey())
+                        .merchantName(entry.getValue().get(0).getMerchantName())
+                        .merchantAvatar(entry.getValue().get(0).getMerchantAvatar())
+                        .merchantLocation(entry.getValue().get(0).getMerchantLocation())
+                        .cartItemDTOList(entry.getValue())
+                        .build())
+                .collect(Collectors.toList());
     }
 
     public void addOrUpdateCartItem(AddOrUpdateCartItemDTO dto, User user, Cart existedCart) throws FriendlyException {
@@ -98,14 +117,14 @@ public class CartService{
 
     public CartDTO getUnAuthenticatedCart(String cartId) {
         if (cartId != null) {
-            List<CartItemDTO> cartItemDTOS = cartDAO.getCartItems(null, cartId);
+            List<MerchantGroupCartItem> cartItemDTOS = getCartItemByCartId(cartId);
 
             CartDTO cartDTO = CartDTO.builder()
                     .cartItemList(cartItemDTOS)
                     .build();
 
             if (!CollectionUtils.isEmpty(cartItemDTOS)){
-                cartDTO.setCartId(cartItemDTOS.get(0).getCartId());
+                cartDTO.setCartId(cartItemDTOS.get(0).getCartItemDTOList().get(0).getCartId());
             }
 
             return cartDTO;
