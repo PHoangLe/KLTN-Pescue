@@ -14,6 +14,11 @@ public class CreateMerchantRequest {
     private String userId;
     private String merchantName;
     private String merchantDescription;
-    private String location;
+    private String cityName;
+    private String districtName;
+    private String wardName;
+    private String cityCode;
+    private String districtCode;
+    private String wardCode;
     private String phoneNumber;
 }

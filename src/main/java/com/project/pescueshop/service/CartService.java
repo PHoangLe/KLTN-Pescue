@@ -63,7 +63,9 @@ public class CartService{
                         .merchantId(entry.getKey())
                         .merchantName(entry.getValue().get(0).getMerchantName())
                         .merchantAvatar(entry.getValue().get(0).getMerchantAvatar())
-                        .merchantLocation(entry.getValue().get(0).getMerchantLocation())
+                        .cityName(entry.getValue().get(0).getCityName())
+                        .districtName(entry.getValue().get(0).getDistrictName())
+                        .wardName(entry.getValue().get(0).getWardName())
                         .cartItemDTOList(entry.getValue())
                         .build())
                 .collect(Collectors.toList());
