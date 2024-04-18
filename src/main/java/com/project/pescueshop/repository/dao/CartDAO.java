@@ -18,7 +18,7 @@ public class CartDAO extends BaseDAO{
     private final CartItemRepository cartItemRepository;
 
     public List<CartItemDTO> getCartItems(String userId, String cartId){
-        String sql = "SELECT * FROM get_cart_items(:p_user_id, :p_cart_id);";
+        String sql = "SELECT * FROM get_cart_items_group_by_merchant(:p_cart_id, :p_user_id);";
 
         MapSqlParameterSource parameters = new MapSqlParameterSource()
                 .addValue("p_user_id", userId)

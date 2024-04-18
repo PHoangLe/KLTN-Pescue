@@ -28,8 +28,14 @@ public class CartItemMapper implements RowMapper<CartItemDTO> {
                 .stockAmount(rs.getInt("stock_amount"))
                 .build();
 
-        List<String> attributeNameList = Util.getListStringFromString(rs.getString("attribute_name"));
+        List<String> attributeNameList = Util.getListStringFromString(rs.getString("list_attribute_name"));
         cartItemDTO.setListAttributeName(attributeNameList);
+
+        List<String> merchantInfo = Util.getListStringFromString(rs.getString("merchant_info"));
+        cartItemDTO.setMerchantId(merchantInfo.get(0));
+        cartItemDTO.setMerchantName(merchantInfo.get(1));
+        cartItemDTO.setMerchantAvatar(merchantInfo.get(2));
+        cartItemDTO.setMerchantLocation(merchantInfo.get(3));
 
         return cartItemDTO;
     }
