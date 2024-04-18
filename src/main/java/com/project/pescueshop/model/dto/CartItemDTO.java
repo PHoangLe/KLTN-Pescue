@@ -28,5 +28,7 @@ public class CartItemDTO {
     private String merchantId;
     private String merchantName;
     private String merchantAvatar;
-    private String merchantLocation;
+    private String cityName;
+    private String districtName;
+    private String wardName;
 }

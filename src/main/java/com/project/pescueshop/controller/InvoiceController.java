@@ -59,7 +59,7 @@ public class InvoiceController {
     @GetMapping("/user-invoice-info")
     @PreAuthorize("hasAuthority('ROLE_CUSTOMER')")
     @SecurityRequirement(name = "Bearer Authentication")
-    public ResponseEntity<ResponseDTO<List<Invoice>>> getOrderInfo() throws FriendlyException {
+    public ResponseEntity<ResponseDTO<List<Invoice>>> getInvoiceInfo() throws FriendlyException {
         User user = AuthenticationService.getCurrentLoggedInUser();
         List<Invoice> invoiceList = invoiceService.getOrderInfoByUser(user);
         ResponseDTO<List<Invoice>> result = new ResponseDTO<>(EnumResponseCode.SUCCESS, invoiceList, "invoiceList");

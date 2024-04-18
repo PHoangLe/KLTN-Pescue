@@ -22,7 +22,12 @@ public class MerchantDTO {
     private String merchantAvatar;
     private String merchantCover;
     private Integer rating;
-    private String location;
+    private String cityName;
+    private String districtName;
+    private String wardName;
+    private String cityCode;
+    private String districtCode;
+    private String wardCode;
     private String phoneNumber;
     private Integer noProduct;
     private List<String> relatedDocuments;
