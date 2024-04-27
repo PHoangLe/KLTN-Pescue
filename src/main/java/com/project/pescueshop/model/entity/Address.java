@@ -21,7 +21,9 @@ public class Address {
     private String userId;
     private String streetName;
     private String wardName;
+    private String wardCode;
     private String districtName;
+    private Integer districtId;
     private String cityName;
     private String status;
 }

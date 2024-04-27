@@ -38,7 +38,7 @@ public class PaymentDAO extends BaseDAO{
     }
 
     public List<InvoiceItemDTO> getInvoiceDetail(String invoiceId){
-        String sql = "SELECT * FROM get_invoice_detail(:p_invoice_id);";
+        String sql = "SELECT * FROM get_invoice_details(:p_invoice_id);";
 
         MapSqlParameterSource parameters = new MapSqlParameterSource()
                 .addValue("p_invoice_id", invoiceId);
@@ -64,5 +64,14 @@ public class PaymentDAO extends BaseDAO{
 
     public List<InvoiceItem> findInvoiceItemByInvoiceId(String invoiceId) {
         return invoiceItemRepository.findInvoiceItemByInvoiceId(invoiceId);
+    }
+
+    public List<InvoiceItemDTO> getAllInvoiceItemsGroupedByMerchantInCart(String cartId) {
+        String sql = "SELECT * FROM get_selected_invoice_items(:p_invoice_id);";
+
+        MapSqlParameterSource parameters = new MapSqlParameterSource()
+                .addValue("p_cart_id", cartId);
+
+        return jdbcTemplate.query(sql, parameters, invoiceItemMapper);
     }
 }

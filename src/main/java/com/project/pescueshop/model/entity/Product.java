@@ -39,13 +39,13 @@ public class Product {
     private String detail;
     private String description;
     @Transient
-    private Double width;
+    private Integer width;
     @Transient
-    private Double height;
+    private Integer height;
     @Transient
-    private Double length;
+    private Integer length;
     @Transient
-    private Double weight;
+    private Integer weight;
     private Integer avgRating;
     private String status;
     @ElementCollection

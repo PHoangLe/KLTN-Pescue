@@ -1,10 +1,7 @@
 package com.project.pescueshop.service;
 
 import com.project.pescueshop.config.PaymentConfig;
-import com.project.pescueshop.model.dto.CartCheckOutInfoDTO;
-import com.project.pescueshop.model.dto.CheckoutResultDTO;
-import com.project.pescueshop.model.dto.PaymentInfoDTO;
-import com.project.pescueshop.model.dto.SingleItemCheckOutInfoDTO;
+import com.project.pescueshop.model.dto.*;
 import com.project.pescueshop.model.entity.*;
 import com.project.pescueshop.model.exception.FriendlyException;
 import com.project.pescueshop.repository.dao.CartDAO;
@@ -33,6 +30,8 @@ public class PaymentService {
     private final PaymentDAO paymentDAO;
     private final CartDAO cartDAO;
     private final VarietyService varietyService;
+    private final InvoiceService invoiceService;
+    private final ShippingFeeService shippingFeeService;
     private final UserService userService;
     private final ThreadService threadService;
 
@@ -96,94 +95,118 @@ public class PaymentService {
         return paymentUrl;
     }
 
-    public CheckoutResultDTO userCartCheckout(User user, CartCheckOutInfoDTO cartCheckOutInfoDTO) throws UnsupportedEncodingException, FriendlyException {
+    public CheckoutResultDTO userCartCheckout(User user, CartCheckOutInfoDTO cartCheckOutInfoDTO) throws FriendlyException {
         PaymentInfoDTO paymentInfo = cartCheckOutInfoDTO.getPaymentInfoDTO();
         EnumPaymentType paymentType = EnumPaymentType.getByValue(paymentInfo.getPaymentType());
         Address address = paymentInfo.getAddress();
 
-        Invoice invoice = new Invoice();
-        invoice.setPaymentType(paymentType.getValue());
-        invoice.setUserId(user.getUserId());
-        invoice.setCityName(address.getCityName());
-        invoice.setDistrictName(address.getDistrictName());
-        invoice.setWardName(address.getWardName());
-        invoice.setStreetName(address.getStreetName());
-        invoice.setStatus(EnumInvoiceStatus.PENDING.getValue());
-        invoice.setPhoneNumber(paymentInfo.getPhoneNumber());
-        invoice.setCreatedDate(Util.getCurrentDate());
-        invoice.setVoucher(paymentInfo.getVoucher());
-        invoice.setShippingFee(paymentInfo.getShippingFee());
-        invoice.setUserEmail(paymentInfo.getUserEmail());
-        invoice.setRecipientName(paymentInfo.getRecipientName());
+        Map<String, List<InvoiceItemDTO>> invoiceItemGroupByMerchantId = invoiceService.getAllInvoicesGroupedByMerchantInCart(cartCheckOutInfoDTO.getCartId());
 
-        long invoiceValue = cartDAO.sumValueOfAllSelectedProductInCart(cartCheckOutInfoDTO.getCartId(), user.getUserId());
-
-        if (invoiceValue == 0){
+        if (invoiceItemGroupByMerchantId.isEmpty()){
             throw new FriendlyException(EnumResponseCode.NO_ITEM_TO_CHECKOUT);
         }
 
-        invoice.setTotalPrice(invoiceValue);
-        invoice.setFinalPrice(invoiceValue + paymentInfo.getShippingFee());
+        List<Invoice> invoiceList = new ArrayList<>();
 
-        if (invoice.getVoucher() != null){
-            Voucher voucher = invoice.getVoucher();
-            EnumVoucherType voucherType = EnumVoucherType.getByValue(voucher.getType());
-            long discountAmount = 0;
+        invoiceItemGroupByMerchantId.forEach((merchantId, invoiceItemDTO) -> {
+            Invoice invoice = Invoice.builder()
+                    .paymentType(paymentType.getValue())
+                    .userId(user.getUserId())
+                    .merchantId(merchantId)
+                    .cityName(address.getCityName())
+                    .districtName(address.getDistrictName())
+                    .districtId(address.getDistrictId())
+                    .voucher(paymentInfo.getVoucherByMerchantMap().get(merchantId))
+                    .wardName(address.getWardName())
+                    .wardCode(address.getWardCode())
+                    .streetName(address.getStreetName())
+                    .status(EnumInvoiceStatus.PENDING.getValue())
+                    .phoneNumber(paymentInfo.getPhoneNumber())
+                    .createdDate(Util.getCurrentDate())
+                    .shippingFee(paymentInfo.getShippingFee())
+                    .userEmail(paymentInfo.getUserEmail())
+                    .recipientName(paymentInfo.getRecipientName())
+                    .build();
 
-            if (voucherType == EnumVoucherType.PERCENTAGE){
-                discountAmount = (voucher.getValue() * invoice.getTotalPrice()) / 100L;
+            long invoiceValue = invoiceItemDTO.stream().mapToLong(InvoiceItemDTO::getTotalPrice).sum();
+            try {
+                long shippingFee = shippingFeeService.calculateShippingFee(invoiceItemDTO, address);
+                invoice.setTotalPrice(invoiceValue);
+                invoice.setFinalPrice(invoiceValue + shippingFee);
+            } catch (FriendlyException e) {
+                throw new RuntimeException(e);
             }
-            else {
-                discountAmount = voucher.getValue();
+
+            if (invoice.getVoucher() != null){
+                Voucher voucher = invoice.getVoucher();
+                EnumVoucherType voucherType = EnumVoucherType.getByValue(voucher.getType());
+                long discountAmount = 0;
+
+                if (voucherType == EnumVoucherType.PERCENTAGE){
+                    discountAmount = (voucher.getValue() * invoice.getTotalPrice()) / 100L;
+                }
+                else {
+                    discountAmount = voucher.getValue();
+                }
+
+                discountAmount = Math.min(discountAmount, voucher.getMaxValue());
+                invoice.setDiscountPrice(discountAmount);
+
+                long finalPrice = Math.max(invoice.getFinalPrice() - discountAmount, 0);
+                invoice.setFinalPrice(finalPrice);
+
+                CompletableFuture.runAsync(() -> {
+                    userService.removeMemberPoint(user, voucher.getPrice());
+                });
             }
 
-            discountAmount = Math.min(discountAmount, voucher.getMaxValue());
-            invoice.setDiscountPrice(discountAmount);
+            paymentDAO.saveAndFlushInvoice(invoice);
+            threadService.sendReceiptEmail(invoice);
 
-            long finalPrice = Math.max(invoice.getFinalPrice() - discountAmount, 0);
-            invoice.setFinalPrice(finalPrice);
-
-            CompletableFuture.runAsync(() -> {
-                userService.removeMemberPoint(user, voucher.getPrice());
-            });
-        }
-
-        paymentDAO.saveAndFlushInvoice(invoice);
-
-        threadService.sendReceiptEmail(invoice);
-
-        CompletableFuture.runAsync(() -> {
-            addInvoiceItemsToInvoice(invoice);
+            CompletableFuture.allOf(
+                    CompletableFuture.runAsync(() -> addInvoiceItemsToInvoice(invoice, invoiceItemDTO)),
+                    CompletableFuture.runAsync(() -> userService.addMemberPoint(user, invoice.getFinalPrice() / MEMBER_POINT_RATE)),
+                    CompletableFuture.runAsync(() -> cartDAO.removeSelectedCartItem(cartCheckOutInfoDTO.getCartId()))
+            ).join();
+            invoiceList.add(invoice);
+            paymentDAO.saveAndFlushInvoice(invoice);
         });
 
-        CompletableFuture.runAsync(() -> {
-            userService.addMemberPoint(user, invoice.getFinalPrice() / MEMBER_POINT_RATE);
-        });
+        return createCheckoutResultDTO(paymentType, paymentInfo, cartCheckOutInfoDTO, invoiceList);
+    }
 
-        CompletableFuture.runAsync(() -> {
-            cartDAO.removeSelectedCartItem(cartCheckOutInfoDTO.getCartId());
-        });
+    private CheckoutResultDTO createCheckoutResultDTO(EnumPaymentType paymentType, PaymentInfoDTO paymentInfo, CartCheckOutInfoDTO cartCheckOutInfoDTO, List<Invoice> invoiceList) {
+        long totalCartValue = invoiceList.stream().mapToLong(Invoice::getFinalPrice).sum();
 
         if (paymentType == EnumPaymentType.CREDIT_CARD){
-            return CheckoutResultDTO.builder()
-                    .paymentUrl(createPaymentLink("Invoice ID: " + invoice.getInvoiceId(), paymentInfo.getReturnUrl(), invoice.getFinalPrice()))
-                    .invoiceId(invoice.getInvoiceId())
-                    .build();
+            try {
+                return CheckoutResultDTO.builder()
+                        .paymentUrl(createPaymentLink("Cart ID: " + cartCheckOutInfoDTO.getCartId(), paymentInfo.getReturnUrl(), totalCartValue))
+                        .cartId(cartCheckOutInfoDTO.getCartId())
+                        .build();
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
         }
-        paymentDAO.saveAndFlushInvoice(invoice);
         return CheckoutResultDTO.builder()
-                .invoiceId(invoice.getInvoiceId())
+                .cartId(cartCheckOutInfoDTO.getCartId())
                 .build();
     }
 
-    public CheckoutResultDTO singleItemCheckOut(User user, SingleItemCheckOutInfoDTO info) throws UnsupportedEncodingException {
+    public CheckoutResultDTO singleItemCheckOut(User user, SingleItemCheckOutInfoDTO info) throws UnsupportedEncodingException, FriendlyException {
         PaymentInfoDTO paymentInfo = info.getPaymentInfoDTO();
         EnumPaymentType paymentType = EnumPaymentType.getByValue(paymentInfo.getPaymentType());
         Address address = paymentInfo.getAddress();
 
+        Variety variety = varietyService.findById(info.getVarietyId());
+        if (variety == null){
+            throw new FriendlyException(EnumResponseCode.VARIETY_NOT_FOUND);
+        }
+
         Invoice invoice = new Invoice();
         invoice.setPaymentType(paymentType.getValue());
         invoice.setUserId(user.getUserId());
+        invoice.setMerchantId(variety.getMerchantId());
         invoice.setCityName(address.getCityName());
         invoice.setDistrictName(address.getDistrictName());
         invoice.setWardName(address.getWardName());
@@ -191,15 +214,14 @@ public class PaymentService {
         invoice.setStatus(EnumInvoiceStatus.PENDING.getValue());
         invoice.setPhoneNumber(paymentInfo.getPhoneNumber());
         invoice.setCreatedDate(Util.getCurrentDate());
-        invoice.setVoucher(paymentInfo.getVoucher());
+        invoice.setVoucher(paymentInfo.getVoucherByMerchantMap().get(variety.getMerchantId()));
         invoice.setShippingFee(paymentInfo.getShippingFee());
         invoice.setUserEmail(paymentInfo.getUserEmail());
         invoice.setRecipientName(paymentInfo.getRecipientName());
 
-        Variety variety = varietyService.findById(info.getVarietyId());
         long invoiceValue = (variety.getPrice() * info.getQuantity());
         invoice.setTotalPrice(invoiceValue);
-        invoice.setFinalPrice(invoiceValue + paymentInfo.getShippingFee());
+        invoice.setFinalPrice(invoiceValue + shippingFeeService.calculateShippingFee(variety, address));
 
         if (invoice.getVoucher() != null){
             Voucher voucher = invoice.getVoucher();
@@ -254,25 +276,25 @@ public class PaymentService {
                 .build();
     }
 
-    public void addInvoiceItemsToInvoice(Invoice invoice) {
-        cartDAO.addInvoiceItemsToInvoice(invoice);
+    private void addInvoiceItemsToInvoice(Invoice invoice, List<InvoiceItemDTO> invoiceItemDTO) {
+        invoiceService.addInvoiceItemsToInvoice(invoice, invoiceItemDTO);
     }
 
-    public CheckoutResultDTO userCartCheckoutUnAuthenticate(CartCheckOutInfoDTO cartCheckOutInfoDTO) throws FriendlyException, UnsupportedEncodingException {
+    public CheckoutResultDTO userCartCheckoutUnAuthenticate(CartCheckOutInfoDTO cartCheckOutInfoDTO) throws FriendlyException {
         User user = userService.getAdminUser();
         return userCartCheckout(user, cartCheckOutInfoDTO);
     }
 
-    public CheckoutResultDTO singleItemCheckOutUnAuthenticate(SingleItemCheckOutInfoDTO singleItemCheckOutInfoDTO) throws FriendlyException, UnsupportedEncodingException {
+    public CheckoutResultDTO singleItemCheckOutUnAuthenticate(SingleItemCheckOutInfoDTO singleItemCheckOutInfoDTO) throws UnsupportedEncodingException, FriendlyException {
         User user = userService.getAdminUser();
         return singleItemCheckOut(user, singleItemCheckOutInfoDTO);
     }
 
-    public CheckoutResultDTO userCartCheckoutAuthenticate(User user, CartCheckOutInfoDTO cartCheckOutInfoDTO) throws UnsupportedEncodingException, FriendlyException {
+    public CheckoutResultDTO userCartCheckoutAuthenticate(User user, CartCheckOutInfoDTO cartCheckOutInfoDTO) throws FriendlyException {
         return userCartCheckout(user, cartCheckOutInfoDTO);
     }
 
-    public CheckoutResultDTO singleItemCheckOutAuthenticate(User user, SingleItemCheckOutInfoDTO singleItemCheckOutInfoDTO) throws UnsupportedEncodingException {
+    public CheckoutResultDTO singleItemCheckOutAuthenticate(User user, SingleItemCheckOutInfoDTO singleItemCheckOutInfoDTO) throws UnsupportedEncodingException, FriendlyException {
         return singleItemCheckOut(user, singleItemCheckOutInfoDTO);
     }
 

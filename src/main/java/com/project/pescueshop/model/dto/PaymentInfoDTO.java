@@ -5,6 +5,8 @@ import com.project.pescueshop.model.entity.Address;
 import com.project.pescueshop.model.entity.Voucher;
 import lombok.*;
 
+import java.util.Map;
+
 @Data
 @Builder
 @Getter
@@ -14,7 +16,7 @@ import lombok.*;
 @Name(noun = "paymentInfo", pluralNoun = "paymentInfoList")
 public class PaymentInfoDTO {
     private Address address;
-    private Voucher voucher;
+    private Map<String, Voucher> voucherByMerchantMap;
     private String phoneNumber;
     private String recipientName;
     private String paymentType;

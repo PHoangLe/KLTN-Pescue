@@ -11,20 +11,22 @@ import java.sql.SQLException;
 public class InvoiceItemMapper implements RowMapper<InvoiceItemDTO> {
     @Override
     public InvoiceItemDTO mapRow(ResultSet rs, int rowNum) throws SQLException {
-        InvoiceItemDTO dto = InvoiceItemDTO.builder()
+        return InvoiceItemDTO.builder()
                 .userId(rs.getString("user_id"))
                 .invoiceId(rs.getString("invoice_id"))
                 .quantity(rs.getInt("quantity"))
-                .total_price(rs.getLong("total_price"))
+                .totalPrice(rs.getLong("total_price"))
                 .varietyId(rs.getString("variety_id"))
                 .name(rs.getString("name"))
+                .merchantId(rs.getString("merchant_id"))
                 .productId(rs.getString("product_id"))
                 .unitPrice(rs.getLong("unit_price"))
                 .image(rs.getString("image"))
-                .stock_amount(rs.getInt("stock_amount"))
+                .stockAmount(rs.getInt("stock_amount"))
+                .weight(rs.getInt("weight"))
+                .height(rs.getInt("height"))
+                .length(rs.getInt("length"))
+                .width(rs.getInt("width"))
                 .build();
-
-
-        return dto;
     }
 }
