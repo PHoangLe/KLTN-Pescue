@@ -11,5 +11,6 @@ import lombok.*;
 @Builder
 public class CheckoutResultDTO {
     private String paymentUrl;
+    private String cartId;
     private String invoiceId;
 }

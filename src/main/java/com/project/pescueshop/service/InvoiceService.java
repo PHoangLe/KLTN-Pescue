@@ -3,6 +3,7 @@ package com.project.pescueshop.service;
 import com.project.pescueshop.model.dto.InvoiceItemDTO;
 import com.project.pescueshop.model.dto.InvoiceListResultDTO;
 import com.project.pescueshop.model.entity.Invoice;
+import com.project.pescueshop.model.entity.InvoiceItem;
 import com.project.pescueshop.model.entity.User;
 import com.project.pescueshop.model.exception.FriendlyException;
 import com.project.pescueshop.repository.dao.PaymentDAO;
@@ -13,6 +14,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
@@ -52,5 +55,31 @@ public class InvoiceService {
 
     public List<Invoice> getOrderInfoByUser(User user) {
         return paymentDAO.findAllInvoiceByUserId(user.getUserId());
+    }
+
+    public Map<String, List<InvoiceItemDTO>> getAllInvoicesGroupedByMerchantInCart(String cartId) {
+        List<InvoiceItemDTO> invoiceItemDTOS = paymentDAO.getAllInvoiceItemsGroupedByMerchantInCart(cartId);
+
+        return invoiceItemDTOS.stream().
+                collect(Collectors.groupingBy(InvoiceItemDTO::getMerchantId));
+    }
+
+
+    public void addInvoiceItemsToInvoice(Invoice invoice, List<InvoiceItemDTO> invoiceItemDTO) {
+        invoiceItemDTO.forEach(item -> {
+            InvoiceItem invoiceItem = InvoiceItem.builder()
+                    .invoiceId(invoice.getInvoiceId())
+                    .merchantId(item.getMerchantId())
+                    .varietyId(item.getVarietyId())
+                    .quantity(item.getQuantity())
+                    .totalPrice(item.getTotalPrice())
+                    .build();
+
+            saveAndFlushInvoiceItem(invoiceItem);
+        });
+    }
+
+    private void saveAndFlushInvoiceItem(InvoiceItem invoiceItem) {
+        paymentDAO.saveAndFlushItem(invoiceItem);
     }
 }

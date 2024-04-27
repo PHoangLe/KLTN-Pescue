@@ -31,10 +31,10 @@ public class ProductDTO {
     private Integer avgRating;
     private List<VarietyDTO> varieties;
     private String status;
-    private Double width;
-    private Double height;
-    private Double length;
-    private Double weight;
+    private Integer width;
+    private Integer height;
+    private Integer length;
+    private Integer weight;
     private List<VarietyAttribute> varietyAttributeList;
     private List<RatingResultDTO> ratingList;
 

@@ -2,10 +2,7 @@ package com.project.pescueshop.model.entity;
 
 import com.project.pescueshop.model.annotation.Name;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 
 import java.util.Date;
@@ -14,6 +11,7 @@ import java.util.Date;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 @Table(name = "INVOICE")
 @Entity
 @Name(prefix = "INVO")
@@ -22,6 +20,7 @@ public class Invoice {
     @GeneratedValue(generator = "CustomIdGenerator")
     @GenericGenerator(name = "CustomIdGenerator", strategy = "com.project.pescueshop.util.CustomIdGenerator")
     private String invoiceId;
+    private String merchantId;
     private String userId;
     private Date createdDate;
     private long totalPrice;
@@ -33,7 +32,9 @@ public class Invoice {
     private Voucher voucher;
     private String streetName;
     private String wardName;
+    private String wardCode;
     private String districtName;
+    private Integer districtId;
     private String cityName;
     private String phoneNumber;
     private String userEmail;

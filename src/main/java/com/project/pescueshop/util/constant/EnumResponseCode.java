@@ -12,6 +12,7 @@ public enum EnumResponseCode {
     SUCCESS("0_2_s", "Succeed"),
     FAILED("0_3_f", "Failed"),
     MAIL_SENT_FAIL("0_4_f", "Mail sent failed"),
+    SHIPPING_FEE_ERROR("0_5_f", "Error when get shipping fee"),
     //</editor-fold>
 
     //<editor-fold desc="1-AUTHENTICATION">

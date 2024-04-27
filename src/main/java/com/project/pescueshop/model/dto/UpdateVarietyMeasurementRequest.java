@@ -12,8 +12,8 @@ import lombok.*;
 @Name(noun = "product", pluralNoun = "productList")
 public class UpdateVarietyMeasurementRequest {
     private String varietyId;
-    private Double width;
-    private Double height;
-    private Double length;
-    private Double weight;
+    private Integer width;
+    private Integer height;
+    private Integer length;
+    private Integer weight;
 }

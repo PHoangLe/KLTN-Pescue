@@ -19,6 +19,7 @@ public class InvoiceItem {
     private String invoiceId;
     @Id
     private String varietyId;
+    private String merchantId;
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "varietyId", referencedColumnName = "varietyId", insertable = false, updatable = false)
     private Variety variety;

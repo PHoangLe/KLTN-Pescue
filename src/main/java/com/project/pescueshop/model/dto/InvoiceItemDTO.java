@@ -13,12 +13,17 @@ import lombok.*;
 public class InvoiceItemDTO {
     private String userId;
     private String invoiceId;
+    private String merchantId;
     private Integer quantity;
-    private Long total_price;
+    private Long totalPrice;
     private String varietyId;
     private String name;
     private String productId;
     private Long unitPrice;
     private String image;
-    private Integer stock_amount;
+    private Integer stockAmount;
+    private Integer weight;
+    private Integer height;
+    private Integer length;
+    private Integer width;
 }
