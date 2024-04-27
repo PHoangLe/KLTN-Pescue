@@ -67,7 +67,7 @@ public class PaymentDAO extends BaseDAO{
     }
 
     public List<InvoiceItemDTO> getAllInvoiceItemsGroupedByMerchantInCart(String cartId) {
-        String sql = "SELECT * FROM get_selected_invoice_items(:p_invoice_id);";
+        String sql = "SELECT * FROM get_selected_invoice_items(:p_cart_id);";
 
         MapSqlParameterSource parameters = new MapSqlParameterSource()
                 .addValue("p_cart_id", cartId);
