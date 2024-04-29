@@ -18,7 +18,7 @@ public class CreateMerchantRequest {
     private String districtName;
     private String wardName;
     private String cityCode;
-    private String districtCode;
+    private Integer districtId;
     private String wardCode;
     private String phoneNumber;
 }
