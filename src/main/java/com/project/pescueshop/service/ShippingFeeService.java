@@ -35,6 +35,8 @@ public class ShippingFeeService {
         headers.set("Token", TOKEN);
         headers.set("ShopId", SHOP_ID.toString());
 
+        request.setServiceTypeId(2);
+
         HttpEntity entity = new HttpEntity(request, headers);
 
         try{
