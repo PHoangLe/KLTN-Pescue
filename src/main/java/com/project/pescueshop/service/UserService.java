@@ -50,8 +50,10 @@ public class UserService extends BaseService {
         Address address = Address.builder()
                 .userId(user.getUserId())
                 .districtName(dto.getDistrictName())
+                .districtId(dto.getDistrictId())
                 .cityName(dto.getCityName())
                 .wardName(dto.getWardName())
+                .wardCode(dto.getWardCode())
                 .streetName(dto.getStreetName())
                 .status(EnumStatus.ACTIVE.getValue())
                 .build();
