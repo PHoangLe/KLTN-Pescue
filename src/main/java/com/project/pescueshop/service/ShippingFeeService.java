@@ -5,6 +5,7 @@ import com.project.pescueshop.model.dto.ShippingFeeRequest;
 import com.project.pescueshop.model.dto.ShippingFeeResponse;
 import com.project.pescueshop.model.dto.ShippingItem;
 import com.project.pescueshop.model.entity.Address;
+import com.project.pescueshop.model.entity.Merchant;
 import com.project.pescueshop.model.entity.Variety;
 import com.project.pescueshop.model.exception.FriendlyException;
 import com.project.pescueshop.util.constant.EnumResponseCode;
@@ -47,7 +48,7 @@ public class ShippingFeeService {
         }
     }
 
-    public long calculateShippingFee(List<InvoiceItemDTO> invoiceItemDTO, Address address) throws FriendlyException {
+    public long calculateShippingFee(List<InvoiceItemDTO> invoiceItemDTO, Address toAddress, Merchant merchant) throws FriendlyException {
         List<ShippingItem> items = invoiceItemDTO.stream()
                 .map(item -> ShippingItem.builder()
                         .itemId(item.getVarietyId())
@@ -61,8 +62,10 @@ public class ShippingFeeService {
                 .toList();
 
         ShippingFeeResponse response = calculateShippingFee(ShippingFeeRequest.builder()
-                .toDistrictId(address.getDistrictId())
-                .toWardCode(address.getWardCode())
+                .toDistrictId(toAddress.getDistrictId())
+                .toWardCode(toAddress.getWardCode())
+                .fromDistrictId(merchant.getDistrictId())
+                .fromWardCode(merchant.getWardCode())
                 .weight(invoiceItemDTO.stream().mapToInt(InvoiceItemDTO::getWeight).sum())
                 .items(items)
                 .build());
@@ -70,7 +73,7 @@ public class ShippingFeeService {
         return response.getData().getTotal();
     }
 
-    public long calculateShippingFee(Variety variety, Address address) throws FriendlyException {
+    public long calculateShippingFee(Variety variety, Address toAddress, Merchant merchant) throws FriendlyException {
         List<ShippingItem> items = new ArrayList<>();
         items.add(ShippingItem.builder()
                 .itemId(variety.getVarietyId())
@@ -83,8 +86,10 @@ public class ShippingFeeService {
                 .build());
 
         ShippingFeeResponse response = calculateShippingFee(ShippingFeeRequest.builder()
-                .toDistrictId(address.getDistrictId())
-                .toWardCode(address.getWardCode())
+                .toDistrictId(toAddress.getDistrictId())
+                .toWardCode(toAddress.getWardCode())
+                .fromDistrictId(merchant.getDistrictId())
+                .fromWardCode(merchant.getWardCode())
                 .weight(variety.getWeight())
                 .items(items)
                 .build());

@@ -33,6 +33,7 @@ public class PaymentService {
     private final InvoiceService invoiceService;
     private final ShippingFeeService shippingFeeService;
     private final UserService userService;
+    private final MerchantService merchantService;
     private final ThreadService threadService;
 
     public String createPaymentLink(String content, String returnUrl, long value) throws UnsupportedEncodingException {
@@ -128,9 +129,11 @@ public class PaymentService {
                     .recipientName(paymentInfo.getRecipientName())
                     .build();
 
+            Merchant merchant = merchantService.getMerchantById(merchantId);
+
             long invoiceValue = invoiceItemDTO.stream().mapToLong(InvoiceItemDTO::getTotalPrice).sum();
             try {
-                long shippingFee = shippingFeeService.calculateShippingFee(invoiceItemDTO, address);
+                long shippingFee = shippingFeeService.calculateShippingFee(invoiceItemDTO, address, merchant);
                 invoice.setTotalPrice(invoiceValue);
                 invoice.setFinalPrice(invoiceValue + shippingFee);
             } catch (FriendlyException e) {
@@ -219,9 +222,11 @@ public class PaymentService {
         invoice.setUserEmail(paymentInfo.getUserEmail());
         invoice.setRecipientName(paymentInfo.getRecipientName());
 
+        Merchant merchant = merchantService.getMerchantById(variety.getMerchantId());
+
         long invoiceValue = (variety.getPrice() * info.getQuantity());
         invoice.setTotalPrice(invoiceValue);
-        invoice.setFinalPrice(invoiceValue + shippingFeeService.calculateShippingFee(variety, address));
+        invoice.setFinalPrice(invoiceValue + shippingFeeService.calculateShippingFee(variety, address, merchant));
 
         if (invoice.getVoucher() != null){
             Voucher voucher = invoice.getVoucher();

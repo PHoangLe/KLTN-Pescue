@@ -30,7 +30,7 @@ public class VoucherDAO extends BaseDAO{
         saveAndFlushVoucher(voucher);
     }
 
-    public List<Voucher> findAllAvailabeVoucher(String userId){
-        return voucherRepository.findAllAvailabeVoucher(userId);
+    public List<Voucher> findAllAvailableVoucher(String userId){
+        return voucherRepository.findAllAvailableVoucher(userId);
     }
 }
