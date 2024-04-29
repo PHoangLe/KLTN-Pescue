@@ -12,6 +12,8 @@ import lombok.NoArgsConstructor;
 public class AddressInputDTO {
     private String streetName;
     private String wardName;
+    private String wardCode;
     private String districtName;
+    private Integer districtId;
     private String cityName;
 }
