@@ -15,5 +15,5 @@ public interface VoucherRepository extends JpaRepository<Voucher, String> {
             "AND u.member_point > v.price " +
             "WHERE min_invoice_value > 0  " +
             "AND v.status = 'ACTIVE' ", nativeQuery = true)
-    List<Voucher> findAllAvailabeVoucher(String userId);
+    List<Voucher> findAllAvailableVoucher(String userId);
 }

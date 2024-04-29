@@ -1,14 +1,12 @@
 package com.project.pescueshop.controller;
 
 
-import com.project.pescueshop.model.dto.InvoiceItemDTO;
 import com.project.pescueshop.model.dto.VoucherInputDTO;
 import com.project.pescueshop.model.dto.general.ResponseDTO;
 import com.project.pescueshop.model.entity.User;
 import com.project.pescueshop.model.entity.Voucher;
 import com.project.pescueshop.model.exception.FriendlyException;
 import com.project.pescueshop.service.AuthenticationService;
-import com.project.pescueshop.service.InvoiceService;
 import com.project.pescueshop.service.VoucherService;
 import com.project.pescueshop.util.constant.EnumResponseCode;
 import io.swagger.annotations.Api;
@@ -43,7 +41,7 @@ public class VoucherController {
     @SecurityRequirement(name = "Bearer Authentication")
     public ResponseEntity<ResponseDTO<List<Voucher>>> getAllAvailableVoucher() throws FriendlyException {
         User user = AuthenticationService.getCurrentLoggedInUser();
-        List<Voucher> voucherList = voucherService.findAllAvailabeVoucher(user);
+        List<Voucher> voucherList = voucherService.findAllAvailableVoucher(user);
         ResponseDTO<List<Voucher>> result = new ResponseDTO<>(EnumResponseCode.SUCCESS, voucherList, "voucherList");
         return ResponseEntity.ok(result);
     }

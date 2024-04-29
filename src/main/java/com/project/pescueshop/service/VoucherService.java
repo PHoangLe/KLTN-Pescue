@@ -74,7 +74,7 @@ public class VoucherService {
         return voucher;
     }
 
-    public List<Voucher> findAllAvailabeVoucher(User user){
-        return voucherDAO.findAllAvailabeVoucher(user.getUserId());
+    public List<Voucher> findAllAvailableVoucher(User user){
+        return voucherDAO.findAllAvailableVoucher(user.getUserId());
     }
 }
