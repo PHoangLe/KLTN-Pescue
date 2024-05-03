@@ -5,6 +5,8 @@ import com.project.pescueshop.repository.inteface.MerchantRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 @RequiredArgsConstructor
 public class MerchantDAO extends BaseDAO{
@@ -20,5 +22,8 @@ public class MerchantDAO extends BaseDAO{
 
     public Merchant getMerchantByUserId(String userId) {
         return merchantRepository.findByUserId(userId);
+    }
+    public List<Merchant> getAllMerchant() {
+        return merchantRepository.findAll();
     }
 }

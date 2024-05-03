@@ -133,4 +133,10 @@ public class MerchantService extends BaseService {
 
         return toDTO(merchant);
     }
+
+    public List<MerchantDTO> getAllMerchant() {
+        return merchantDAO.getAllMerchant().stream()
+                .map(this::toDTO)
+                .toList();
+    }
 }
