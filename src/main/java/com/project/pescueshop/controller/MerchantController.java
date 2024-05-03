@@ -57,4 +57,11 @@ public class MerchantController {
         ResponseDTO<String> result = new ResponseDTO<>(EnumResponseCode.SUCCESS, "Success", "message");
         return ResponseEntity.ok(result);
     }
+
+    @GetMapping("")
+    public ResponseEntity<ResponseDTO<List<MerchantDTO>>> getAllMerchant() throws FriendlyException {
+        List<MerchantDTO> merchants = merchantService.getAllMerchant();
+        ResponseDTO<List<MerchantDTO>> result = new ResponseDTO<>(EnumResponseCode.SUCCESS, merchants, "merchantList");
+        return ResponseEntity.ok(result);
+    }
 }
