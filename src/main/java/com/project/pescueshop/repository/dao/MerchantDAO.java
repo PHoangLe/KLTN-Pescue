@@ -23,8 +23,13 @@ public class MerchantDAO extends BaseDAO{
     public Merchant getMerchantByUserId(String userId) {
         return merchantRepository.findByUserId(userId);
     }
-    public List<Merchant> getAllMerchant() {
-        return merchantRepository.findAll();
+
+    public List<Merchant> getApprovedMerchant() {
+        return merchantRepository.getApprovedMerchant();
+    }
+
+    public List<Merchant> getListMerchantForAdmin(boolean isApproved, boolean isSuspended, boolean isLiveable) {
+        return merchantRepository.getListMerchantForAdmin(isApproved, isSuspended, isLiveable);
     }
 
     public void deleteMerchant(String merchantId) {
