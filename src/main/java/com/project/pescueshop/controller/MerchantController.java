@@ -86,8 +86,19 @@ public class MerchantController {
     }
 
     @GetMapping("")
-    public ResponseEntity<ResponseDTO<List<MerchantDTO>>> getAllMerchant() throws FriendlyException {
-        List<MerchantDTO> merchants = merchantService.getAllMerchant();
+    public ResponseEntity<ResponseDTO<List<MerchantDTO>>> getAllMerchant() {
+        List<MerchantDTO> merchants = merchantService.getApproveMerchant();
+        ResponseDTO<List<MerchantDTO>> result = new ResponseDTO<>(EnumResponseCode.SUCCESS, merchants, "merchantList");
+        return ResponseEntity.ok(result);
+    }
+
+    @GetMapping("/admin")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    @SecurityRequirement(name = "Bearer Authentication")
+    public ResponseEntity<ResponseDTO<List<MerchantDTO>>> getAllMerchantAdmin(@RequestParam(defaultValue = "false") Boolean isApproved,
+                                                                              @RequestParam(defaultValue = "false") Boolean isSuspended,
+                                                                              @RequestParam(defaultValue = "false") Boolean isLiveable) {
+        List<MerchantDTO> merchants = merchantService.getListMerchantForAdmin(isApproved, isSuspended, isLiveable);
         ResponseDTO<List<MerchantDTO>> result = new ResponseDTO<>(EnumResponseCode.SUCCESS, merchants, "merchantList");
         return ResponseEntity.ok(result);
     }

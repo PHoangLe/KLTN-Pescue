@@ -154,8 +154,14 @@ public class MerchantService extends BaseService {
         return toDTO(merchant);
     }
 
-    public List<MerchantDTO> getAllMerchant() {
-        return merchantDAO.getAllMerchant().stream()
+    public List<MerchantDTO> getApproveMerchant() {
+        return merchantDAO.getApprovedMerchant().stream()
+                .map(this::toDTO)
+                .toList();
+    }
+
+    public List<MerchantDTO> getListMerchantForAdmin(boolean isApproved, boolean isSuspended, boolean isLiveable) {
+        return merchantDAO.getListMerchantForAdmin(isApproved, isSuspended, isLiveable).stream()
                 .map(this::toDTO)
                 .toList();
     }
