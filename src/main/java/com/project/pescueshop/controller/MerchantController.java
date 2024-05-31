@@ -28,7 +28,7 @@ public class MerchantController {
     @PostMapping("")
     @PreAuthorize("hasAuthority('ROLE_CUSTOMER')")
     @SecurityRequirement(name = "Bearer Authentication")
-    public ResponseEntity<ResponseDTO<MerchantDTO>> merchantRegistry(@RequestPart CreateMerchantRequest createMerchantRequest,
+    public ResponseEntity<ResponseDTO<MerchantDTO>> merchantRegistry(@RequestPart("createMerchantRequest") CreateMerchantRequest createMerchantRequest,
                                                                       @RequestPart("relatedDocuments") MultipartFile[] relatedDocumentsFile,
                                                                       @RequestPart("avatar") MultipartFile avatarFile,
                                                                       @RequestPart("coverImage") MultipartFile coverImageFile) throws FriendlyException {
