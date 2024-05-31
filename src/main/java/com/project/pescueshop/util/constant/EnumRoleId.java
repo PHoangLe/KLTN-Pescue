@@ -1,8 +1,11 @@
 package com.project.pescueshop.util.constant;
 
+import lombok.Getter;
+
 import java.util.HashMap;
 import java.util.Map;
 
+@Getter
 public enum EnumRoleId {
     ADMIN(1, "ROLE_ADMIN"),
     MERCHANT(2, "ROLE_MERCHANT"),
