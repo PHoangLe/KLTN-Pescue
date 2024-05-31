@@ -63,21 +63,12 @@ public class MerchantService extends BaseService {
                 .noProduct(0)
                 .isSuspended(false)
                 .isLiveable(true)
+                .isApproved(false)
                 .build();
 
         merchantDAO.saveAndFlushMerchant(merchant);
-
         threadService.uploadMerchantFiles(merchant, List.of(relatedDocumentsFile), avatarFile, coverImageFile);
-
         merchantDAO.saveAndFlushMerchant(merchant);
-
-        CompletableFuture.runAsync(() -> {
-            try {
-                userService.addUserRole(user.getUserId(), EnumRoleId.MERCHANT);
-            } catch (FriendlyException e) {
-                throw new RuntimeException(e);
-            }
-        });
 
         return toDTO(merchant);
     }
@@ -102,6 +93,35 @@ public class MerchantService extends BaseService {
 
         merchant.setIsSuspended(false);
         merchantDAO.saveAndFlushMerchant(merchant);
+    }
+
+    public void approveMerchant(String merchantId) throws FriendlyException {
+        Merchant merchant = merchantDAO.getMerchantById(merchantId);
+
+        if (merchant == null) {
+            throw new FriendlyException(EnumResponseCode.MERCHANT_NOT_FOUND);
+        }
+
+        CompletableFuture.runAsync(() -> {
+            try {
+                userService.addUserRole(merchant.getUserId(), EnumRoleId.MERCHANT);
+            } catch (FriendlyException e) {
+                throw new RuntimeException(e);
+            }
+        });
+
+        merchant.setIsApproved(true);
+        merchantDAO.saveAndFlushMerchant(merchant);
+    }
+
+    public void unapproveMerchant(String merchantId) throws FriendlyException {
+        Merchant merchant = merchantDAO.getMerchantById(merchantId);
+
+        if (merchant == null) {
+            throw new FriendlyException(EnumResponseCode.MERCHANT_NOT_FOUND);
+        }
+
+        merchantDAO.deleteMerchant(merchantId);
     }
 
     public Merchant getMerchantById(String merchantId) {

@@ -12,4 +12,7 @@ public interface MerchantRepository extends JpaRepository<Merchant, String>{
 
     @Query("select m from Merchant m where m.userId = ?1")
     Merchant findByUserId(String userId);
+
+    @Query("delete from Merchant m where m.merchantId = ?1")
+    void deleteByMerchantId(String merchantId);
 }

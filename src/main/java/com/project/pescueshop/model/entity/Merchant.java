@@ -40,4 +40,5 @@ public class Merchant {
     private List<String> relatedDocuments;
     private Boolean isLiveable;
     private Boolean isSuspended;
+    private Boolean isApproved;
 }
