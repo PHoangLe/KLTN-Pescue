@@ -52,8 +52,35 @@ public class MerchantController {
     @PutMapping("/suspend/{merchantId}")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @SecurityRequirement(name = "Bearer Authentication")
-    public ResponseEntity<ResponseDTO<String>> createNewMerchant(@PathVariable String merchantId) throws FriendlyException {
+    public ResponseEntity<ResponseDTO<String>> suspendMerchant(@PathVariable String merchantId) throws FriendlyException {
         merchantService.suspendMerchant(merchantId);
+        ResponseDTO<String> result = new ResponseDTO<>(EnumResponseCode.SUCCESS, "Success", "message");
+        return ResponseEntity.ok(result);
+    }
+
+    @PutMapping("/un-suspend/{merchantId}")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    @SecurityRequirement(name = "Bearer Authentication")
+    public ResponseEntity<ResponseDTO<String>> unsuspendMerchant(@PathVariable String merchantId) throws FriendlyException {
+        merchantService.unsuspendMerchant(merchantId);
+        ResponseDTO<String> result = new ResponseDTO<>(EnumResponseCode.SUCCESS, "Success", "message");
+        return ResponseEntity.ok(result);
+    }
+
+    @PutMapping("/approve/{merchantId}")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    @SecurityRequirement(name = "Bearer Authentication")
+    public ResponseEntity<ResponseDTO<String>> approveMerchant(@PathVariable String merchantId) throws FriendlyException {
+        merchantService.approveMerchant(merchantId);
+        ResponseDTO<String> result = new ResponseDTO<>(EnumResponseCode.SUCCESS, "Success", "message");
+        return ResponseEntity.ok(result);
+    }
+
+    @PutMapping("/un-approve/{merchantId}")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    @SecurityRequirement(name = "Bearer Authentication")
+    public ResponseEntity<ResponseDTO<String>> unapproveMerchant(@PathVariable String merchantId) throws FriendlyException {
+        merchantService.unapproveMerchant(merchantId);
         ResponseDTO<String> result = new ResponseDTO<>(EnumResponseCode.SUCCESS, "Success", "message");
         return ResponseEntity.ok(result);
     }

@@ -7,11 +7,11 @@ import java.util.Map;
 
 @Getter
 public enum EnumRoleId {
-    ADMIN(1, "ROLE_ADMIN"),
-    MERCHANT(2, "ROLE_MERCHANT"),
-    CUSTOMER(3, "ROLE_CUSTOMER");
+    ADMIN("ROLE_1", "ROLE_ADMIN"),
+    MERCHANT("ROLE_2", "ROLE_MERCHANT"),
+    CUSTOMER("ROLE_3", "ROLE_CUSTOMER");
 
-    private static final Map<Integer, EnumRoleId> BY_ID = new HashMap<>();
+    private static final Map<String, EnumRoleId> BY_ID = new HashMap<>();
     private static final Map<String, EnumRoleId> BY_LABEL = new HashMap<>();
 
     static {
@@ -21,15 +21,15 @@ public enum EnumRoleId {
         }
     }
 
-    private final Integer id;
+    private final String id;
     private final String value;
 
-    private EnumRoleId(Integer id, String value) {
+    private EnumRoleId(String id, String value) {
         this.id = id;
         this.value = value;
     }
 
-    public static EnumRoleId getById(Integer id) {
+    public static EnumRoleId getById(String id) {
         return BY_ID.get(id);
     }
 

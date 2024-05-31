@@ -116,7 +116,7 @@ public class UserService extends BaseService {
             throw new FriendlyException(EnumResponseCode.ACCOUNT_NOT_FOUND);
         }
 
-        userDAO.addUserRole(userId, roleId.getValue());
+        userDAO.addUserRole(userId, roleId.getId());
     }
 
     public void removeUserRole(String userId, EnumRoleId roleId) throws FriendlyException {

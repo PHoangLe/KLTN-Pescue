@@ -26,4 +26,8 @@ public class MerchantDAO extends BaseDAO{
     public List<Merchant> getAllMerchant() {
         return merchantRepository.findAll();
     }
+
+    public void deleteMerchant(String merchantId) {
+        merchantRepository.deleteByMerchantId(merchantId);
+    }
 }
