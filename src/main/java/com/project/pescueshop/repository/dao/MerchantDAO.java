@@ -3,6 +3,8 @@ package com.project.pescueshop.repository.dao;
 import com.project.pescueshop.model.entity.Merchant;
 import com.project.pescueshop.repository.inteface.MerchantRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -28,8 +30,8 @@ public class MerchantDAO extends BaseDAO{
         return merchantRepository.getApprovedMerchant();
     }
 
-    public List<Merchant> getListMerchantForAdmin(boolean isApproved, boolean isSuspended, boolean isLiveable) {
-        return merchantRepository.getListMerchantForAdmin(isApproved, isSuspended, isLiveable);
+    public Page<Merchant> getListMerchantForAdmin(Boolean isApproved, Boolean isSuspended, Boolean isLiveable, Pageable pageable) {
+        return merchantRepository.getListMerchantForAdmin(isApproved, isSuspended, isLiveable, pageable);
     }
 
     public void deleteMerchant(String merchantId) {
