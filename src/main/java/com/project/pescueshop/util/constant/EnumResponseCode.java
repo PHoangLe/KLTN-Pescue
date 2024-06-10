@@ -13,6 +13,7 @@ public enum EnumResponseCode {
     FAILED("0_3_f", "Failed"),
     MAIL_SENT_FAIL("0_4_f", "Mail sent failed"),
     SHIPPING_FEE_ERROR("0_5_f", "Error when get shipping fee"),
+    UNAUTHORIZED("0_6_f", "You do not have permission to do this"),
     //</editor-fold>
 
     //<editor-fold desc="1-AUTHENTICATION">
@@ -60,7 +61,11 @@ public enum EnumResponseCode {
     //<editor-fold desc="8-PAYMENT">
     MERCHANT_NOT_FOUND("8_1_f", "Merchant not found"),
     MERCHANT_ALREADY_SUSPENDED("8_2_f", "Merchant already suspended"),
-    MERCHANT_SUSPENDED("8_2_f", "Merchant suspended");
+    MERCHANT_SUSPENDED("8_2_f", "Merchant suspended"),
+    //</editor-fold>
+    //<editor-fold desc="9-LIVE">
+    LIVE_SESSION_NOT_FOUND("9_1_f", "Live session not found"),
+    LIVE_SESSION_ALREADY_END("8_2_f", "Live session end already");
     //</editor-fold>
 
     private static final Map<String, EnumResponseCode> BY_STATUS_CODE = new HashMap<>();

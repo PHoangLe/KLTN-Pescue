@@ -120,4 +120,8 @@ public class VarietyService extends BaseService{
                 addOrUpdateVariety(variety);
         }
     }
+
+    public String getCoverImageById(String varietyId) {
+        return varietyRepository.getCoverImageById(varietyId);
+    }
 }

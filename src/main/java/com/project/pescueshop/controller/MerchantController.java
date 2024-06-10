@@ -10,6 +10,10 @@ import com.project.pescueshop.util.constant.EnumResponseCode;
 import io.swagger.annotations.Api;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
+import net.bytebuddy.ClassFileVersion;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -40,7 +44,7 @@ public class MerchantController {
         return ResponseEntity.ok(result);
     }
 
-    @PutMapping("/{merchantId}")
+    @GetMapping("/{merchantId}")
     @PreAuthorize("hasAuthority('ROLE_MERCHANT')")
     @SecurityRequirement(name = "Bearer Authentication")
     public ResponseEntity<ResponseDTO<MerchantDTO>> getMerchantInfo(@PathVariable(required = false) String merchantId) throws FriendlyException {
@@ -95,11 +99,12 @@ public class MerchantController {
     @GetMapping("/admin")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @SecurityRequirement(name = "Bearer Authentication")
-    public ResponseEntity<ResponseDTO<List<MerchantDTO>>> getAllMerchantAdmin(@RequestParam(defaultValue = "false") Boolean isApproved,
-                                                                              @RequestParam(defaultValue = "false") Boolean isSuspended,
-                                                                              @RequestParam(defaultValue = "false") Boolean isLiveable) {
-        List<MerchantDTO> merchants = merchantService.getListMerchantForAdmin(isApproved, isSuspended, isLiveable);
-        ResponseDTO<List<MerchantDTO>> result = new ResponseDTO<>(EnumResponseCode.SUCCESS, merchants, "merchantList");
+    public ResponseEntity<ResponseDTO<Page<MerchantDTO>>> getAllMerchantAdmin(@RequestParam(required = false) Boolean isApproved,
+                                                                              @RequestParam(required = false) Boolean isSuspended,
+                                                                              @RequestParam(required = false) Boolean isLiveable,
+                                                                              @RequestParam(defaultValue = "1") int offset, @RequestParam(defaultValue = "10") int limit) {
+        Page<MerchantDTO> merchants = merchantService.getListMerchantForAdmin(isApproved, isSuspended, isLiveable, offset, limit);
+        ResponseDTO<Page<MerchantDTO>> result = new ResponseDTO<>(EnumResponseCode.SUCCESS, merchants, "merchantList");
         return ResponseEntity.ok(result);
     }
 }

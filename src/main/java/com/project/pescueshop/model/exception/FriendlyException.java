@@ -14,4 +14,8 @@ public class FriendlyException extends Exception{
         super(enumResponseCode.getMessage());
         this.statusCode = enumResponseCode;
     }
+
+    public FriendlyException(String message, Throwable cause) {
+        super(message, cause);
+    }
 }

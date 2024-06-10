@@ -1,6 +1,8 @@
 package com.project.pescueshop.repository.inteface;
 
 import com.project.pescueshop.model.entity.Merchant;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -22,8 +24,8 @@ public interface MerchantRepository extends JpaRepository<Merchant, String>{
     List<Merchant> getApprovedMerchant();
 
     @Query("SELECT m FROM Merchant m WHERE " +
-            "(?1 = false OR m.isApproved = true) AND " +
-            "(?2 = false OR m.isSuspended = true) AND " +
-            "(?3 = false OR m.isLiveable = true)")
-    List<Merchant> getListMerchantForAdmin(boolean isApproved, boolean isSuspended, boolean isLiveable);
+            "(?1 IS NULL OR m.isApproved = ?1) AND " +
+            "(?2 IS NULL OR  m.isSuspended = ?2) AND " +
+            "(?3 IS NULL OR  m.isLiveable = ?3)")
+    Page<Merchant> getListMerchantForAdmin(Boolean isApproved, Boolean isSuspended, Boolean isLiveable, Pageable pageable);
 }

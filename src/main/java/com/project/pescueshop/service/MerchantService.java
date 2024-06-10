@@ -9,6 +9,9 @@ import com.project.pescueshop.repository.dao.MerchantDAO;
 import com.project.pescueshop.util.constant.EnumResponseCode;
 import com.project.pescueshop.util.constant.EnumRoleId;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -43,6 +46,7 @@ public class MerchantService extends BaseService {
                 .noProduct(merchant.getNoProduct())
                 .relatedDocuments(merchant.getRelatedDocuments() == null ? new ArrayList<>() : merchant.getRelatedDocuments())
                 .isSuspended(merchant.getIsSuspended())
+                .isApproved(merchant.getIsApproved())
                 .isLiveable(merchant.getIsLiveable())
                 .build();
     }
@@ -160,9 +164,8 @@ public class MerchantService extends BaseService {
                 .toList();
     }
 
-    public List<MerchantDTO> getListMerchantForAdmin(boolean isApproved, boolean isSuspended, boolean isLiveable) {
-        return merchantDAO.getListMerchantForAdmin(isApproved, isSuspended, isLiveable).stream()
-                .map(this::toDTO)
-                .toList();
+    public Page<MerchantDTO> getListMerchantForAdmin(Boolean isApproved, Boolean isSuspended, Boolean isLiveable, Integer offset, Integer limit) {
+        Pageable pageable = PageRequest.of(offset, limit);
+        return merchantDAO.getListMerchantForAdmin(isApproved, isSuspended, isLiveable, pageable).map(this::toDTO);
     }
 }
