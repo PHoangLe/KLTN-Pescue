@@ -15,6 +15,5 @@ import java.util.List;
 @Builder
 public class CreateLiveSessionRequest {
     String liveSessionTitle;
-    MultipartFile thumbnail;
     List<LiveItemRequest> liveItemList;
 }
