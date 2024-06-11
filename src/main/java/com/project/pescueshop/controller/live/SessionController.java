@@ -22,6 +22,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequiredArgsConstructor
@@ -34,10 +35,10 @@ public class SessionController {
     @PostMapping("")
     @PreAuthorize("hasAuthority('ROLE_MERCHANT')")
     @SecurityRequirement(name = "Bearer Authentication")
-    public ResponseEntity<ResponseDTO<String>> initializeSession(@RequestPart CreateLiveSessionRequest request)
+    public ResponseEntity<ResponseDTO<String>> initializeSession(@RequestPart CreateLiveSessionRequest request,@RequestPart MultipartFile thumbnail)
             throws FriendlyException, OpenViduJavaClientException {
         User user = AuthenticationService.getCurrentLoggedInUser();
-        Session session = liveService.createSession(request, user);
+        Session session = liveService.createSession(request, thumbnail, user);
 
         ResponseDTO<String> resp = new ResponseDTO<>(EnumResponseCode.SUCCESS, session.getSessionId(), "sessionKey");
         return ResponseEntity.ok(resp);
@@ -60,7 +61,7 @@ public class SessionController {
             @RequestParam(defaultValue = "true") boolean isOnlyActive) {
         isOnlyActive = !AuthenticationService.isCurrentAdmin() || isOnlyActive;
 
-        Pageable pageable = PageRequest.of(offset, limit);
+        Pageable pageable = PageRequest.of(offset - 1, limit);
         Page<LiveSession> liveSession = liveSessionService.getAllActiveLiveSession(isOnlyActive, pageable);
 
         ResponseDTO<Page<LiveSession>> resp = new ResponseDTO<>(EnumResponseCode.SUCCESS, liveSession);

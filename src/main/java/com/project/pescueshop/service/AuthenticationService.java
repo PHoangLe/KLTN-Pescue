@@ -33,16 +33,21 @@ public class AuthenticationService {
     private final ThreadService threadService;
 
     public static User getCurrentLoggedInUser() throws FriendlyException {
-        User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-        if (principal == null)
+        if (!(principal instanceof User))
             throw new FriendlyException(EnumResponseCode.NOT_LOGGED_IN);
 
-        return principal;
+        return (User) principal;
     }
 
     public static User getCurrentLoggedInUserIfExist() {
-        return  (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        if (principal instanceof User user) {
+            return user;
+        }
+        return null;
     }
 
     public static boolean isCurrentAdmin() {
