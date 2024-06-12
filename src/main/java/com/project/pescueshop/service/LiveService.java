@@ -18,6 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import io.openvidu.java.client.Connection;
@@ -169,10 +170,10 @@ public class LiveService {
         }
     }
 
-    public Session createSession(CreateLiveSessionRequest request, User user) throws OpenViduJavaClientException {
+    public Session createSession(CreateLiveSessionRequest request, MultipartFile thumbnail, User user) throws OpenViduJavaClientException {
         String sessionKey = UUID.randomUUID().toString();
 
-        String thumbnailURL = fileUploadService.uploadFile(request.getThumbnail(), "live-thumbnail/", sessionKey);
+        String thumbnailURL = fileUploadService.uploadFile(thumbnail, "live-thumbnail/", sessionKey);
 
         Session session = createSession(sessionKey);
         LiveSession liveSession = LiveSession.builder()

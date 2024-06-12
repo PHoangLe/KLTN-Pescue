@@ -165,7 +165,7 @@ public class MerchantService extends BaseService {
     }
 
     public Page<MerchantDTO> getListMerchantForAdmin(Boolean isApproved, Boolean isSuspended, Boolean isLiveable, Integer offset, Integer limit) {
-        Pageable pageable = PageRequest.of(offset, limit);
+        Pageable pageable = PageRequest.of(offset - 1, limit);
         return merchantDAO.getListMerchantForAdmin(isApproved, isSuspended, isLiveable, pageable).map(this::toDTO);
     }
 }
