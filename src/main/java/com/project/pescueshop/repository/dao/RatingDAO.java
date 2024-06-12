@@ -1,7 +1,7 @@
 package com.project.pescueshop.repository.dao;
 
 import com.project.pescueshop.model.entity.Rating;
-import com.project.pescueshop.repository.inteface.RatingRepository;
+import com.project.pescueshop.repository.jpa.RatingRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 

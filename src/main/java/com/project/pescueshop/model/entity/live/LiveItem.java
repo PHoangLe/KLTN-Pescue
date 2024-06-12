@@ -9,8 +9,6 @@ import jakarta.persistence.Table;
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 
-import java.util.LinkedList;
-
 @Getter
 @Setter
 @AllArgsConstructor

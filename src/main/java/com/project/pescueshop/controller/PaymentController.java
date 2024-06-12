@@ -60,18 +60,4 @@ public class PaymentController {
         ResponseDTO<CheckoutResultDTO> result = new ResponseDTO<>(EnumResponseCode.SUCCESS, paymentInfo, "output");
         return ResponseEntity.ok(result);
     }
-
-    @PutMapping("/createPaymentLink")
-    public ResponseEntity<ResponseDTO<String>> singleItemCheckoutUnAuthenticate(@RequestBody CreatePaymentLinkDTO dto) throws FriendlyException, UnsupportedEncodingException {
-        String paymentLink = paymentService.createPaymentLink(dto.getContent(), dto.getReturnUrl(), dto.getValue());
-        ResponseDTO<String> result = new ResponseDTO<>(EnumResponseCode.SUCCESS, paymentLink, "paymentLink");
-        return ResponseEntity.ok(result);
-    }
-
-//    @PostMapping("/getShippingFee")
-//    public ResponseEntity<ResponseDTO<String>> getShippingFee(@RequestParam String cartId, @RequestParam String varietyId, @RequestParam Integer quantity) throws FriendlyException, UnsupportedEncodingException {
-//        String paymentLink = paymentService.createPaymentLink(dto.getContent(), dto.getReturnUrl(), dto.getValue());
-//        ResponseDTO<String> result = new ResponseDTO<>(EnumResponseCode.SUCCESS, paymentLink, "paymentLink");
-//        return ResponseEntity.ok(result);
-//    }
 }

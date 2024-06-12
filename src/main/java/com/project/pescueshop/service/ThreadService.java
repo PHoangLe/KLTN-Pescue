@@ -2,7 +2,11 @@ package com.project.pescueshop.service;
 
 import com.project.pescueshop.model.dto.*;
 import com.project.pescueshop.model.entity.*;
+import com.project.pescueshop.model.entity.live.LiveInvoice;
+import com.project.pescueshop.model.entity.live.LiveInvoiceItem;
+import com.project.pescueshop.model.entity.live.LiveItem;
 import com.project.pescueshop.model.exception.FriendlyException;
+import com.project.pescueshop.repository.dao.LiveInvoiceDAO;
 import com.project.pescueshop.repository.dao.ViewAuditLogDAO;
 import com.project.pescueshop.util.constant.EnumObjectType;
 import com.project.pescueshop.util.constant.EnumStatus;
@@ -29,12 +33,11 @@ public class ThreadService extends BaseService {
     private final CartService cartService;
     private final ChatRoomService chatRoomService;
     private final ViewAuditLogDAO viewAuditLogDAO;
-    private final MerchantService merchantService;
     private final FileUploadService fileUploadService;
-    private final PaymentService paymentService;
     private final EmailService emailService;
     private final InvoiceService invoiceService;
     private final OtpService otpService;
+    private final LiveInvoiceDAO liveInvoiceDAO;
 
     @Autowired
     public ThreadService(
@@ -44,9 +47,8 @@ public class ThreadService extends BaseService {
             @Lazy ProductService productService,
             @Lazy CartService cartService,
             @Lazy OtpService otpService,
-            @Lazy PaymentService paymentService,
+            @Lazy LiveInvoiceDAO liveInvoiceDAO,
             @Lazy EmailService emailService,
-            @Lazy MerchantService merchantService,
             @Lazy FileUploadService fileUploadService,
             @Lazy InvoiceService invoiceService,
             @Lazy ChatRoomService chatRoomService,
@@ -56,14 +58,13 @@ public class ThreadService extends BaseService {
         this.ratingService = ratingService;
         this.productService = productService;
         this.cartService = cartService;
-        this.merchantService = merchantService;
         this.fileUploadService = fileUploadService;
         this.chatRoomService = chatRoomService;
         this.otpService = otpService;
-        this.paymentService = paymentService;
         this.emailService = emailService;
         this.invoiceService = invoiceService;
         this.viewAuditLogDAO = viewAuditLogDAO;
+        this.liveInvoiceDAO = liveInvoiceDAO;
     }
 
     public void addVarietyByAttribute(Product product, List<VarietyAttribute> existingAttributes, VarietyAttribute newAttribute, boolean isSameMeasurement) {
@@ -242,5 +243,36 @@ public class ThreadService extends BaseService {
             log.trace(e.getMessage());
             e.printStackTrace();
         }
+    }
+
+    public void sendReceiptEmail(LiveInvoice invoice) throws FriendlyException {
+        List<LiveInvoiceItem> liveItems = liveInvoiceDAO.findItemsByLiveInvoiceId(invoice.getLiveInvoiceId());
+
+        List<InvoiceItemDTO> liveItemDTOList = liveItems.stream().map(liveInvoiceItem -> {
+            LiveItem item = liveInvoiceItem.getLiveItem();
+            return InvoiceItemDTO.builder()
+                    .name(item.getName())
+                    .unitPrice(item.getLivePrice())
+                    .quantity(liveInvoiceItem.getQuantity())
+                    .totalPrice(liveInvoiceItem.getTotalPrice())
+                    .build();
+        }).toList();
+
+        emailService.sendInvoiceEmail(liveItemDTOList, Invoice.builder()
+                        .invoiceId(invoice.getLiveInvoiceId())
+                        .userEmail(invoice.getUserEmail())
+                        .recipientName(invoice.getRecipientName())
+                        .phoneNumber(invoice.getPhoneNumber())
+                        .cityName(invoice.getCityName())
+                        .districtName(invoice.getDistrictName())
+                        .wardName(invoice.getWardName())
+                        .streetName(invoice.getStreetName())
+                        .totalPrice(invoice.getTotalPrice())
+                        .finalPrice(invoice.getFinalPrice())
+                        .shippingFee(invoice.getShippingFee())
+                        .discountPrice(invoice.getDiscountPrice())
+                        .createdDate(invoice.getCreatedDate())
+                        .status(invoice.getStatus())
+                .build());
     }
 }
