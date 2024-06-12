@@ -2,8 +2,8 @@ package com.project.pescueshop.service;
 
 import com.project.pescueshop.model.entity.Category;
 import com.project.pescueshop.model.entity.SubCategory;
-import com.project.pescueshop.repository.inteface.CategoryRepository;
-import com.project.pescueshop.repository.inteface.SubCategoryRepository;
+import com.project.pescueshop.repository.jpa.CategoryRepository;
+import com.project.pescueshop.repository.jpa.SubCategoryRepository;
 import com.project.pescueshop.util.constant.EnumStatus;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;

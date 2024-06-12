@@ -2,8 +2,8 @@ package com.project.pescueshop.repository.dao;
 
 import com.project.pescueshop.model.entity.ChatMessage;
 import com.project.pescueshop.model.entity.ChatRoom;
-import com.project.pescueshop.repository.inteface.ChatMessageRepository;
-import com.project.pescueshop.repository.inteface.ChatRoomRepository;
+import com.project.pescueshop.repository.jpa.ChatMessageRepository;
+import com.project.pescueshop.repository.jpa.ChatRoomRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.stereotype.Repository;

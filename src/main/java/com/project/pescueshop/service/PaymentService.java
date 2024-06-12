@@ -132,13 +132,9 @@ public class PaymentService {
             Merchant merchant = merchantService.getMerchantById(merchantId);
 
             long invoiceValue = invoiceItemDTO.stream().mapToLong(InvoiceItemDTO::getTotalPrice).sum();
-            try {
-                long shippingFee = shippingFeeService.calculateShippingFee(invoiceItemDTO, address, merchant);
-                invoice.setTotalPrice(invoiceValue);
-                invoice.setFinalPrice(invoiceValue + shippingFee);
-            } catch (FriendlyException e) {
-                throw new RuntimeException(e);
-            }
+            long shippingFee = shippingFeeService.calculateShippingFee(invoiceItemDTO, address, merchant);
+            invoice.setTotalPrice(invoiceValue);
+            invoice.setFinalPrice(invoiceValue + shippingFee);
 
             if (invoice.getVoucher() != null){
                 Voucher voucher = invoice.getVoucher();
@@ -301,9 +297,5 @@ public class PaymentService {
 
     public CheckoutResultDTO singleItemCheckOutAuthenticate(User user, SingleItemCheckOutInfoDTO singleItemCheckOutInfoDTO) throws UnsupportedEncodingException, FriendlyException {
         return singleItemCheckOut(user, singleItemCheckOutInfoDTO);
-    }
-
-    public List<InvoiceItem> findInvoiceItemByInvoiceId(String invoiceId) {
-        return paymentDAO.findInvoiceItemByInvoiceId(invoiceId);
     }
 }

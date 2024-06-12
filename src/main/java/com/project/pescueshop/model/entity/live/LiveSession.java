@@ -22,6 +22,7 @@ public class LiveSession {
     private String sessionId;
     private String sessionKey;
     private String userId;
+    private String merchantId;
     private String title;
     private String thumbnail;
     private Date startTime;

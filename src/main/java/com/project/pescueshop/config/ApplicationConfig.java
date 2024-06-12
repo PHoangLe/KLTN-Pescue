@@ -1,7 +1,7 @@
 package com.project.pescueshop.config;
 
 import com.cloudinary.Cloudinary;
-import com.project.pescueshop.repository.inteface.UserRepository;
+import com.project.pescueshop.repository.jpa.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;

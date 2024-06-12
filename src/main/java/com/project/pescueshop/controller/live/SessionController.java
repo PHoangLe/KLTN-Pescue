@@ -2,13 +2,12 @@ package com.project.pescueshop.controller.live;
 
 import com.project.pescueshop.model.dto.CreateLiveSessionRequest;
 import com.project.pescueshop.model.dto.general.ResponseDTO;
-import com.project.pescueshop.model.entity.Merchant;
 import com.project.pescueshop.model.entity.User;
 import com.project.pescueshop.model.entity.live.LiveSession;
 import com.project.pescueshop.model.exception.FriendlyException;
 import com.project.pescueshop.service.AuthenticationService;
-import com.project.pescueshop.service.LiveService;
-import com.project.pescueshop.service.LiveSessionService;
+import com.project.pescueshop.service.live.LiveService;
+import com.project.pescueshop.service.live.LiveSessionService;
 import com.project.pescueshop.util.constant.EnumResponseCode;
 
 import io.openvidu.java.client.*;
@@ -26,7 +25,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/sessions")
+@RequestMapping("/api/v1/live/sessions")
 @Slf4j
 public class SessionController {
     private final LiveService liveService;
@@ -45,8 +44,8 @@ public class SessionController {
     }
 
     @PostMapping("/{sessionKey}/connections")
-    public ResponseEntity<ResponseDTO<String>> createConnection(@PathVariable String sessionKey, @RequestBody OpenViduRole role)
-            throws OpenViduJavaClientException, OpenViduHttpException {
+    public ResponseEntity<ResponseDTO<String>> createConnection(@PathVariable String sessionKey, @RequestBody String role)
+            throws OpenViduJavaClientException, OpenViduHttpException, FriendlyException {
         User user = AuthenticationService.getCurrentLoggedInUserIfExist();
         Connection connection = liveService.createConnection(sessionKey, user, role);
 

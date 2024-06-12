@@ -1,13 +1,11 @@
 package com.project.pescueshop.repository.dao;
 
 import com.project.pescueshop.model.entity.live.LiveSession;
-import com.project.pescueshop.repository.inteface.LiveSessionRepository;
+import com.project.pescueshop.repository.jpa.LiveSessionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
-
-import java.util.List;
 
 @Repository
 @RequiredArgsConstructor
@@ -24,5 +22,9 @@ public class LiveSessionDAO {
 
     public LiveSession findBySessionKey(String sessionKey) {
         return liveSessionRepository.findBySessionKey(sessionKey);
+    }
+
+    public LiveSession findBySessionId(String sessionId) {
+        return liveSessionRepository.findById(sessionId).orElse(null);
     }
 }

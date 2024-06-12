@@ -1,7 +1,7 @@
 package com.project.pescueshop.service;
 
 import com.project.pescueshop.model.entity.Brand;
-import com.project.pescueshop.repository.inteface.BrandRepository;
+import com.project.pescueshop.repository.jpa.BrandRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

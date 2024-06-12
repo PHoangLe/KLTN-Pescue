@@ -3,8 +3,8 @@ package com.project.pescueshop.repository.dao;
 import com.project.pescueshop.model.dto.InvoiceItemDTO;
 import com.project.pescueshop.model.dto.InvoiceListResultDTO;
 import com.project.pescueshop.model.entity.*;
-import com.project.pescueshop.repository.inteface.InvoiceItemRepository;
-import com.project.pescueshop.repository.inteface.InvoiceRepository;
+import com.project.pescueshop.repository.jpa.InvoiceItemRepository;
+import com.project.pescueshop.repository.jpa.InvoiceRepository;
 import com.project.pescueshop.repository.mapper.InvoiceItemMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -31,10 +31,6 @@ public class PaymentDAO extends BaseDAO{
 
     public Invoice findInvoiceById(String invoiceId){
         return invoiceRepository.findById(invoiceId).orElse(null);
-    }
-
-    public List<Invoice> findInvoiceByDateRange(Date fromDate, Date toDate){
-        return invoiceRepository.findInvoiceByDateRange(fromDate, toDate);
     }
 
     public List<InvoiceItemDTO> getInvoiceDetail(String invoiceId){

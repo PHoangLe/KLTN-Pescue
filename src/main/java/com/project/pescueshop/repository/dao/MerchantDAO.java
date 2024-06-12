@@ -1,7 +1,7 @@
 package com.project.pescueshop.repository.dao;
 
 import com.project.pescueshop.model.entity.Merchant;
-import com.project.pescueshop.repository.inteface.MerchantRepository;
+import com.project.pescueshop.repository.jpa.MerchantRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

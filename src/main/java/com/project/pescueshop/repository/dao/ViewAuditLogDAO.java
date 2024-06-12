@@ -1,7 +1,7 @@
 package com.project.pescueshop.repository.dao;
 
 import com.project.pescueshop.model.entity.ViewAuditLog;
-import com.project.pescueshop.repository.inteface.ViewAuditLogRepository;
+import com.project.pescueshop.repository.jpa.ViewAuditLogRepository;
 import com.project.pescueshop.util.Util;
 import com.project.pescueshop.util.constant.EnumObjectType;
 import lombok.RequiredArgsConstructor;

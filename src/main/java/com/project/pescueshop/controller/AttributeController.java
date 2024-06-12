@@ -28,7 +28,7 @@ public class AttributeController {
     @PostMapping("")
     @PreAuthorize("hasAuthority('ROLE_MERCHANT')")
     @SecurityRequirement(name = "Bearer Authentication")
-    public ResponseEntity<ResponseDTO<VarietyAttribute>> addAttribute(@RequestBody CreateVarietyAttributeRequest request) throws FriendlyException, InterruptedException {
+    public ResponseEntity<ResponseDTO<VarietyAttribute>> addAttribute(@RequestBody CreateVarietyAttributeRequest request) throws FriendlyException {
         Merchant currentMerchant = authenticationService.getCurrentMerchant();
 
         VarietyAttribute varietyAttribute = attributeService.addAttribute(request, currentMerchant);
