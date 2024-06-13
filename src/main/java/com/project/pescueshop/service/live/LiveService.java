@@ -77,6 +77,7 @@ public class LiveService {
 
         liveItemService.addLiveItemAsync(liveSession, request.getLiveItemList());
         return liveSession;
+        //change session
     }
 
     private Session createSession(String sessionKey)
