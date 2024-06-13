@@ -21,6 +21,7 @@ public class LiveSession {
     @GenericGenerator(name = "CustomIdGenerator", strategy = "com.project.pescueshop.util.CustomIdGenerator")
     private String sessionId;
     private String sessionKey;
+    private String exposedSessionKey;
     private String userId;
     private String merchantId;
     private String title;
