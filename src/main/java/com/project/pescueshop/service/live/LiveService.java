@@ -53,18 +53,19 @@ public class LiveService {
     }
 
     public LiveSession createSession(CreateLiveSessionRequest request, MultipartFile thumbnail, User user) throws OpenViduJavaClientException, FriendlyException {
-        String sessionKey = UUID.randomUUID().toString();
-        String thumbnailURL = thumbnail != null ? fileUploadService.uploadFile(thumbnail, "live-thumbnail/", sessionKey) : "";
+        String exposedSessionKey = UUID.randomUUID().toString();
+        String thumbnailURL = thumbnail != null ? fileUploadService.uploadFile(thumbnail, "live/thumbnail/", exposedSessionKey) : "";
 
         Merchant merchant = merchantService.getMerchantByUserId(user.getUserId());
 
-        Session session = createSession(sessionKey);
+        Session session = createSession(exposedSessionKey);
         if (session == null){
             throw new FriendlyException(EnumResponseCode.SYSTEM_ERROR);
         }
 
         LiveSession liveSession = LiveSession.builder()
                 .sessionKey(session.getSessionId())
+                .exposedSessionKey(exposedSessionKey)
                 .userId(user.getUserId())
                 .merchantId(merchant.getMerchantId())
                 .title(request.getLiveSessionTitle())
