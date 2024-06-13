@@ -12,7 +12,7 @@ public interface VarietyRepository extends JpaRepository<Variety, String> {
 
     @Query(value = "SELECT pi.images " +
             "FROM product_images pi " +
-            "JOIN product p ON p.product_id = pi.product_id " +
+            "JOIN product p ON p.product_id = pi.product_product_id " +
             "JOIN variety v ON v.product_id = p.product_id " +
             "WHERE v.variety_id = ?1 LIMIT 1", nativeQuery = true)
     String getCoverImageById(String varietyId);
