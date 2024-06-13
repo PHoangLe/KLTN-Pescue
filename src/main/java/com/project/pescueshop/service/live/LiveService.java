@@ -73,7 +73,7 @@ public class LiveService {
 
         liveItemService.addLiveItemAsync(liveSession, request.getLiveItemList());
         return liveSession;
-        //change session key
+        //change session
     }
 
     private void createSession(String sessionKey)
