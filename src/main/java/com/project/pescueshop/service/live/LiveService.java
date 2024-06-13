@@ -52,15 +52,19 @@ public class LiveService {
         this.openvidu = new OpenVidu(OPENVIDU_URL, OPENVIDU_SECRET);
     }
 
-    public LiveSession createSession(CreateLiveSessionRequest request, MultipartFile thumbnail, User user) throws OpenViduJavaClientException {
+    public LiveSession createSession(CreateLiveSessionRequest request, MultipartFile thumbnail, User user) throws OpenViduJavaClientException, FriendlyException {
         String sessionKey = UUID.randomUUID().toString();
         String thumbnailURL = fileUploadService.uploadFile(thumbnail, "live-thumbnail/", sessionKey);
 
         Merchant merchant = merchantService.getMerchantByUserId(user.getUserId());
 
-        createSession(sessionKey);
+        Session session = createSession(sessionKey);
+        if (session == null){
+            throw new FriendlyException(EnumResponseCode.SYSTEM_ERROR);
+        }
+
         LiveSession liveSession = LiveSession.builder()
-                .sessionKey(sessionKey)
+                .sessionKey(session.getSessionId())
                 .userId(user.getUserId())
                 .merchantId(merchant.getMerchantId())
                 .title(request.getLiveSessionTitle())
@@ -75,7 +79,7 @@ public class LiveService {
         return liveSession;
     }
 
-    private void createSession(String sessionKey)
+    private Session createSession(String sessionKey)
         throws OpenViduJavaClientException {
         try {
             Map<String, Object> params = new HashMap<>();
@@ -83,9 +87,12 @@ public class LiveService {
             SessionProperties properties = SessionProperties.fromJson(params).build();
             Session session = openvidu.createSession(properties);
             session.fetch();
+            return session;
         } catch (OpenViduHttpException e) {
             log.error("Error creating session: " + e.getMessage());
         }
+
+        return null;
     }
     
     public Connection createConnection(String sessionId, User user, String role) throws OpenViduJavaClientException, OpenViduHttpException, FriendlyException {
@@ -101,7 +108,7 @@ public class LiveService {
             default -> OpenViduRole.PUBLISHER;
         };
 
-        Session session = openvidu.getActiveSession(liveSession.getSessionKey());
+        Session session = openvidu.getActiveSession(sessionId);
         String nickname = user != null ? user.getUserFirstName() + " " + user.getUserLastName() : getRandomNickname();
         String userId = user != null ? user.getUserId() : null;
 
