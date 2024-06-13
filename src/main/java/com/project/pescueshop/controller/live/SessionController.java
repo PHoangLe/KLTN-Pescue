@@ -34,7 +34,7 @@ public class SessionController {
     @PostMapping("")
     @PreAuthorize("hasAuthority('ROLE_MERCHANT')")
     @SecurityRequirement(name = "Bearer Authentication")
-    public ResponseEntity<ResponseDTO<String>> initializeSession(@RequestPart CreateLiveSessionRequest request,@RequestPart MultipartFile thumbnail)
+    public ResponseEntity<ResponseDTO<String>> initializeSession(@RequestPart CreateLiveSessionRequest request,@RequestPart(required = false) MultipartFile thumbnail)
             throws FriendlyException, OpenViduJavaClientException {
         User user = AuthenticationService.getCurrentLoggedInUser();
         LiveSession session = liveService.createSession(request, thumbnail, user);

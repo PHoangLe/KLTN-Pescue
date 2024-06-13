@@ -64,7 +64,7 @@ public enum EnumResponseCode {
     MERCHANT_SUSPENDED("8_2_f", "Merchant suspended"),
     //</editor-fold>
     //<editor-fold desc="9-LIVE">
-    LIVE_SESSION_NOT_FOUND("9_1_f", "Live session not found"),
+    LIVE_SESSION_NOT_FOUND("9_1_f", "Live session not found or already ended"),
     LIVE_SESSION_ALREADY_END("9_2_f", "Live session end already"),
     LIVE_ITEM_NOT_FOUND("9_3_f", "Live item not found");
     //</editor-fold>
