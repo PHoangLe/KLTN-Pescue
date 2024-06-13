@@ -34,11 +34,6 @@ import io.openvidu.java.client.SessionProperties;
 @RequiredArgsConstructor
 public class LiveService {
 
-    public static final String MODERATOR_TOKEN_NAME = "ovCallModeratorToken";
-    public static final String PARTICIPANT_TOKEN_NAME = "ovCallParticipantToken";
-    public Map<String, RecordingData> moderatorsCookieMap = new HashMap<String, RecordingData>();
-    public Map<String, List<String>> participantsCookieMap = new HashMap<String, List<String>>();
-
     @Value("${OPENVIDU_URL}")
     public String OPENVIDU_URL;
 
@@ -63,6 +58,7 @@ public class LiveService {
 
         Merchant merchant = merchantService.getMerchantByUserId(user.getUserId());
 
+        createSession(sessionKey);
         LiveSession liveSession = LiveSession.builder()
                 .sessionKey(sessionKey)
                 .userId(user.getUserId())
@@ -79,7 +75,7 @@ public class LiveService {
         return liveSession;
     }
 
-    private Session createSession(String sessionKey)
+    private void createSession(String sessionKey)
         throws OpenViduJavaClientException {
         try {
             Map<String, Object> params = new HashMap<>();
@@ -87,11 +83,9 @@ public class LiveService {
             SessionProperties properties = SessionProperties.fromJson(params).build();
             Session session = openvidu.createSession(properties);
             session.fetch();
-            return session;
         } catch (OpenViduHttpException e) {
             log.error("Error creating session: " + e.getMessage());
         }
-        return null;
     }
     
     public Connection createConnection(String sessionId, User user, String role) throws OpenViduJavaClientException, OpenViduHttpException, FriendlyException {
