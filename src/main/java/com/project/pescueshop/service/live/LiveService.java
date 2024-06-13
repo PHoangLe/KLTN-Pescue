@@ -57,13 +57,12 @@ public class LiveService {
         this.openvidu = new OpenVidu(OPENVIDU_URL, OPENVIDU_SECRET);
     }
 
-    public Session createSession(CreateLiveSessionRequest request, MultipartFile thumbnail, User user) throws OpenViduJavaClientException {
+    public LiveSession createSession(CreateLiveSessionRequest request, MultipartFile thumbnail, User user) throws OpenViduJavaClientException {
         String sessionKey = UUID.randomUUID().toString();
         String thumbnailURL = fileUploadService.uploadFile(thumbnail, "live-thumbnail/", sessionKey);
 
         Merchant merchant = merchantService.getMerchantByUserId(user.getUserId());
 
-        Session session = createSession(sessionKey);
         LiveSession liveSession = LiveSession.builder()
                 .sessionKey(sessionKey)
                 .userId(user.getUserId())
@@ -77,7 +76,7 @@ public class LiveService {
         liveSessionService.saveAndFlushLiveSession(liveSession);
 
         liveItemService.addLiveItemAsync(liveSession, request.getLiveItemList());
-        return session;
+        return liveSession;
     }
 
     private Session createSession(String sessionKey)

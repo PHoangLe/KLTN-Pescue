@@ -37,9 +37,9 @@ public class SessionController {
     public ResponseEntity<ResponseDTO<String>> initializeSession(@RequestPart CreateLiveSessionRequest request,@RequestPart MultipartFile thumbnail)
             throws FriendlyException, OpenViduJavaClientException {
         User user = AuthenticationService.getCurrentLoggedInUser();
-        Session session = liveService.createSession(request, thumbnail, user);
+        LiveSession session = liveService.createSession(request, thumbnail, user);
 
-        ResponseDTO<String> resp = new ResponseDTO<>(EnumResponseCode.SUCCESS, session.getSessionId(), "sessionKey");
+        ResponseDTO<String> resp = new ResponseDTO<>(EnumResponseCode.SUCCESS, session.getSessionId(), "sessionId");
         return ResponseEntity.ok(resp);
     }
 
