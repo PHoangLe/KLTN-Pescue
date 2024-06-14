@@ -18,6 +18,7 @@ import java.util.Date;
 public class InvoiceListResultDTO {
     private String invoiceId;
     private String userId;
+    private String merchantId;
     private Date createdDate;
     private long totalPrice;
     private long discountPrice;
@@ -36,6 +37,7 @@ public class InvoiceListResultDTO {
     public InvoiceListResultDTO(Invoice invoice, String userName){
         this.invoiceId = invoice.getInvoiceId();
         this.userId = invoice.getUserId();
+        this.merchantId = invoice.getMerchantId();
         this.createdDate = invoice.getCreatedDate();
         this.totalPrice = invoice.getTotalPrice();
         this.discountPrice = invoice.getDiscountPrice();
