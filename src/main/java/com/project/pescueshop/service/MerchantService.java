@@ -38,7 +38,7 @@ public class MerchantService extends BaseService {
                 .cityName(merchant.getCityName())
                 .districtName(merchant.getDistrictName())
                 .wardName(merchant.getWardName())
-                .cityName(merchant.getCityCode())
+                .cityCode(merchant.getCityCode())
                 .districtId(merchant.getDistrictId())
                 .wardCode(merchant.getWardCode())
                 .phoneNumber(merchant.getPhoneNumber())
