@@ -58,27 +58,30 @@ public class LiveService {
 
         Merchant merchant = merchantService.getMerchantByUserId(user.getUserId());
 
-        Session session = createSession(exposedSessionKey);
-        if (session == null){
+        try {
+            Session session = createSession(exposedSessionKey);
+            assert session != null;
+
+            LiveSession liveSession = LiveSession.builder()
+                    .sessionKey(session.getSessionId())
+                    .exposedSessionKey(exposedSessionKey)
+                    .userId(user.getUserId())
+                    .merchantId(merchant.getMerchantId())
+                    .title(request.getLiveSessionTitle())
+                    .startTime(new Date())
+                    .thumbnail(thumbnailURL)
+                    .status(EnumLiveStatus.ACTIVE.getValue())
+                    .build();
+
+            liveSessionService.saveAndFlushLiveSession(liveSession);
+
+            liveItemService.addLiveItemAsync(liveSession, request.getLiveItemList());
+            return liveSession;
+        }
+        catch (OpenViduJavaClientException e) {
+            log.error("Error creating session: " + e.getMessage());
             throw new FriendlyException(EnumResponseCode.SYSTEM_ERROR);
         }
-
-        LiveSession liveSession = LiveSession.builder()
-                .sessionKey(session.getSessionId())
-                .exposedSessionKey(exposedSessionKey)
-                .userId(user.getUserId())
-                .merchantId(merchant.getMerchantId())
-                .title(request.getLiveSessionTitle())
-                .startTime(new Date())
-                .thumbnail(thumbnailURL)
-                .status(EnumLiveStatus.ACTIVE.getValue())
-                .build();
-
-        liveSessionService.saveAndFlushLiveSession(liveSession);
-
-        liveItemService.addLiveItemAsync(liveSession, request.getLiveItemList());
-        return liveSession;
-        //change session
     }
 
     private Session createSession(String sessionKey)
