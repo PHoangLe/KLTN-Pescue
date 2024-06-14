@@ -5,7 +5,6 @@ import com.project.pescueshop.model.entity.User;
 import com.project.pescueshop.model.entity.live.*;
 import com.project.pescueshop.model.exception.FriendlyException;
 import com.project.pescueshop.repository.dao.LiveCartDAO;
-import com.project.pescueshop.service.UserService;
 import com.project.pescueshop.util.constant.EnumCartStatus;
 import com.project.pescueshop.util.constant.EnumResponseCode;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +21,6 @@ public class LiveCartService {
     private final LiveCartDAO cartDAO;
     private final LiveItemService liveItemService;
     private final LiveSessionService liveSessionService;
-    private final UserService userService;
 
     public LiveCart createCartForNewUser(String userId, LiveSession liveSession) {
         LiveCart newCart = LiveCart.builder()
@@ -37,7 +35,7 @@ public class LiveCartService {
         return newCart;
     }
 
-    public LiveCart createCartForNewUser(String userId, String sessionId) {
+    public void createCartForNewUser(String userId, String sessionId) {
         LiveSession liveSession = liveSessionService.findBySessionId(sessionId);
 
         LiveCart cart = findCartByUserId(userId);
@@ -46,8 +44,6 @@ public class LiveCartService {
         }
         cart.setSessionId(sessionId);
         cartDAO.saveAndFlushLiveCart(cart);
-
-        return cart;
     }
 
     public void createCartForNewUserAsync(String userId, String sessionKey) {
@@ -66,10 +62,6 @@ public class LiveCartService {
 
     public LiveCart findCartByCartId(String cartId){
         return cartDAO.findByCartId(cartId);
-    }
-
-    public List<LiveCartItem> getLiveCartItemsByUserId(String userId){
-        return getLiveCartItems(userId, null);
     }
 
     public List<LiveCartItem> getLiveCartItemsByCartId(String cartId) {
@@ -126,30 +118,6 @@ public class LiveCartService {
         cartItem.setIsSelected(!cartItem.getIsSelected());
 
         cartDAO.saveAndFlushLiveCartItem(cartItem);
-    }
-
-    public LiveCart getUnAuthenticatedCart(String liveCartId, String sessionId) {
-        if (liveCartId != null) {
-            return findCartByCartId(liveCartId);
-        }
-
-        User user = userService.getAdminUser();
-        return  createCartForNewUser(user.getUserId(), sessionId);
-    }
-
-    public void addOrUpdateUnAuthenticatedCartItem(AddOrUpdateLiveCartItemDTO dto, String cartId) throws FriendlyException {
-        LiveCart cart = findCartByCartId(cartId);
-        if (cart == null){
-            throw new FriendlyException(EnumResponseCode.CART_NOT_FOUND);
-        }
-
-        User user = userService.getAdminUser();
-        addOrUpdateCartItem(dto, user, cart);
-    }
-
-    public List<LiveCartItem> getLiveItemsByLiveCartId(String cartId) {
-        LiveCart cart = findCartByCartId(cartId);
-        return cart != null ? cart.getLiveCartItemList() : List.of();
     }
 
     public void removeSelectedCartItem(String cartId) {

@@ -42,25 +42,6 @@ public class LiveCartController {
         return ResponseEntity.ok(result);
     }
 
-    @GetMapping("/un-authenticate")
-    public ResponseEntity<ResponseDTO<LiveCart>> getCartUnAuthenticate(@RequestParam String cartId, @RequestParam String sessionId) {
-        LiveCart itemList = cartService.getUnAuthenticatedCart(cartId, sessionId);
-
-        EnumResponseCode responseCode = (itemList == null) ? EnumResponseCode.CART_NOT_FOUND : EnumResponseCode.SUCCESS;
-
-        ResponseDTO<LiveCart> result = new ResponseDTO<>(responseCode, itemList, "cart");
-
-        return ResponseEntity.ok(result);
-    }
-
-    @PostMapping("/un-authenticate/update-cart-item/{cartId}")
-    public ResponseEntity<ResponseDTO<LiveCartItem>> addItemToCartUnAuthenticate(@RequestBody AddOrUpdateLiveCartItemDTO dto, @PathVariable String cartId) throws FriendlyException {
-        cartService.addOrUpdateUnAuthenticatedCartItem(dto, cartId);
-
-        ResponseDTO<LiveCartItem> result = new ResponseDTO<>(EnumResponseCode.SUCCESS);
-        return ResponseEntity.ok(result);
-    }
-
     @PostMapping("/update-cart-item")
     @PreAuthorize("hasAuthority('ROLE_CUSTOMER')")
     @SecurityRequirement(name = "Bearer Authentication")

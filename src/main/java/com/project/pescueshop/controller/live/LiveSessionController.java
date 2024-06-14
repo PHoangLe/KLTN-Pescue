@@ -27,7 +27,7 @@ import org.springframework.web.multipart.MultipartFile;
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/live/sessions")
 @Slf4j
-public class SessionController {
+public class LiveSessionController {
     private final LiveService liveService;
     private final LiveSessionService liveSessionService;
 
