@@ -167,7 +167,12 @@ public class AuthenticationService {
         var jwtToken = jwtService.generateJwtToken(user);
         log.trace("Successfully authenticate user: " + request.getUserEmail());
 
-        ResponseDTO<UserDTO> response = new ResponseDTO<>(EnumResponseCode.AUTHENTICATE_SUCCESSFUL, new UserDTO(user, jwtToken));
+        UserDTO dto = new UserDTO(user, jwtToken);
+        if (isMerchant(user)){
+            dto.setMerchantId(merchantService.getMerchantByUserId(user.getUserId()).getMerchantId());
+        }
+
+        ResponseDTO<UserDTO> response = new ResponseDTO<>(EnumResponseCode.AUTHENTICATE_SUCCESSFUL, dto);
         return ResponseEntity.ok(response);
     }
 
