@@ -25,6 +25,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Api
 public class InvoiceController {
+    private static final int BASE_EPOCH_TIME = 0; // 1970-01-01 00:00:00
     private final InvoiceService invoiceService;
 
     @GetMapping("/{invoiceId}")
@@ -37,9 +38,12 @@ public class InvoiceController {
     }
 
     @GetMapping("")
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    @PreAuthorize("hasAuthority('ROLE_MERCHANT')")
     @SecurityRequirement(name = "Bearer Authentication")
-    public ResponseEntity<ResponseDTO<List<InvoiceListResultDTO>>> getAllInvoice(@RequestParam(required = false) Date fromDate, @RequestParam(required = false) Date toDate){
+    public ResponseEntity<ResponseDTO<List<InvoiceListResultDTO>>> getAllInvoice(@RequestParam(required = false) Date fromDate, @RequestParam(required = false) Date toDate) throws FriendlyException {
+        fromDate = fromDate == null ? new Date(BASE_EPOCH_TIME) : fromDate;
+        toDate = toDate == null ? new Date() : toDate;
+
         List<InvoiceListResultDTO> invoice = invoiceService.findAllInvoice(fromDate, toDate);
         ResponseDTO<List<InvoiceListResultDTO>> result = new ResponseDTO<>(EnumResponseCode.SUCCESS, invoice, "invoiceList");
         return ResponseEntity.ok(result);

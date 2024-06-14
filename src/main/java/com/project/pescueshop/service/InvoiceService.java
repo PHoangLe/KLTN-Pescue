@@ -4,6 +4,7 @@ import com.project.pescueshop.model.dto.InvoiceItemDTO;
 import com.project.pescueshop.model.dto.InvoiceListResultDTO;
 import com.project.pescueshop.model.entity.Invoice;
 import com.project.pescueshop.model.entity.InvoiceItem;
+import com.project.pescueshop.model.entity.Merchant;
 import com.project.pescueshop.model.entity.User;
 import com.project.pescueshop.model.exception.FriendlyException;
 import com.project.pescueshop.repository.dao.PaymentDAO;
@@ -21,11 +22,18 @@ import java.util.stream.Collectors;
 @Service
 public class InvoiceService {
     private final PaymentDAO paymentDAO;
+    private final AuthenticationService authenticationService;
 
-    public List<InvoiceListResultDTO> findAllInvoice(Date fromDate, Date toDate){
-        if (fromDate == null && toDate == null){
-            return paymentDAO.findAllInvoice();
+    public List<InvoiceListResultDTO> findAllInvoice(Date fromDate, Date toDate) throws FriendlyException {
+        List<InvoiceListResultDTO> resp = paymentDAO.findAllInvoice().stream()
+                .filter(invoice -> invoice.getCreatedDate().before(toDate) && invoice.getCreatedDate().after(fromDate))
+                .toList();
+
+        if (!AuthenticationService.isCurrentAdmin()){
+            Merchant merchant = authenticationService.getCurrentMerchant();
+            return resp.stream().filter(invoice -> invoice.getMerchantId().equals(merchant.getMerchantId())).toList();
         }
+
 
         return paymentDAO.findAllInvoice().stream()
                 .filter(invoice -> invoice.getCreatedDate().before(toDate) && invoice.getCreatedDate().after(fromDate))
