@@ -53,6 +53,7 @@ public class Product {
 
     public Product(ProductDTO dto){
         this.productId = dto.getProductId();
+        this.merchantId = dto.getMerchantId();
         this.name = dto.getName();
         this.subCategory = dto.getSubCategory();
         this.price = dto.getPrice();

@@ -34,10 +34,7 @@ public class InvoiceService {
             return resp.stream().filter(invoice -> invoice.getMerchantId().equals(merchant.getMerchantId())).toList();
         }
 
-
-        return paymentDAO.findAllInvoice().stream()
-                .filter(invoice -> invoice.getCreatedDate().before(toDate) && invoice.getCreatedDate().after(fromDate))
-                .toList();
+        return resp;
     }
 
     public List<InvoiceItemDTO> getInvoiceDetail(String invoiceId){

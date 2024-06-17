@@ -2,6 +2,7 @@ package com.project.pescueshop.service;
 
 
 import com.project.pescueshop.model.dto.UpdateVarietyMeasurementRequest;
+import com.project.pescueshop.model.dto.UpdateVarietyStockAmountRequest;
 import com.project.pescueshop.model.dto.VarietyDTO;
 import com.project.pescueshop.model.entity.Product;
 import com.project.pescueshop.model.entity.Variety;
@@ -63,14 +64,11 @@ public class VarietyService extends BaseService{
     public Map<String, List<VarietyAttribute>> findAllVarietyAttribute(){
         List<VarietyAttribute> varietyAttributeList = varietyAttributeRepository.findAll();
 
-        Map<String, List<VarietyAttribute>> varietyAttributeMap = varietyAttributeList.stream()
+        return varietyAttributeList.stream()
                 .collect(Collectors.groupingBy(VarietyAttribute::getType));
-
-        return varietyAttributeMap;
     }
 
     public void addVarietyByListAttribute(Product product, List<VarietyAttribute> varietyAttributeList, boolean isSameMeasurement){
-        List<Variety> varietyList = new ArrayList<>();
         for (VarietyAttribute attribute: varietyAttributeList){
             Variety variety = new Variety();
             variety.addAttribute(attribute);
@@ -86,7 +84,7 @@ public class VarietyService extends BaseService{
                 variety.setWeight(product.getWeight());
             }
 
-            varietyList.add(addOrUpdateVariety(variety));
+            addOrUpdateVariety(variety);
         }
     }
 
@@ -123,5 +121,24 @@ public class VarietyService extends BaseService{
 
     public String getCoverImageById(String varietyId) {
         return varietyRepository.getCoverImageById(varietyId);
+    }
+
+    public void updateVarietyStockAmount(UpdateVarietyStockAmountRequest request) throws FriendlyException {
+        if (request.getVarietyId() == null){
+            throw new FriendlyException(EnumResponseCode.INVALID_PARAMS);
+        }
+
+        if (request.getStockAmount() < 0) {
+            request.setStockAmount(0);
+        }
+
+        Variety variety = findById(request.getVarietyId());
+        if (variety == null){
+            throw new FriendlyException(EnumResponseCode.VARIETY_NOT_FOUND);
+        }
+
+        variety.setStockAmount(request.getStockAmount());
+
+        addOrUpdateVariety(variety);
     }
 }
