@@ -32,7 +32,7 @@ public class ProductController {
     private final VarietyService varietyService;
 
     //<editor-fold desc="Category">
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    @PreAuthorize("hasAuthority('ROLE_MERCHANT')")
     @SecurityRequirement(name = "Bearer Authentication")
     @PostMapping("/category")
     public ResponseEntity<ResponseDTO<Category>> addCategory(@RequestBody Category category) throws FriendlyException {
@@ -54,7 +54,7 @@ public class ProductController {
     //</editor-fold>
 
     //<editor-fold desc="SubCategory">
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    @PreAuthorize("hasAuthority('ROLE_MERCHANT')")
     @SecurityRequirement(name = "Bearer Authentication")
     @PostMapping("/sub-category")
     public ResponseEntity<ResponseDTO<SubCategory>> addSubCategory(@RequestBody SubCategory subCategory) throws FriendlyException {
@@ -85,7 +85,7 @@ public class ProductController {
     //</editor-fold>
 
     //<editor-fold desc="Brand">
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    @PreAuthorize("hasAuthority('ROLE_MERCHANT')")
     @SecurityRequirement(name = "Bearer Authentication")
     @PostMapping("/brand")
     public ResponseEntity<ResponseDTO<Brand>> addBrand(@RequestPart Brand brand, @RequestPart("image") MultipartFile image) throws FriendlyException {
@@ -132,7 +132,7 @@ public class ProductController {
     //</editor-fold>
 
     //<editor-fold desc="Product">
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    @PreAuthorize("hasAuthority('ROLE_MERCHANT')")
     @SecurityRequirement(name = "Bearer Authentication")
     @PostMapping("")
     public ResponseEntity<ResponseDTO<ProductDTO>> addProduct(@RequestPart ProductDTO productDTO, @RequestPart("images") MultipartFile[] images, @RequestParam(defaultValue = "false") boolean isSameMeasurement) throws InterruptedException {
@@ -144,7 +144,7 @@ public class ProductController {
     }
 
     @PutMapping("")
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    @PreAuthorize("hasAuthority('ROLE_MERCHANT')")
     @SecurityRequirement(name = "Bearer Authentication")
     public ResponseEntity<ResponseDTO<ProductDTO>> updateProduct(@RequestBody ProductDTO productDTO) throws FriendlyException {
         productDTO = productService.updateProduct(productDTO);
@@ -155,7 +155,7 @@ public class ProductController {
     }
 
     @PutMapping("/product-images/{productId}")
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    @PreAuthorize("hasAuthority('ROLE_MERCHANT')")
     @SecurityRequirement(name = "Bearer Authentication")
     public ResponseEntity<ResponseDTO<List<String>>> updateProductImage(@RequestPart("newImages") List<MultipartFile> newImages, @RequestPart List<String> deletedImages, @PathVariable String productId) throws FriendlyException {
         List<String> imagesUrl = productService.updateProductImage(productId, newImages, deletedImages);
