@@ -129,6 +129,15 @@ public class ProductController {
         ResponseDTO<String> result = new ResponseDTO<>(EnumResponseCode.SUCCESS);
         return ResponseEntity.ok(result);
     }
+
+    @PutMapping("/variety/stock-amount")
+    @PreAuthorize("hasAuthority('ROLE_MERCHANT')")
+    @SecurityRequirement(name = "Bearer Authentication")
+    public ResponseEntity<ResponseDTO<String>> updateVarietyStockAmount(@RequestBody UpdateVarietyStockAmountRequest request) throws FriendlyException {
+        varietyService.updateVarietyStockAmount(request);
+        ResponseDTO<String> result = new ResponseDTO<>(EnumResponseCode.SUCCESS);
+        return ResponseEntity.ok(result);
+    }
     //</editor-fold>
 
     //<editor-fold desc="Product">

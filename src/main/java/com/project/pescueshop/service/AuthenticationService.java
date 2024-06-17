@@ -70,7 +70,7 @@ public class AuthenticationService {
         if (principal == null)
             throw new FriendlyException(EnumResponseCode.NOT_LOGGED_IN);
 
-        return merchantService.getMerchantById(principal.getUserId());
+        return merchantService.getMerchantByUserId(principal.getUserId());
     }
 
     public ResponseEntity<ResponseDTO<UserDTO>> userRegister(RegisterDTO request) throws FriendlyException {
