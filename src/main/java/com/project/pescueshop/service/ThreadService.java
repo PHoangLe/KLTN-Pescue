@@ -100,6 +100,7 @@ public class ThreadService extends BaseService {
     private void processAddVarietyByAttribute(Product product, VarietyAttribute existingAttribute, VarietyAttribute newAttribute, boolean isSameMeasurement) {
         Variety variety = new Variety();
         variety.addAttribute(newAttribute);
+        variety.setMerchantId(product.getMerchantId());
         variety.setName(product.getName());
         variety.addAttribute(existingAttribute);
         variety.setProductId(product.getProductId());
