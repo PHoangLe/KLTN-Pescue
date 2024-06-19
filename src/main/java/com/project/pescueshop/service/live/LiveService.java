@@ -32,6 +32,13 @@ public class LiveService {
     @Value("${OPENVIDU_SECRET}")
     private String OPENVIDU_SECRET;
 
+    @Value("${ICE_SERVER_URL}")
+    private String ICESERVER_URL;
+    @Value("${ICE_SERVER_USERNAME}")
+    private String ICESERVER_USERNAME;
+    @Value("${ICE_SERVER_CREDENTIAL}")
+    private String ICESERVER_CREDENTIAL;
+
     private OpenVidu openvidu;
     private final MerchantService merchantService;
     private final LiveSessionService liveSessionService;
@@ -135,9 +142,9 @@ public class LiveService {
         params.put("data", connectionData.toString());
 
         IceServerProperties iceServerProperties = new IceServerProperties.Builder()
-                .url("turns:global.relay.metered.ca:443?transport=tcp")
-                .username("e5501e082a3b3e2c71bbd3e8")
-                .credential("a9RtoZ3qOO7qa8+/")
+                .url(ICESERVER_URL)
+                .username(ICESERVER_USERNAME)
+                .credential(ICESERVER_CREDENTIAL)
                 .build();
 
         ConnectionProperties properties = ConnectionProperties.fromJson(params)
