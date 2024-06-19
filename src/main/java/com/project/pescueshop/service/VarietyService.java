@@ -72,6 +72,7 @@ public class VarietyService extends BaseService{
         for (VarietyAttribute attribute: varietyAttributeList){
             Variety variety = new Variety();
             variety.addAttribute(attribute);
+            variety.setMerchantId(product.getMerchantId());
             variety.setProductId(product.getProductId());
             variety.setName(product.getName());
             variety.setStatus(EnumStatus.ACTIVE.getValue());

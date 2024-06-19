@@ -84,6 +84,7 @@ public class ProductService extends BaseService {
             variety.setName(product.getName());
             variety.setPrice(product.getPrice());
             variety.setStatus(product.getStatus());
+            variety.setMerchantId(product.getMerchantId());
             variety.setStockAmount(0);
 
             if (isSameMeasurement) {
