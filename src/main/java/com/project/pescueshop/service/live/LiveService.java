@@ -13,21 +13,13 @@ import com.project.pescueshop.service.FileUploadService;
 import com.project.pescueshop.service.MerchantService;
 import com.project.pescueshop.util.constant.EnumLiveStatus;
 import com.project.pescueshop.util.constant.EnumResponseCode;
+import io.openvidu.java.client.*;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-
-import io.openvidu.java.client.Connection;
-import io.openvidu.java.client.ConnectionProperties;
-import io.openvidu.java.client.OpenVidu;
-import io.openvidu.java.client.OpenViduHttpException;
-import io.openvidu.java.client.OpenViduJavaClientException;
-import io.openvidu.java.client.OpenViduRole;
-import io.openvidu.java.client.Session;
-import io.openvidu.java.client.SessionProperties;
 
 @Service
 @Slf4j
@@ -141,7 +133,16 @@ public class LiveService {
         connectionData.put("openviduCustomConnectionId", nickname);
         params.put("role", role.name());
         params.put("data", connectionData.toString());
-        ConnectionProperties properties = ConnectionProperties.fromJson(params).build();
+
+        IceServerProperties iceServerProperties = new IceServerProperties.Builder()
+                .url("turns:global.relay.metered.ca:443?transport=tcp")
+                .username("e5501e082a3b3e2c71bbd3e8")
+                .credential("a9RtoZ3qOO7qa8+/")
+                .build();
+
+        ConnectionProperties properties = ConnectionProperties.fromJson(params)
+                .addCustomIceServer(iceServerProperties)
+                .build();
 
         try {
             return session.createConnection(properties);
