@@ -140,15 +140,7 @@ public class LiveService {
         params.put("role", role.name());
         params.put("data", connectionData.toString());
 
-        IceServerProperties iceServerProperties = new IceServerProperties.Builder()
-                .url(ICE_SERVER_URL)
-                .username(ICE_SERVER_USERNAME)
-                .credential(ICE_SERVER_CREDENTIAL)
-                .build();
-
-        ConnectionProperties properties = ConnectionProperties.fromJson(params)
-                .addCustomIceServer(iceServerProperties)
-                .build();
+        ConnectionProperties properties = new ConnectionProperties.Builder().build();
 
         try {
             return session.createConnection(properties);
