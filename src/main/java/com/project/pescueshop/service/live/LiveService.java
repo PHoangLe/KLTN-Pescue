@@ -6,7 +6,6 @@ import com.project.pescueshop.model.dto.CreateLiveSessionRequest;
 import com.project.pescueshop.model.entity.Merchant;
 import com.project.pescueshop.model.entity.User;
 import com.project.pescueshop.model.entity.live.LiveSession;
-import com.project.pescueshop.model.entity.live.RecordingData;
 import com.project.pescueshop.model.exception.FriendlyException;
 import com.project.pescueshop.service.AuthenticationService;
 import com.project.pescueshop.service.FileUploadService;
@@ -33,11 +32,11 @@ public class LiveService {
     private String OPENVIDU_SECRET;
 
     @Value("${ICE_SERVER_URL}")
-    private String ICESERVER_URL;
+    private String ICE_SERVER_URL;
     @Value("${ICE_SERVER_USERNAME}")
-    private String ICESERVER_USERNAME;
+    private String ICE_SERVER_USERNAME;
     @Value("${ICE_SERVER_CREDENTIAL}")
-    private String ICESERVER_CREDENTIAL;
+    private String ICE_SERVER_CREDENTIAL;
 
     private OpenVidu openvidu;
     private final MerchantService merchantService;
@@ -142,9 +141,9 @@ public class LiveService {
         params.put("data", connectionData.toString());
 
         IceServerProperties iceServerProperties = new IceServerProperties.Builder()
-                .url(ICESERVER_URL)
-                .username(ICESERVER_USERNAME)
-                .credential(ICESERVER_CREDENTIAL)
+                .url(ICE_SERVER_URL)
+                .username(ICE_SERVER_USERNAME)
+                .credential(ICE_SERVER_CREDENTIAL)
                 .build();
 
         ConnectionProperties properties = ConnectionProperties.fromJson(params)
