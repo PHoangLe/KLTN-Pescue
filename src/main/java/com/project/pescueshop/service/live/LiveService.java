@@ -57,7 +57,7 @@ public class LiveService {
         Merchant merchant = merchantService.getMerchantByUserId(user.getUserId());
 
         try {
-            Session session = createSession(exposedSessionKey);
+            Session session = createSession();
             assert session != null;
 
             LiveSession liveSession = LiveSession.builder()
@@ -82,12 +82,10 @@ public class LiveService {
         }
     }
 
-    private Session createSession(String sessionKey)
+    private Session createSession()
         throws OpenViduJavaClientException {
         try {
-            Map<String, Object> params = new HashMap<>();
-            params.put("customSessionId", sessionKey);
-            SessionProperties properties = SessionProperties.fromJson(params).build();
+            SessionProperties properties = new SessionProperties.Builder().build();
 
             Session session = openvidu.createSession(properties);
             session.fetch();
