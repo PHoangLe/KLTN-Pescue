@@ -231,9 +231,9 @@ public class ProductController {
         return ResponseEntity.ok(result);
     }
 
-    @GetMapping("/{productId}")
-    public ResponseEntity<ResponseDTO<ProductDTO>> getProductDetail(@PathVariable String productId) {
-        ProductDTO dto = productService.getProductDetail(productId);
+    @GetMapping("/{productId}/viewer/{viewerId}")
+    public ResponseEntity<ResponseDTO<ProductDTO>> getProductDetail(@PathVariable String productId, @PathVariable String viewerId) {
+        ProductDTO dto = productService.getProductDetail(productId, viewerId);
 
         ResponseDTO<ProductDTO> result = new ResponseDTO<>(EnumResponseCode.SUCCESS, dto);
 

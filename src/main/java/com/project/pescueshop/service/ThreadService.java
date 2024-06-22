@@ -137,7 +137,7 @@ public class ThreadService extends BaseService {
         importService.addOrUpdateImportItem(invoice, dto);
     }
 
-    public void retrieveExternalInfoForProductDTO(ProductDTO dto){
+    public void retrieveExternalInfoForProductDTO(ProductDTO dto, String viewerId){
         ExecutorService executorService = Executors.newFixedThreadPool(4);
 
         Future<List<Variety>> varietyFuture = executorService.submit(() ->
@@ -149,7 +149,7 @@ public class ThreadService extends BaseService {
         Future<List<RatingResultDTO>> ratingFuture = executorService.submit(() ->
                 ratingService.getRatingByProductId(dto.getProductId()));
 
-        Future<String> auditId = executorService.submit(() -> viewAuditLogDAO.saveAndFLushAudit(dto.getProductId(), EnumObjectType.PRODUCT));
+        Future<String> auditId = executorService.submit(() -> viewAuditLogDAO.saveAndFLushAudit(dto.getProductId(), viewerId, EnumObjectType.PRODUCT));
 
         executorService.shutdown();
 
