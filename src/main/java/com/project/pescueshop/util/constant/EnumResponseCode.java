@@ -15,6 +15,7 @@ public enum EnumResponseCode {
     SHIPPING_FEE_ERROR("0_5_f", "Error when get shipping fee"),
     UNAUTHORIZED("0_6_f", "You do not have permission to do this"),
     INVALID_PARAMS("0_7_f", "Invalid request params"),
+    CLIENT_ID_OR_CLIENT_KEY_INVALID("0_8_f", "Client id or client key is invalid"),
     //</editor-fold>
 
     //<editor-fold desc="1-AUTHENTICATION">

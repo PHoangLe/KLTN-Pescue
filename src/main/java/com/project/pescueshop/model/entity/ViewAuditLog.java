@@ -24,6 +24,7 @@ public class ViewAuditLog {
     @GenericGenerator(name = "CustomIdGenerator", strategy = "com.project.pescueshop.util.CustomIdGenerator")
     private String viewAuditLogId;
     private String objectId;
+    private String viewerId;
     private Date date;
     private String objectType;
 }

@@ -41,11 +41,11 @@ public class ProductService extends BaseService {
         return productDAO.findProductById(id);
     }
 
-    public ProductDTO getProductDetail(String productId){
+    public ProductDTO getProductDetail(String productId, String viewerId){
         Product product = findById(productId);
         ProductDTO dto = transformProductToDTO(product);
 
-        threadService.retrieveExternalInfoForProductDTO(dto);
+        threadService.retrieveExternalInfoForProductDTO(dto, viewerId);
 
         return dto;
     }
