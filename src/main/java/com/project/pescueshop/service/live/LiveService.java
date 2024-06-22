@@ -86,8 +86,9 @@ public class LiveService {
         throws OpenViduJavaClientException {
         try {
             Map<String, Object> params = new HashMap<>();
-            params.put("sessionKey", sessionKey);
+            params.put("customSessionId", sessionKey);
             SessionProperties properties = SessionProperties.fromJson(params).build();
+
             Session session = openvidu.createSession(properties);
             session.fetch();
             return session;

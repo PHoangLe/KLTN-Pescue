@@ -4,7 +4,6 @@ import com.cloudinary.utils.StringUtils;
 import com.project.pescueshop.model.dto.general.ResponseDTO;
 import com.project.pescueshop.model.entity.ViewAuditLog;
 import com.project.pescueshop.model.exception.FriendlyException;
-import com.project.pescueshop.repository.dao.ViewAuditLogDAO;
 import com.project.pescueshop.service.data.DataService;
 import com.project.pescueshop.util.constant.EnumResponseCode;
 import io.swagger.annotations.Api;
@@ -12,10 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.net.http.HttpHeaders;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/v1/data")
