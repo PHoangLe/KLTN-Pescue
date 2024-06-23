@@ -67,11 +67,11 @@ public class LiveSessionController {
         return ResponseEntity.ok(resp);
     }
 
-    @PutMapping("/{sessionKey}/end")
+    @PutMapping("/{sessionId}/end")
     @PreAuthorize("hasAuthority('ROLE_MERCHANT')")
     @SecurityRequirement(name = "Bearer Authentication")
-    public ResponseEntity<ResponseDTO<String>> endLiveSession(@PathVariable String sessionKey) throws FriendlyException, OpenViduJavaClientException, OpenViduHttpException {
-        liveService.endLiveSession(sessionKey);
+    public ResponseEntity<ResponseDTO<String>> endLiveSession(@PathVariable String sessionId) throws FriendlyException, OpenViduJavaClientException, OpenViduHttpException {
+        liveService.endLiveSession(sessionId);
 
         ResponseDTO<String> resp = new ResponseDTO<>(EnumResponseCode.SUCCESS, "End live successfully");
         return ResponseEntity.ok(resp);
