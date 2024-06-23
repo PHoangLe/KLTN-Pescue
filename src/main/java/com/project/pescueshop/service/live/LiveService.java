@@ -31,13 +31,6 @@ public class LiveService {
     @Value("${OPENVIDU_SECRET}")
     private String OPENVIDU_SECRET;
 
-    @Value("${ICE_SERVER_URL}")
-    private String ICE_SERVER_URL;
-    @Value("${ICE_SERVER_USERNAME}")
-    private String ICE_SERVER_USERNAME;
-    @Value("${ICE_SERVER_CREDENTIAL}")
-    private String ICE_SERVER_CREDENTIAL;
-
     private OpenVidu openvidu;
     private final MerchantService merchantService;
     private final LiveSessionService liveSessionService;
@@ -50,14 +43,14 @@ public class LiveService {
         this.openvidu = new OpenVidu(OPENVIDU_URL, OPENVIDU_SECRET);
     }
 
-    public LiveSession createSession(CreateLiveSessionRequest request, MultipartFile thumbnail, User user) throws OpenViduJavaClientException, FriendlyException {
+    public LiveSession createSession(CreateLiveSessionRequest request, MultipartFile thumbnail, User user) throws FriendlyException {
         String exposedSessionKey = UUID.randomUUID().toString();
         String thumbnailURL = thumbnail != null ? fileUploadService.uploadFile(thumbnail, "live/thumbnail/", exposedSessionKey) : "";
 
         Merchant merchant = merchantService.getMerchantByUserId(user.getUserId());
 
         try {
-            Session session = createSession();
+            Session session = createSession(exposedSessionKey);
             assert session != null;
 
             LiveSession liveSession = LiveSession.builder()
@@ -82,15 +75,20 @@ public class LiveService {
         }
     }
 
-    private Session createSession()
+    private Session createSession(String sessionKey)
         throws OpenViduJavaClientException {
         try {
-            SessionProperties properties = new SessionProperties.Builder().build();
+            Map<String, Object> params = new HashMap<>();
+            params.put("customSessionId", sessionKey);
+
+            SessionProperties properties = SessionProperties.fromJson(params).build();
 
             Session session = openvidu.createSession(properties);
             session.fetch();
             return session;
         } catch (OpenViduHttpException e) {
+            log.error("Error creating session: " + e.getMessage());
+        } catch (Exception e) {
             log.error("Error creating session: " + e.getMessage());
         }
 
