@@ -44,18 +44,17 @@ public class LiveService {
     }
 
     public LiveSession createSession(CreateLiveSessionRequest request, MultipartFile thumbnail, User user) throws FriendlyException {
-        String exposedSessionKey = UUID.randomUUID().toString();
-        String thumbnailURL = thumbnail != null ? fileUploadService.uploadFile(thumbnail, "live/thumbnail/", exposedSessionKey) : "";
+        String sessionKey = UUID.randomUUID().toString();
+        String thumbnailURL = thumbnail != null ? fileUploadService.uploadFile(thumbnail, "live/thumbnail/", sessionKey) : "";
 
         Merchant merchant = merchantService.getMerchantByUserId(user.getUserId());
 
         try {
-            Session session = createSession(exposedSessionKey);
+            Session session = createSession(sessionKey);
             assert session != null;
 
             LiveSession liveSession = LiveSession.builder()
                     .sessionKey(session.getSessionId())
-                    .exposedSessionKey(exposedSessionKey)
                     .userId(user.getUserId())
                     .merchantId(merchant.getMerchantId())
                     .title(request.getLiveSessionTitle())
@@ -147,10 +146,10 @@ public class LiveService {
         }
     }
 
-    public void endLiveSession(String sessionKey) throws FriendlyException, OpenViduJavaClientException, OpenViduHttpException {
+    public void endLiveSession(String sessionId) throws FriendlyException, OpenViduJavaClientException, OpenViduHttpException {
         User user = AuthenticationService.getCurrentLoggedInUser();
 
-        LiveSession liveSession = liveSessionService.findBySessionKey(sessionKey);
+        LiveSession liveSession = liveSessionService.findBySessionId(sessionId);
 
         if (liveSession == null) {
             throw new FriendlyException(EnumResponseCode.LIVE_SESSION_NOT_FOUND);
@@ -160,7 +159,7 @@ public class LiveService {
             throw new FriendlyException(EnumResponseCode.UNAUTHORIZED);
         }
         try {
-            Session session = openvidu.getActiveSession(sessionKey);
+            Session session = openvidu.getActiveSession(liveSession.getSessionKey());
             session.close();
         } catch (OpenViduHttpException | OpenViduJavaClientException e) {
             log.error("Error ending session: " + e.getMessage());
