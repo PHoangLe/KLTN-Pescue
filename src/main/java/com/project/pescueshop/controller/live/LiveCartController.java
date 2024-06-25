@@ -29,16 +29,11 @@ public class LiveCartController {
     @GetMapping("/session/{sessionId}")
     @PreAuthorize("hasAuthority('ROLE_CUSTOMER')")
     @SecurityRequirement(name = "Bearer Authentication")
-    public ResponseEntity<ResponseDTO<List<LiveCartItem>>> getCart(@PathVariable String sessionId) throws FriendlyException {
+    public ResponseEntity<ResponseDTO<LiveCart>> getCart(@PathVariable String sessionId) throws FriendlyException {
         User user = AuthenticationService.getCurrentLoggedInUser();
-        List<LiveCartItem> itemList = cartService.findCartItemByUserIdAndSessionId(user.getUserId(), sessionId);
-        ResponseDTO<List<LiveCartItem>> result;
-        if (itemList == null) {
-            result = new ResponseDTO<>(EnumResponseCode.CART_NOT_FOUND);
-        }
-        else {
-            result = new ResponseDTO<>(EnumResponseCode.SUCCESS, itemList, "cartItems");
-        }
+        LiveCart cart = cartService.findCartByUserIdAndSessionId(user.getUserId(), sessionId);
+        ResponseDTO<LiveCart> result = new ResponseDTO<>(EnumResponseCode.SUCCESS, cart, "cart");
+
         return ResponseEntity.ok(result);
     }
 
