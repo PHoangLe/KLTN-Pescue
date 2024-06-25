@@ -23,6 +23,7 @@ public class LiveItem {
     @GenericGenerator(name = "CustomIdGenerator", strategy = "com.project.pescueshop.util.CustomIdGenerator")
     private String liveItemId;
     private String liveSessionId;
+    private String productId;
     private String varietyId;
     private String name;
     private String coverImage;
