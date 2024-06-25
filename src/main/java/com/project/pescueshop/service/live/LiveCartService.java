@@ -154,6 +154,10 @@ public class LiveCartService {
 
     public List<LiveCartItem> findCartItemByUserIdAndSessionId(String userId, String sessionId) {
         LiveCart cart = findCartByUserIdAndSessionId(userId, sessionId);
+        if (cart == null){
+            createCartForNewUserAsync(userId, sessionId);
+        }
+
         return cart != null ? cart.getLiveCartItemList() : List.of();
     }
 }
