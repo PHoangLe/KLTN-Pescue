@@ -40,7 +40,7 @@ public class LiveSessionController {
     @PreAuthorize("hasAuthority('ROLE_MERCHANT')")
     @SecurityRequirement(name = "Bearer Authentication")
     public ResponseEntity<ResponseDTO<String>> initializeSession(@RequestPart CreateLiveSessionRequest request,@RequestPart(required = false) MultipartFile thumbnail)
-            throws FriendlyException, OpenViduJavaClientException {
+            throws FriendlyException {
         User user = AuthenticationService.getCurrentLoggedInUser();
         LiveSession session = liveService.createSession(request, thumbnail, user);
 

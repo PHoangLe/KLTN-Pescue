@@ -39,6 +39,7 @@ public class LiveItemService extends BaseService {
                         LiveItem liveItem = LiveItem.builder()
                                 .liveSessionId(liveSession.getSessionId())
                                 .varietyId(variety.getVarietyId())
+                                .productId(variety.getProductId())
                                 .name(variety.getName())
                                 .initialPrice(variety.getPrice())
                                 .livePrice(liveItemRequest.getLivePrice())
