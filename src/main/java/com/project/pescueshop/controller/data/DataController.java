@@ -1,6 +1,7 @@
 package com.project.pescueshop.controller.data;
 
 import com.cloudinary.utils.StringUtils;
+import com.project.pescueshop.model.dto.InvoiceDataDTO;
 import com.project.pescueshop.model.dto.general.ResponseDTO;
 import com.project.pescueshop.model.entity.ViewAuditLog;
 import com.project.pescueshop.model.exception.FriendlyException;
@@ -34,5 +35,19 @@ public class DataController {
 
         List<ViewAuditLog> resp = dataService.getViewsAudiLogData(objectId);
         return ResponseEntity.ok(new ResponseDTO<>(EnumResponseCode.SUCCESS, resp, "views"));
+    }
+
+    @GetMapping("/invoice-data")
+    public ResponseEntity<ResponseDTO<List<InvoiceDataDTO>>> getInvoiceData(@RequestHeader("client-id") String clientId, @RequestHeader("client-key") String clientKey) throws FriendlyException {
+        if(StringUtils.isEmpty(clientId) || StringUtils.isEmpty(clientKey)){
+            throw new FriendlyException(EnumResponseCode.CLIENT_ID_OR_CLIENT_KEY_INVALID);
+        }
+
+        if (!clientKey.equals("opIGrWw2u0WBmZHVIyDRqM6t0P2NKE1c") || !clientId.equals("PqescSU7WscLlNRvHK2Ew397vBa0b7dr")){
+            throw new FriendlyException(EnumResponseCode.CLIENT_ID_OR_CLIENT_KEY_INVALID);
+        }
+
+        List<InvoiceDataDTO> resp = dataService.getInvoiceData();
+        return ResponseEntity.ok(new ResponseDTO<>(EnumResponseCode.SUCCESS, resp, "invoiceData"));
     }
 }

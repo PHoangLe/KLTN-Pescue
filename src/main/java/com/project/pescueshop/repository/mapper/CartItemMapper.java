@@ -33,8 +33,8 @@ public class CartItemMapper implements RowMapper<CartItemDTO> {
 
         List<String> merchantInfo = Util.getListStringFromString(rs.getString("merchant_info"));
         cartItemDTO.setMerchantId(merchantInfo.get(0));
-        cartItemDTO.setMerchantName(merchantInfo.get(1));
-        cartItemDTO.setMerchantAvatar(merchantInfo.get(2));
+        cartItemDTO.setMerchantAvatar(merchantInfo.get(1));
+        cartItemDTO.setMerchantName(merchantInfo.get(2));
         cartItemDTO.setCityName(merchantInfo.get(3));
         cartItemDTO.setDistrictName(merchantInfo.get(4));
         cartItemDTO.setWardName(merchantInfo.get(5));
