@@ -1,5 +1,6 @@
 package com.project.pescueshop.service.data;
 
+import com.project.pescueshop.model.dto.InvoiceDataDTO;
 import com.project.pescueshop.model.entity.ViewAuditLog;
 import com.project.pescueshop.repository.dao.ViewAuditLogDAO;
 import lombok.RequiredArgsConstructor;
@@ -16,5 +17,9 @@ public class DataService {
 
     public List<ViewAuditLog> getViewsAudiLogData(String objectId){
         return viewAuditLogDAO.getByObjectId(objectId);
+    }
+
+    public List<InvoiceDataDTO> getInvoiceData(){
+        return viewAuditLogDAO.getInvoiceData();
     }
 }
