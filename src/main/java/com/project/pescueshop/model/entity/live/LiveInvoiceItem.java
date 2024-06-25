@@ -10,9 +10,9 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@Table(name = "LIVE_CART_ITEM")
+@Table(name = "LIVE_INVOICE_ITEM")
 @Entity
-@Name(prefix = "LICI", noun = "liveCartItem")
+@Name(prefix = "LIIV", noun = "liveInvoiceItem")
 @IdClass(LiveInvoiceItemKey.class)
 public class LiveInvoiceItem {
     @Id
