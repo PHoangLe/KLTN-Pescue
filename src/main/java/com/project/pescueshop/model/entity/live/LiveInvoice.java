@@ -26,12 +26,12 @@ public class LiveInvoice {
     private String userId;
     private Date createdDate;
     private Integer amount;
-    private Long initialPrice;
-    private Long livePrice;
+    private long initialPrice;
+    private long livePrice;
     private Long shippingFee;
-    private Long discountPrice;
-    private Long totalPrice;
-    private Long finalPrice;
+    private long discountPrice;
+    private long totalPrice;
+    private long finalPrice;
     @OneToOne
     @JoinColumn(name = "voucherId", referencedColumnName = "voucherId")
     private Voucher voucher;
