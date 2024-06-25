@@ -151,4 +151,9 @@ public class LiveCartService {
     public void removeSelectedCartItem(String cartId) {
         cartDAO.removeSelectedCartItem(cartId);
     }
+
+    public List<LiveCartItem> findCartItemByUserIdAndSessionId(String userId, String sessionId) {
+        LiveCart cart = findCartByUserIdAndSessionId(userId, sessionId);
+        return cart != null ? cart.getLiveCartItemList() : List.of();
+    }
 }
