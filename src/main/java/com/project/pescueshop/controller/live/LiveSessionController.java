@@ -3,9 +3,11 @@ package com.project.pescueshop.controller.live;
 import com.project.pescueshop.model.dto.CreateLiveSessionRequest;
 import com.project.pescueshop.model.dto.general.ResponseDTO;
 import com.project.pescueshop.model.entity.User;
+import com.project.pescueshop.model.entity.live.LiveItem;
 import com.project.pescueshop.model.entity.live.LiveSession;
 import com.project.pescueshop.model.exception.FriendlyException;
 import com.project.pescueshop.service.AuthenticationService;
+import com.project.pescueshop.service.live.LiveItemService;
 import com.project.pescueshop.service.live.LiveService;
 import com.project.pescueshop.service.live.LiveSessionService;
 import com.project.pescueshop.util.constant.EnumResponseCode;
@@ -23,6 +25,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/live/sessions")
@@ -30,6 +34,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class LiveSessionController {
     private final LiveService liveService;
     private final LiveSessionService liveSessionService;
+    private final LiveItemService liveItemService;
 
     @PostMapping("")
     @PreAuthorize("hasAuthority('ROLE_MERCHANT')")
@@ -67,6 +72,15 @@ public class LiveSessionController {
         return ResponseEntity.ok(resp);
     }
 
+    @GetMapping("/{liveSessionId}/live-items")
+    public ResponseEntity<ResponseDTO<List<LiveItem>>> getLiveItem(@PathVariable String liveSessionId) throws FriendlyException {
+        List<LiveItem> items = liveItemService.getLiveItemByLiveSessionId(liveSessionId);
+
+        ResponseDTO<List<LiveItem>> resp = new ResponseDTO<>(EnumResponseCode.SUCCESS, items);
+        return ResponseEntity.ok(resp);
+    }
+
+
     @PutMapping("/{sessionId}/end")
     @PreAuthorize("hasAuthority('ROLE_MERCHANT')")
     @SecurityRequirement(name = "Bearer Authentication")
@@ -76,4 +90,6 @@ public class LiveSessionController {
         ResponseDTO<String> resp = new ResponseDTO<>(EnumResponseCode.SUCCESS, "End live successfully");
         return ResponseEntity.ok(resp);
     }
+
+
 }

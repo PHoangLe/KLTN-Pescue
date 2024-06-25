@@ -6,13 +6,17 @@ import com.project.pescueshop.model.entity.live.LiveItem;
 import com.project.pescueshop.model.entity.live.LiveSession;
 import com.project.pescueshop.model.exception.FriendlyException;
 import com.project.pescueshop.repository.dao.LiveItemDAO;
+import com.project.pescueshop.repository.dao.LiveSessionDAO;
 import com.project.pescueshop.service.BaseService;
 import com.project.pescueshop.service.VarietyService;
+import com.project.pescueshop.util.constant.EnumLiveStatus;
+import com.project.pescueshop.util.constant.EnumResponseCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -23,6 +27,7 @@ import java.util.concurrent.Executors;
 public class LiveItemService extends BaseService {
     private final LiveItemDAO liveItemDAO;
     private final VarietyService varietyService;
+    private final LiveSessionDAO liveSessionDAO;
 
     public void addLiveItem(LiveSession liveSession, List<LiveItemRequest> liveItemList) throws FriendlyException {
         ExecutorService executor = Executors.newFixedThreadPool(10);
@@ -68,5 +73,19 @@ public class LiveItemService extends BaseService {
 
     public LiveItem findByLiveItemId(String liveItemId) {
         return liveItemDAO.findLiveItemByLiveItemId(liveItemId);
+    }
+
+    private List<LiveItem> getLiveItemBySessionId(String liveSessionId) {
+        return liveItemDAO.findAllByLiveSessionId(liveSessionId);
+    }
+
+    public List<LiveItem> getLiveItemByLiveSessionId(String liveSessionId) throws FriendlyException {
+        LiveSession liveSession = liveSessionDAO.findBySessionId(liveSessionId);
+
+        if (liveSession == null || !Objects.equals(liveSession.getStatus(), EnumLiveStatus.ACTIVE.getValue())){
+            throw new FriendlyException(EnumResponseCode.LIVE_SESSION_NOT_FOUND);
+        }
+
+        return getLiveItemBySessionId(liveSessionId);
     }
 }

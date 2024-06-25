@@ -5,7 +5,8 @@ import com.project.pescueshop.repository.jpa.LiveItemRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
-import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Repository
 @RequiredArgsConstructor
@@ -19,5 +20,9 @@ public class LiveItemDAO {
 
     public LiveItem findLiveItemByLiveItemId(String liveItemId) {
         return liveItemRepository.findById(liveItemId).orElse(null);
+    }
+
+    public List<LiveItem> findAllByLiveSessionId(String liveSessionId) {
+        return liveItemRepository.findByLiveSessionId(liveSessionId);
     }
 }
