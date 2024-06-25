@@ -40,7 +40,7 @@ public class LiveCartService {
     public LiveCart createCartForNewUser(String userId, String liveSessionId) {
         LiveSession liveSession = liveSessionService.findBySessionId(liveSessionId);
 
-        LiveCart cart = findCartByUserId(userId);
+        LiveCart cart = findCartByUserIdAndSessionId(userId, liveSession.getSessionId());
         if (cart == null) {
             cart = createCartForNewUser(userId, liveSession);
         }
@@ -54,14 +54,14 @@ public class LiveCartService {
         if (userId == null) return;
 
         CompletableFuture.runAsync(() -> {
-            if (findCartByUserId(userId) == null) {
+            if (findCartByUserIdAndSessionId(userId, liveSessionId) == null) {
                 createCartForNewUser(userId, liveSessionId);
             }
         });
     }
 
-    public LiveCart findCartByUserId(String userId){
-        return cartDAO.findByUserId(userId);
+    public LiveCart findCartByUserIdAndSessionId(String userId, String liveSessionId) {
+        return cartDAO.findByUserId(userId, liveSessionId);
     }
 
     public LiveCart findCartByCartId(String cartId){
@@ -85,7 +85,7 @@ public class LiveCartService {
             throw new FriendlyException(EnumResponseCode.LIVE_ITEM_NOT_FOUND);
         }
 
-        LiveCart cart = existedCart != null ? existedCart : findCartByUserId(user.getUserId());
+        LiveCart cart = existedCart != null ? existedCart : findCartByUserIdAndSessionId(user.getUserId(), liveItem.getLiveSessionId());
         if (cart == null){
             throw new FriendlyException(EnumResponseCode.CART_NOT_FOUND);
         }
