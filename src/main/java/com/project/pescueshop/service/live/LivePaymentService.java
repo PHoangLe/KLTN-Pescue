@@ -27,15 +27,15 @@ import java.util.concurrent.ExecutionException;
 @Slf4j
 public class LivePaymentService {
     private final static long MEMBER_POINT_RATE = 20L;
-    LiveInvoiceService invoiceService;
-    LiveCartService cartService;
-    LiveItemService liveItemService;
-    VarietyService varietyService;
-    MerchantService merchantService;
-    UserService userService;
-    ShippingFeeService shippingFeeService;
-    PaymentService paymentService;
-    ThreadService threadService;
+    private final LiveInvoiceService invoiceService;
+    private final LiveCartService cartService;
+    private final LiveItemService liveItemService;
+    private final VarietyService varietyService;
+    private final MerchantService merchantService;
+    private final UserService userService;
+    private final ShippingFeeService shippingFeeService;
+    private final PaymentService paymentService;
+    private final ThreadService threadService;
 
     public CheckoutResultDTO userCartCheckout(User user, CartCheckOutInfoDTO cartCheckOutInfoDTO) throws FriendlyException {
         PaymentInfoDTO paymentInfo = cartCheckOutInfoDTO.getPaymentInfoDTO();
