@@ -37,25 +37,25 @@ public class LiveCartService {
         return newCart;
     }
 
-    public LiveCart createCartForNewUser(String userId, String sessionId) {
-        LiveSession liveSession = liveSessionService.findBySessionId(sessionId);
+    public LiveCart createCartForNewUser(String userId, String liveSessionId) {
+        LiveSession liveSession = liveSessionService.findBySessionId(liveSessionId);
 
         LiveCart cart = findCartByUserId(userId);
         if (cart == null) {
             cart = createCartForNewUser(userId, liveSession);
         }
-        cart.setSessionId(sessionId);
+        cart.setSessionId(liveSessionId);
         cartDAO.saveAndFlushLiveCart(cart);
 
         return cart;
     }
 
-    public void createCartForNewUserAsync(String userId, String sessionKey) {
+    public void createCartForNewUserAsync(String userId, String liveSessionId) {
         if (userId == null) return;
 
         CompletableFuture.runAsync(() -> {
-            if (findCartByUserId(userId) != null) {
-                createCartForNewUser(userId, sessionKey);
+            if (findCartByUserId(userId) == null) {
+                createCartForNewUser(userId, liveSessionId);
             }
         });
     }
@@ -66,10 +66,6 @@ public class LiveCartService {
 
     public LiveCart findCartByCartId(String cartId){
         return cartDAO.findByCartId(cartId);
-    }
-
-    public List<LiveCartItem> getLiveCartItemsByUserId(String userId){
-        return getLiveCartItems(userId, null);
     }
 
     public List<LiveCartItem> getLiveCartItemsByCartId(String cartId) {
