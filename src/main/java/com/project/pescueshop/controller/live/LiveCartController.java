@@ -26,12 +26,12 @@ import java.util.List;
 public class LiveCartController {
     private final LiveCartService cartService;
 
-    @GetMapping("")
+    @GetMapping("/session/{sessionId}")
     @PreAuthorize("hasAuthority('ROLE_CUSTOMER')")
     @SecurityRequirement(name = "Bearer Authentication")
-    public ResponseEntity<ResponseDTO<List<LiveCartItem>>> getCart() throws FriendlyException {
+    public ResponseEntity<ResponseDTO<List<LiveCartItem>>> getCart(@PathVariable String sessionId) throws FriendlyException {
         User user = AuthenticationService.getCurrentLoggedInUser();
-        List<LiveCartItem> itemList = cartService.getLiveCartItemsByCartId(user.getUserId());
+        List<LiveCartItem> itemList = cartService.findCartItemByUserIdAndSessionId(user.getUserId(), sessionId);
         ResponseDTO<List<LiveCartItem>> result;
         if (itemList == null) {
             result = new ResponseDTO<>(EnumResponseCode.CART_NOT_FOUND);
