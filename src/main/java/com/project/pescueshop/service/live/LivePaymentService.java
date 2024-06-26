@@ -87,6 +87,7 @@ public class LivePaymentService {
         try {
             long shippingFee = shippingFeeFuture.get();
             liveInvoice.setTotalPrice(invoiceValue);
+            liveInvoice.setShippingFee(shippingFee);
             liveInvoice.setFinalPrice(invoiceValue + shippingFee);
         } catch (ExecutionException | InterruptedException e) {
             log.error(e.getMessage());
@@ -96,7 +97,7 @@ public class LivePaymentService {
         if (liveInvoice.getVoucher() != null){
             Voucher voucher = liveInvoice.getVoucher();
             EnumVoucherType voucherType = EnumVoucherType.getByValue(voucher.getType());
-            long discountAmount = 0;
+            long discountAmount;
 
             if (voucherType == EnumVoucherType.PERCENTAGE){
                 discountAmount = (voucher.getValue() * liveInvoice.getFinalPrice()) / 100L;
