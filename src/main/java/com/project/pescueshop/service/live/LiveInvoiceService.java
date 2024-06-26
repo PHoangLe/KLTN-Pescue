@@ -26,7 +26,7 @@ public class LiveInvoiceService {
     public void addInvoiceItemsToInvoice(LiveInvoice liveInvoice, List<LiveInvoiceItem> liveInvoiceItems) {
         liveInvoiceItems.forEach(liveInvoiceItem -> {
             liveInvoiceItem.setLiveInvoiceId(liveInvoice.getLiveInvoiceId());
-            liveInvoiceDAO.saveAndFlushLiveInvoiceItem(liveInvoiceItem);
+            saveAndFlushLiveInvoiceItem(liveInvoiceItem);
         });
     }
 }

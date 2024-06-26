@@ -2,11 +2,14 @@ package com.project.pescueshop.service;
 
 import com.project.pescueshop.model.dto.InvoiceItemDTO;
 import com.project.pescueshop.model.dto.InvoiceListResultDTO;
+import com.project.pescueshop.model.dto.InvoicesListDTO;
 import com.project.pescueshop.model.entity.Invoice;
 import com.project.pescueshop.model.entity.InvoiceItem;
 import com.project.pescueshop.model.entity.Merchant;
 import com.project.pescueshop.model.entity.User;
+import com.project.pescueshop.model.entity.live.LiveInvoice;
 import com.project.pescueshop.model.exception.FriendlyException;
+import com.project.pescueshop.repository.dao.LiveInvoiceDAO;
 import com.project.pescueshop.repository.dao.PaymentDAO;
 import com.project.pescueshop.util.constant.EnumInvoiceStatus;
 import com.project.pescueshop.util.constant.EnumResponseCode;
@@ -22,6 +25,7 @@ import java.util.stream.Collectors;
 @Service
 public class InvoiceService {
     private final PaymentDAO paymentDAO;
+    private final LiveInvoiceDAO liveInvoiceDAO;
     private final AuthenticationService authenticationService;
 
     public List<InvoiceListResultDTO> findAllInvoice(Date fromDate, Date toDate) throws FriendlyException {
@@ -58,7 +62,7 @@ public class InvoiceService {
         return updateInvoiceStatus(invoice, enumInvoiceStatus);
     }
 
-    public List<Invoice> getOrderInfoByUser(User user) {
+    public List<Invoice> getInvoiceInfoByUser(User user) {
         return paymentDAO.findAllInvoiceByUserId(user.getUserId());
     }
 
@@ -86,5 +90,19 @@ public class InvoiceService {
 
     private void saveAndFlushInvoiceItem(InvoiceItem invoiceItem) {
         paymentDAO.saveAndFlushItem(invoiceItem);
+    }
+
+    public InvoicesListDTO getAllInvoiceInfoByUser(User user) {
+        List<Invoice> invoices = getInvoiceInfoByUser(user);
+        List<LiveInvoice> liveInvoices = liveInvoiceDAO.findAllLiveInvoiceByUserId(user.getUserId());
+
+        return InvoicesListDTO.builder()
+                .invoices(invoices)
+                .liveInvoices(liveInvoices)
+                .build();
+    }
+
+    public List<InvoiceItemDTO> getLiveInvoiceDetail(String liveInvoiceId) {
+        return liveInvoiceDAO.getLiveInvoiceDetail(liveInvoiceId);
     }
 }

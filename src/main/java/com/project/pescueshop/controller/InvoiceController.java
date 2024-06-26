@@ -2,6 +2,7 @@ package com.project.pescueshop.controller;
 
 import com.project.pescueshop.model.dto.InvoiceItemDTO;
 import com.project.pescueshop.model.dto.InvoiceListResultDTO;
+import com.project.pescueshop.model.dto.InvoicesListDTO;
 import com.project.pescueshop.model.dto.general.ResponseDTO;
 import com.project.pescueshop.model.entity.Invoice;
 import com.project.pescueshop.model.entity.User;
@@ -37,6 +38,15 @@ public class InvoiceController {
         return ResponseEntity.ok(result);
     }
 
+    @GetMapping("/live/{liveInvoiceId}")
+    @PreAuthorize("hasAuthority('ROLE_CUSTOMER')")
+    @SecurityRequirement(name = "Bearer Authentication")
+    public ResponseEntity<ResponseDTO<List<InvoiceItemDTO>>> getLiveInvoiceDetail(@PathVariable String liveInvoiceId){
+        List<InvoiceItemDTO> invoiceItemDTOS = invoiceService.getLiveInvoiceDetail(liveInvoiceId);
+        ResponseDTO<List<InvoiceItemDTO>> result = new ResponseDTO<>(EnumResponseCode.SUCCESS, invoiceItemDTOS, "invoiceItemList");
+        return ResponseEntity.ok(result);
+    }
+
     @GetMapping("")
     @PreAuthorize("hasAuthority('ROLE_MERCHANT')")
     @SecurityRequirement(name = "Bearer Authentication")
@@ -63,10 +73,10 @@ public class InvoiceController {
     @GetMapping("/user-invoice-info")
     @PreAuthorize("hasAuthority('ROLE_CUSTOMER')")
     @SecurityRequirement(name = "Bearer Authentication")
-    public ResponseEntity<ResponseDTO<List<Invoice>>> getInvoiceInfo() throws FriendlyException {
+    public ResponseEntity<ResponseDTO<InvoicesListDTO>> getInvoiceInfo() throws FriendlyException {
         User user = AuthenticationService.getCurrentLoggedInUser();
-        List<Invoice> invoiceList = invoiceService.getOrderInfoByUser(user);
-        ResponseDTO<List<Invoice>> result = new ResponseDTO<>(EnumResponseCode.SUCCESS, invoiceList, "invoiceList");
+        InvoicesListDTO invoiceList = invoiceService.getAllInvoiceInfoByUser(user);
+        ResponseDTO<InvoicesListDTO> result = new ResponseDTO<>(EnumResponseCode.SUCCESS, invoiceList, "invoiceList");
         return ResponseEntity.ok(result);
     }
 
