@@ -233,16 +233,6 @@ public class LivePaymentService {
         invoiceService.addInvoiceItemsToInvoice(liveInvoice, invoiceItemDTO);
     }
 
-    public CheckoutResultDTO userCartCheckoutUnAuthenticate(CartCheckOutInfoDTO cartCheckOutInfoDTO) throws FriendlyException {
-        User user = userService.getAdminUser();
-        return userCartCheckout(user, cartCheckOutInfoDTO);
-    }
-
-    public CheckoutResultDTO singleItemCheckOutUnAuthenticate(SingleLiveItemCheckOutInfoDTO singleItemCheckOutInfoDTO) throws UnsupportedEncodingException, FriendlyException {
-        User user = userService.getAdminUser();
-        return singleItemCheckOut(user, singleItemCheckOutInfoDTO);
-    }
-
     public CheckoutResultDTO userCartCheckoutAuthenticate(User user, CartCheckOutInfoDTO cartCheckOutInfoDTO) throws FriendlyException {
         return userCartCheckout(user, cartCheckOutInfoDTO);
     }

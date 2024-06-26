@@ -42,18 +42,4 @@ public class LivePaymentController {
         ResponseDTO<CheckoutResultDTO> result = new ResponseDTO<>(EnumResponseCode.SUCCESS, paymentInfo, "output");
         return ResponseEntity.ok(result);
     }
-
-    @PostMapping("/un-authenticate/user-cart-checkout")
-    public ResponseEntity<ResponseDTO<CheckoutResultDTO>> cartCheckoutUnAuthenticate(@RequestBody CartCheckOutInfoDTO cartCheckOutInfoDTO) throws FriendlyException {
-        CheckoutResultDTO paymentInfo = paymentService.userCartCheckoutUnAuthenticate(cartCheckOutInfoDTO);
-        ResponseDTO<CheckoutResultDTO> result = new ResponseDTO<>(EnumResponseCode.SUCCESS, paymentInfo, "output");
-        return ResponseEntity.ok(result);
-    }
-
-    @PostMapping("/un-authenticate/single-item-checkout")
-    public ResponseEntity<ResponseDTO<CheckoutResultDTO>> singleItemCheckoutUnAuthenticate(@RequestBody SingleLiveItemCheckOutInfoDTO singleItemCheckOutInfoDTO) throws FriendlyException, UnsupportedEncodingException {
-        CheckoutResultDTO paymentInfo = paymentService.singleItemCheckOutUnAuthenticate(singleItemCheckOutInfoDTO);
-        ResponseDTO<CheckoutResultDTO> result = new ResponseDTO<>(EnumResponseCode.SUCCESS, paymentInfo, "output");
-        return ResponseEntity.ok(result);
-    }
 }
