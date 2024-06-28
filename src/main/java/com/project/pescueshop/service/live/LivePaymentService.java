@@ -69,6 +69,7 @@ public class LivePaymentService {
                 .userId(user.getUserId())
                 .merchantId(cart.getMerchantId())
                 .cityName(address.getCityName())
+                .liveSessionId(cart.getSessionId())
                 .districtName(address.getDistrictName())
                 .districtId(address.getDistrictId())
                 .voucher(paymentInfo.getVoucherByMerchantMap().get(cart.getMerchantId()))

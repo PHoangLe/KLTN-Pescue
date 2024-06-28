@@ -68,16 +68,6 @@ public class LiveCartService {
         return cartDAO.findByCartId(cartId);
     }
 
-    public List<LiveCartItem> getLiveCartItemsByCartId(String cartId) {
-        return getLiveCartItems(null, cartId);
-    }
-
-    private List<LiveCartItem> getLiveCartItems(String userId, String cartId) {
-        LiveCart liveCart = cartDAO.findByLiveCartIdAndUserId(userId, cartId);
-
-        return liveCart != null ? liveCart.getLiveCartItemList() : List.of();
-    }
-
     public void addOrUpdateCartItem(AddOrUpdateLiveCartItemDTO dto, User user, LiveCart existedCart) throws FriendlyException {
         LiveItem liveItem = liveItemService.findByLiveItemId(dto.getLiveItemId());
 

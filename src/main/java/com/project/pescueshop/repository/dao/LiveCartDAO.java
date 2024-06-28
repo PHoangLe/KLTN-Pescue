@@ -63,11 +63,7 @@ public class LiveCartDAO extends BaseDAO{
     }
 
     public LiveCart findByCartId(String liveCartId) {
-        return liveCartRepository.findById(liveCartId).orElse(null);
-    }
-
-    public LiveCart findByLiveCartIdAndUserId(String liveCartId, String userId) {
-        return liveCartRepository.findByLiveCartIdAndUserId(liveCartId, userId).orElse(null);
+        return liveCartRepository.findByLiveCartId(liveCartId).orElse(null);
     }
 
     public LiveCartItem findLiveCartItemByLiveCartItemId(String LiveCartItemId) {

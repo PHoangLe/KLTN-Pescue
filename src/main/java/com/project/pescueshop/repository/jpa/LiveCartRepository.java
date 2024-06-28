@@ -16,4 +16,7 @@ public interface LiveCartRepository extends JpaRepository<LiveCart, String> {
             "(?1 IS NULL AND c.userId = ?2) " +
             "OR c.liveCartId = ?1")
     Optional<LiveCart> findByLiveCartIdAndUserId(String liveCartId, String userId);
+
+    @Query(value = "select c from LiveCart c where c.liveCartId = ?1")
+    Optional<LiveCart> findByLiveCartId(String liveCartId);
 }
