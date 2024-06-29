@@ -38,7 +38,8 @@ public class LiveCartController {
     }
 
     @GetMapping("/un-authenticate")
-    public ResponseEntity<ResponseDTO<LiveCart>> getCartUnAuthenticate(@RequestParam String cartId, @RequestParam String sessionId) {
+    public ResponseEntity<ResponseDTO<LiveCart>>
+    getCartUnAuthenticate(@RequestParam String cartId, @RequestParam String sessionId) {
         LiveCart itemList = cartService.getUnAuthenticatedCart(cartId, sessionId);
 
         EnumResponseCode responseCode = (itemList == null) ? EnumResponseCode.CART_NOT_FOUND : EnumResponseCode.SUCCESS;
