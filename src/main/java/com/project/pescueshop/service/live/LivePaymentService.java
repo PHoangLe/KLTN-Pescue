@@ -54,7 +54,7 @@ public class LivePaymentService {
 
         List<LiveCartItem> liveCartItems = cart.getLiveCartItemList();
         List<LiveInvoiceItem> liveInvoiceItems = liveCartItems.stream().map(liveCartItem -> LiveInvoiceItem.builder()
-                .liveItemId(liveCartItem.getLiveItemId())
+                .liveItemId(liveCartItem.getLiveItem().getLiveItemId())
                 .quantity(liveCartItem.getQuantity())
                 .totalPrice(liveCartItem.getTotalItemPrice())
                 .build()).toList();

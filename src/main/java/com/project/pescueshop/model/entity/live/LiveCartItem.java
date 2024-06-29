@@ -19,6 +19,7 @@ public class LiveCartItem {
     @GenericGenerator(name = "CustomIdGenerator", strategy = "com.project.pescueshop.util.CustomIdGenerator")
     private String liveCartItemId;
     private String liveCartId;
+    @Transient
     private String liveItemId;
     @ManyToOne(cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
     @JoinColumn(name = "liveItemId", referencedColumnName = "liveItemId")
