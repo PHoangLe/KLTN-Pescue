@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
 public class ElasticClient {
     @Value("${ELASTIC_URL}")
     private String ELASTIC_URL;
-    private final ElasticsearchClient esClient;
+    private static ElasticsearchClient esClient;
 
     private ElasticClient(){
         RestClient restClient = RestClient
@@ -23,14 +23,14 @@ public class ElasticClient {
         ElasticsearchTransport transport = new RestClientTransport(
                 restClient, new JacksonJsonpMapper());
 
-        this.esClient = new ElasticsearchClient(transport);
+        esClient = new ElasticsearchClient(transport);
     }
 
-    public ElasticsearchClient get() {
-        if (this.esClient == null){
+    public static synchronized ElasticsearchClient get() {
+        if (esClient == null){
             new ElasticClient();
         }
 
-        return this.esClient;
+        return esClient;
     }
 }

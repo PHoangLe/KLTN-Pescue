@@ -1,13 +1,17 @@
 package com.project.pescueshop.service.live;
 
+import co.elastic.clients.elasticsearch.ElasticsearchClient;
+import co.elastic.clients.elasticsearch.core.BulkRequest;
+import co.elastic.clients.elasticsearch.core.BulkResponse;
+import co.elastic.clients.elasticsearch.core.bulk.BulkResponseItem;
 import com.project.pescueshop.model.dto.*;
+import com.project.pescueshop.model.elastic.ElasticClient;
+import com.project.pescueshop.model.elastic.Index;
+import com.project.pescueshop.model.elastic.document.InvoiceData;
 import com.project.pescueshop.model.entity.*;
 import com.project.pescueshop.model.entity.live.*;
 import com.project.pescueshop.model.exception.FriendlyException;
 import com.project.pescueshop.service.*;
-import com.project.pescueshop.service.live.LiveCartService;
-import com.project.pescueshop.service.live.LiveInvoiceService;
-import com.project.pescueshop.service.live.LiveItemService;
 import com.project.pescueshop.util.Util;
 import com.project.pescueshop.util.constant.EnumInvoiceStatus;
 import com.project.pescueshop.util.constant.EnumPaymentType;
@@ -17,6 +21,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -124,6 +129,13 @@ public class LivePaymentService {
         CompletableFuture.runAsync(() -> addInvoiceItemsToInvoice(liveInvoice, liveInvoiceItems));
         CompletableFuture.runAsync(() -> userService.addMemberPoint(user, liveInvoice.getFinalPrice() / MEMBER_POINT_RATE));
         CompletableFuture.runAsync(() -> cartService.removeSelectedCartItem(cartCheckOutInfoDTO.getCartId()));
+        CompletableFuture.runAsync(() -> {
+            try {
+                pushDataToElastic(liveInvoice, liveInvoiceItems);
+            } catch (IOException e) {
+                log.error("error push invoice data: {}", e.getMessage());
+            }
+        });
 
         return createCheckoutResultDTO(paymentType, paymentInfo, cartCheckOutInfoDTO, liveInvoice);
     }
@@ -200,6 +212,11 @@ public class LivePaymentService {
                     .build();
 
             invoiceService.saveAndFlushLiveInvoiceItem(item);
+            try {
+                pushDataToElastic(invoice, List.of(item));
+            } catch (IOException e) {
+                log.error("error push invoice data: {}", e.getMessage());
+            }
         });
 
         if (paymentType == EnumPaymentType.CREDIT_CARD){
@@ -240,5 +257,34 @@ public class LivePaymentService {
 
     public CheckoutResultDTO singleItemCheckOutAuthenticate(User user, SingleLiveItemCheckOutInfoDTO singleItemCheckOutInfoDTO) throws UnsupportedEncodingException, FriendlyException {
         return singleItemCheckOut(user, singleItemCheckOutInfoDTO);
+    }
+
+    private void pushDataToElastic(LiveInvoice invoice, List<LiveInvoiceItem> invoiceItems) throws IOException {
+        ElasticsearchClient esClient = ElasticClient.get();
+
+        BulkRequest.Builder br = new BulkRequest.Builder();
+        for (LiveInvoiceItem invoiceItem : invoiceItems){
+            br.operations(op -> op
+                    .index(idx -> idx
+                            .index(Index.getIndexName(Index.Name.INVOICE_DATA))
+                            .id(invoiceItem.getLiveInvoiceId())
+                            .document(InvoiceData.builder()
+                                    .productId(invoiceItem.getLiveItem().getProductId())
+                                    .invoiceId(invoiceItem.getLiveInvoiceId())
+                                    .userId(invoice.getUserId()).build()
+                            )
+                    )
+            );
+        }
+
+        BulkResponse result = esClient.bulk(br.build());
+        if (result.errors()) {
+            log .error("Bulk had errors");
+            for (BulkResponseItem item: result.items()) {
+                if (item.error() != null) {
+                    log.error(item.error().reason());
+                }
+            }
+        }
     }
 }
