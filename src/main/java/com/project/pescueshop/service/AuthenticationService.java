@@ -160,7 +160,6 @@ public class AuthenticationService {
             user.setMemberPoint(0L);
             user.setStatus(EnumStatus.ACTIVE.getValue());
 
-            userService.addUser(user);
             threadService.createNeededInfoForNewUser(user, true);
         }
 

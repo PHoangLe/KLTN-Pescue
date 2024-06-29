@@ -53,6 +53,25 @@ public class MerchantController {
         return ResponseEntity.ok(result);
     }
 
+    @GetMapping("/customer/{merchantId}")
+    public ResponseEntity<ResponseDTO<MerchantDTO>> getMerchantPageInfo(@PathVariable String merchantId) throws FriendlyException {
+        MerchantDTO merchantDTO = merchantService.getMerchantPageInfo(merchantId);
+        ResponseDTO<MerchantDTO> result = new ResponseDTO<>(EnumResponseCode.SUCCESS, merchantDTO);
+        return ResponseEntity.ok(result);
+    }
+
+    @PutMapping("/info")
+    @PreAuthorize("hasAuthority('ROLE_MERCHANT')")
+    @SecurityRequirement(name = "Bearer Authentication")
+    public ResponseEntity<ResponseDTO<String>> updateMerchantInfo(
+            @RequestPart("updateMerchantInfoRequest") UpdateMerchantInfoRequest updateMerchantInfoRequest,
+            @RequestPart(value = "avatar", required = false) MultipartFile avatarFile,
+            @RequestPart(value = "coverImage", required = false) MultipartFile coverImageFile) throws FriendlyException {
+        MerchantDTO dto = merchantService.updateMerchantInfo(updateMerchantInfoRequest, avatarFile, coverImageFile);
+        ResponseDTO<String> result = new ResponseDTO<>(EnumResponseCode.SUCCESS, "Success", "message");
+        return ResponseEntity.ok(result);
+    }
+
     @PutMapping("/suspend/{merchantId}")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @SecurityRequirement(name = "Bearer Authentication")

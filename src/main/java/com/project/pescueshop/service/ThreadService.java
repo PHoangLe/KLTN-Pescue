@@ -217,11 +217,11 @@ public class ThreadService extends BaseService {
 
         return imagesUrl;
     }
-    private String uploadMerchantAvatar(String merchantId, MultipartFile avatar){
+    public String uploadMerchantAvatar(String merchantId, MultipartFile avatar){
         return fileUploadService.uploadFile(avatar, "merchant_avatar/", merchantId);
     }
 
-    private String uploadMerchantCover(String merchantId, MultipartFile avatar){
+    public String uploadMerchantCover(String merchantId, MultipartFile avatar){
         return fileUploadService.uploadFile(avatar, "merchant_cover/", merchantId);
     }
 
@@ -236,7 +236,9 @@ public class ThreadService extends BaseService {
 
         try {
             List<String> relatedDocumentsUrl = relatedDocumentsFuture.get();
-            merchant.setRelatedDocuments(relatedDocumentsUrl);
+            if (relatedDocumentsUrl != null && !relatedDocumentsUrl.isEmpty()){
+                merchant.setRelatedDocuments(relatedDocumentsUrl);
+            }
             merchant.setMerchantCover(coverFileFuture.get());
             merchant.setMerchantAvatar(avatarFileFuture.get());
 

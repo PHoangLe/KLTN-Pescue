@@ -21,5 +21,4 @@ public class UpdateUserProfileDTO {
     private String userFirstName;
     private String userLastName;
     private String userPhoneNumber;
-    private String userAvatar;
 }

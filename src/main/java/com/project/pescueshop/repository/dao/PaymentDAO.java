@@ -34,7 +34,15 @@ public class PaymentDAO extends BaseDAO{
     }
 
     public List<InvoiceItemDTO> getInvoiceDetail(String invoiceId){
-        String sql = "SELECT * FROM get_invoice_details(:p_invoice_id);";
+        String sql = "SELECT i.user_id, m.user_id as merchant_user_id, i.invoice_id, ii.quantity, " +
+                "           ii.total_price as total_price, v.variety_id, v.name, v.merchant_id, v.product_id, v.price as unit_price, " +
+                "           (SELECT pi.images FROM product_images pi WHERE v.product_id = pi.product_product_id LIMIT 1) as image, v.stock_amount " +
+                "            , v.weight, v.width, v.length, v.height " +
+                "    FROM invoice i " +
+                "    JOIN invoice_item ii ON i.invoice_id = ii.invoice_id" +
+                "    JOIN merchant m ON i.merchant_id = m.merchant_id " +
+                "    JOIN variety v ON ii.variety_id = v.variety_id " +
+                "    WHERE i.invoice_id = :p_invoice_id;";
 
         MapSqlParameterSource parameters = new MapSqlParameterSource()
                 .addValue("p_invoice_id", invoiceId);

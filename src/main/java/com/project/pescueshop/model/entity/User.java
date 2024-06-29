@@ -116,4 +116,8 @@ public class User implements UserDetails {
     public boolean isLocked(){return this.status == "LOCKED";}
     public boolean isInActive(){return this.status == "IN_ACTIVE";}
     public boolean isDeleted(){return this.status == "DELETED";}
+
+    public boolean isMerchant() {
+        return userRoles.stream().anyMatch(role -> role.getRoleName().equals("ROLE_MERCHANT"));
+    }
 }
