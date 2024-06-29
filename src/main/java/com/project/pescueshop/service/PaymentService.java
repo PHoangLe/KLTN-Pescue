@@ -1,8 +1,17 @@
 package com.project.pescueshop.service;
 
+import co.elastic.clients.elasticsearch.ElasticsearchClient;
+import co.elastic.clients.elasticsearch.core.BulkRequest;
+import co.elastic.clients.elasticsearch.core.BulkResponse;
+import co.elastic.clients.elasticsearch.core.bulk.BulkResponseItem;
 import com.project.pescueshop.config.PaymentConfig;
 import com.project.pescueshop.model.dto.*;
+import com.project.pescueshop.model.elastic.ElasticClient;
+import com.project.pescueshop.model.elastic.Index;
+import com.project.pescueshop.model.elastic.document.InvoiceData;
 import com.project.pescueshop.model.entity.*;
+import com.project.pescueshop.model.entity.live.LiveInvoice;
+import com.project.pescueshop.model.entity.live.LiveInvoiceItem;
 import com.project.pescueshop.model.exception.FriendlyException;
 import com.project.pescueshop.repository.dao.CartDAO;
 import com.project.pescueshop.repository.dao.PaymentDAO;
@@ -13,8 +22,10 @@ import com.project.pescueshop.util.constant.EnumResponseCode;
 import com.project.pescueshop.util.constant.EnumVoucherType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.hc.core5.concurrent.CompletedFuture;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -111,7 +122,7 @@ public class PaymentService {
 
         List<Invoice> invoiceList = new ArrayList<>();
 
-        invoiceItemGroupByMerchantId.forEach((merchantId, invoiceItemDTO) -> {
+        invoiceItemGroupByMerchantId.forEach((merchantId, invoiceItemDTOs) -> {
             Invoice invoice = Invoice.builder()
                     .paymentType(paymentType.getValue())
                     .userId(user.getUserId())
@@ -133,8 +144,8 @@ public class PaymentService {
 
             Merchant merchant = merchantService.getMerchantById(merchantId);
 
-            long invoiceValue = invoiceItemDTO.stream().mapToLong(InvoiceItemDTO::getTotalPrice).sum();
-            long shippingFee = shippingFeeService.calculateShippingFee(invoiceItemDTO, address, merchant);
+            long invoiceValue = invoiceItemDTOs.stream().mapToLong(InvoiceItemDTO::getTotalPrice).sum();
+            long shippingFee = shippingFeeService.calculateShippingFee(invoiceItemDTOs, address, merchant);
             invoice.setTotalPrice(invoiceValue);
             invoice.setFinalPrice(invoiceValue + shippingFee);
 
@@ -164,13 +175,20 @@ public class PaymentService {
             paymentDAO.saveAndFlushInvoice(invoice);
             threadService.sendReceiptEmail(invoice);
 
-            CompletableFuture.allOf(
-                    CompletableFuture.runAsync(() -> addInvoiceItemsToInvoice(invoice, invoiceItemDTO)),
-                    CompletableFuture.runAsync(() -> userService.addMemberPoint(user, invoice.getFinalPrice() / MEMBER_POINT_RATE)),
-                    CompletableFuture.runAsync(() -> cartDAO.removeSelectedCartItem(cartCheckOutInfoDTO.getCartId()))
-            ).join();
             invoiceList.add(invoice);
             paymentDAO.saveAndFlushInvoice(invoice);
+
+            CompletableFuture.runAsync(() ->{
+                addInvoiceItemsToInvoice(invoice, invoiceItemDTOs);
+                userService.addMemberPoint(user, invoice.getFinalPrice() / MEMBER_POINT_RATE);
+                cartDAO.removeSelectedCartItem(cartCheckOutInfoDTO.getCartId());
+
+                try {
+                    pushDataToElastic(invoice, invoiceItemDTOs);
+                } catch (IOException e) {
+                    log.error("Error when push data to elastic: ", e);
+                }
+            });
         });
 
         return createCheckoutResultDTO(paymentType, paymentInfo, cartCheckOutInfoDTO, invoiceList);
@@ -301,5 +319,34 @@ public class PaymentService {
 
     public CheckoutResultDTO singleItemCheckOutAuthenticate(User user, SingleItemCheckOutInfoDTO singleItemCheckOutInfoDTO) throws UnsupportedEncodingException, FriendlyException {
         return singleItemCheckOut(user, singleItemCheckOutInfoDTO);
+    }
+
+    private void pushDataToElastic(Invoice invoice, List<InvoiceItemDTO> invoiceItems) throws IOException {
+        ElasticsearchClient esClient = new ElasticClient().get();
+
+        BulkRequest.Builder br = new BulkRequest.Builder();
+        for (InvoiceItemDTO invoiceItem : invoiceItems){
+            br.operations(op -> op
+                    .index(idx -> idx
+                            .index(Index.getIndexName(Index.Name.INVOICE_DATA))
+                            .id(invoiceItem.getInvoiceId())
+                            .document(InvoiceData.builder()
+                                    .productId(invoiceItem.getProductId())
+                                    .invoiceId(invoiceItem.getInvoiceId())
+                                    .userId(invoice.getUserId()).build()
+                            )
+                    )
+            );
+        }
+
+        BulkResponse result = esClient.bulk(br.build());
+        if (result.errors()) {
+            log .error("Bulk had errors");
+            for (BulkResponseItem item: result.items()) {
+                if (item.error() != null) {
+                    log.error(item.error().reason());
+                }
+            }
+        }
     }
 }

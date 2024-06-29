@@ -7,8 +7,6 @@ import com.project.pescueshop.model.entity.*;
 import com.project.pescueshop.model.exception.FriendlyException;
 import com.project.pescueshop.repository.dao.ProductDAO;
 import com.project.pescueshop.repository.dao.VarietyAttributeDAO;
-import com.project.pescueshop.repository.dao.ViewAuditLogDAO;
-import com.project.pescueshop.util.constant.EnumObjectType;
 import com.project.pescueshop.util.constant.EnumPetType;
 import com.project.pescueshop.util.constant.EnumResponseCode;
 import com.project.pescueshop.util.constant.EnumStatus;
@@ -106,10 +104,6 @@ public class ProductService extends BaseService {
             varietyService.addVarietyByListAttribute(product, sizeAttribute, colorAttribute, isSameMeasurement);
         }
 
-    }
-
-    public List<Product> findAllProduct(){
-        return productDAO.findAll();
     }
 
     public List<String> uploadProductImages(String productId, final List<MultipartFile> images){
