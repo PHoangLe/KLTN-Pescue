@@ -180,7 +180,8 @@ public class PaymentService {
         if (paymentType == EnumPaymentType.CREDIT_CARD){
             try {
                 return CheckoutResultDTO.builder()
-                        .paymentUrl(createPaymentLink("Cart ID: " + cartCheckOutInfoDTO.getCartId(), paymentInfo.getReturnUrl(), totalCartValue))
+                        .invoiceIdList(invoiceList.stream().map(Invoice::getInvoiceId).toList())
+                        .paymentUrl(createPaymentLink("InvoiceID: " + cartCheckOutInfoDTO.getCartId(), paymentInfo.getReturnUrl(), totalCartValue))
                         .cartId(cartCheckOutInfoDTO.getCartId())
                         .build();
             } catch (UnsupportedEncodingException e) {
@@ -267,13 +268,13 @@ public class PaymentService {
 
         if (paymentType == EnumPaymentType.CREDIT_CARD){
             return CheckoutResultDTO.builder()
-                    .invoiceId(invoice.getInvoiceId())
+                    .invoiceIdList(List.of(invoice.getInvoiceId()))
                     .paymentUrl(createPaymentLink("Invoice ID: " + invoice.getInvoiceId(), paymentInfo.getReturnUrl(), invoice.getFinalPrice()))
                     .build();
         }
         paymentDAO.saveAndFlushInvoice(invoice);
         return CheckoutResultDTO.builder()
-                .invoiceId(invoice.getInvoiceId())
+                .invoiceIdList(List.of(invoice.getInvoiceId()))
                 .build();
     }
 

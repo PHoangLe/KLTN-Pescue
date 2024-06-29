@@ -3,6 +3,8 @@ package com.project.pescueshop.model.dto;
 import com.project.pescueshop.model.annotation.Name;
 import lombok.*;
 
+import java.util.List;
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -12,5 +14,5 @@ import lombok.*;
 public class CheckoutResultDTO {
     private String paymentUrl;
     private String cartId;
-    private String invoiceId;
+    private List<String> invoiceIdList;
 }
