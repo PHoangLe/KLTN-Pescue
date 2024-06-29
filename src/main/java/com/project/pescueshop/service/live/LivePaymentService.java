@@ -219,7 +219,7 @@ public class LivePaymentService {
         if (paymentType == EnumPaymentType.CREDIT_CARD){
             try {
                 return CheckoutResultDTO.builder()
-                        .paymentUrl(paymentService.createPaymentLink("Cart ID: " + cartCheckOutInfoDTO.getCartId(), paymentInfo.getReturnUrl(), liveInvoice.getFinalPrice()))
+                        .paymentUrl(paymentService.createPaymentLink("InvoiceId: " + liveInvoice.getLiveInvoiceId(), paymentInfo.getReturnUrl(), liveInvoice.getFinalPrice()))
                         .cartId(cartCheckOutInfoDTO.getCartId())
                         .build();
             } catch (UnsupportedEncodingException e) {
