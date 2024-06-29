@@ -16,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -62,8 +63,10 @@ public class UserController {
     @PutMapping("")
     @PreAuthorize("hasAuthority('ROLE_CUSTOMER')")
     @SecurityRequirement(name = "Bearer Authentication")
-    public ResponseEntity<ResponseDTO<UserDTO>> updateUserInfo(@RequestBody UpdateUserProfileDTO updateUserProfileDTO) throws FriendlyException {
-        UserDTO user = userService.updateUserProfile(updateUserProfileDTO);
+    public ResponseEntity<ResponseDTO<UserDTO>> updateUserInfo(
+            @RequestPart UpdateUserProfileDTO updateUserProfileDTO,
+            @RequestPart(required = false) MultipartFile userAvatar) throws FriendlyException {
+        UserDTO user = userService.updateUserProfile(updateUserProfileDTO, userAvatar);
         ResponseDTO<UserDTO> result = new ResponseDTO<>(EnumResponseCode.SUCCESS, user, "userInfo");
         return ResponseEntity.ok(result);
     }

@@ -16,8 +16,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 @RequiredArgsConstructor
@@ -27,6 +30,7 @@ public class UserService extends BaseService {
     private final UserDAO userDAO;
     private final RoleService roleService;
     private final PasswordEncoder passwordEncoder;
+    private final FileUploadService fileUploadService;
 
     public User findByEmail(String email){
         return userDAO.findUserByEmail(email);
@@ -90,19 +94,30 @@ public class UserService extends BaseService {
         userDAO.saveAndFlushUser(user);
     }
 
-    public UserDTO updateUserProfile(UpdateUserProfileDTO dto) throws FriendlyException {
+    public UserDTO updateUserProfile(UpdateUserProfileDTO dto, MultipartFile userAvatar) throws FriendlyException {
         User user = findById(dto.getUserId());
 
         if (user == null){
             throw new FriendlyException(EnumResponseCode.ACCOUNT_NOT_FOUND);
         }
 
-        user.setUserAvatar(dto.getUserAvatar());
         user.setUserFirstName(dto.getUserFirstName());
         user.setUserLastName(dto.getUserLastName());
         user.setUserPhoneNumber(dto.getUserPhoneNumber());
 
         userDAO.saveAndFlushUser(user);
+
+        CompletableFuture.runAsync(() -> {
+            try {
+                if (userAvatar != null){
+                    String avatarPath = fileUploadService.uploadFile(userAvatar, "avatar", user.getUserId());
+                    user.setUserAvatar(avatarPath);
+                    userDAO.saveAndFlushUser(user);
+                }
+            } catch (Exception e){
+                log.error("Error when upload avatar for user: {}", user.getUserId(), e);
+            }
+        });
 
         return new UserDTO(user);
     }

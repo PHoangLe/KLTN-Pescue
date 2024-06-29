@@ -1,6 +1,7 @@
 package com.project.pescueshop.model.entity;
 
 import com.project.pescueshop.model.annotation.Name;
+import com.project.pescueshop.model.dto.MerchantInfo;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
@@ -24,6 +25,8 @@ public class ChatRoom {
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "secondUserId", referencedColumnName = "userId")
     private User secondUser;
+    @Transient
+    private MerchantInfo merchantInfo;
 
     public ChatRoom(User user1, User user2){
         this.firstUser = user1;

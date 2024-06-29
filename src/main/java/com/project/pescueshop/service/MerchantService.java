@@ -2,6 +2,7 @@ package com.project.pescueshop.service;
 
 import com.project.pescueshop.model.dto.CreateMerchantRequest;
 import com.project.pescueshop.model.dto.MerchantDTO;
+import com.project.pescueshop.model.dto.UpdateMerchantInfoRequest;
 import com.project.pescueshop.model.entity.Merchant;
 import com.project.pescueshop.model.entity.User;
 import com.project.pescueshop.model.exception.FriendlyException;
@@ -9,6 +10,7 @@ import com.project.pescueshop.repository.dao.MerchantDAO;
 import com.project.pescueshop.util.constant.EnumResponseCode;
 import com.project.pescueshop.util.constant.EnumRoleId;
 import lombok.RequiredArgsConstructor;
+import org.apache.hc.core5.concurrent.CompletedFuture;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -137,7 +139,7 @@ public class MerchantService extends BaseService {
     }
 
     public MerchantDTO getMerchantInfo(String merchantId) throws FriendlyException {
-        Merchant merchant = null;
+        Merchant merchant;
 
         if (merchantId != null) {
             merchant = getMerchantById(merchantId);
@@ -158,6 +160,16 @@ public class MerchantService extends BaseService {
         return toDTO(merchant);
     }
 
+    public MerchantDTO getMerchantPageInfo(String merchantId) throws FriendlyException {
+        MerchantDTO dto = getMerchantInfo(merchantId);
+        dto.setIsApproved(null);
+        dto.setIsLiveable(null);
+        dto.setIsSuspended(null);
+        dto.setRelatedDocuments(null);
+
+        return dto;
+    }
+
     public List<MerchantDTO> getApproveMerchant() {
         return merchantDAO.getApprovedMerchant().stream()
                 .map(this::toDTO)
@@ -167,5 +179,38 @@ public class MerchantService extends BaseService {
     public Page<MerchantDTO> getListMerchantForAdmin(Boolean isApproved, Boolean isSuspended, Boolean isLiveable, Integer offset, Integer limit) {
         Pageable pageable = PageRequest.of(offset - 1, limit);
         return merchantDAO.getListMerchantForAdmin(isApproved, isSuspended, isLiveable, pageable).map(this::toDTO);
+    }
+
+    public MerchantDTO updateMerchantInfo(
+            UpdateMerchantInfoRequest updateMerchantInfoRequest,
+            MultipartFile avatarFile,
+            MultipartFile coverImageFile) throws FriendlyException {
+        Merchant merchant = getMerchantById(updateMerchantInfoRequest.getMerchantId());
+        if (merchant == null) {
+            throw new FriendlyException(EnumResponseCode.MERCHANT_NOT_FOUND);
+        }
+
+        merchant.setMerchantName(updateMerchantInfoRequest.getMerchantName());
+        merchant.setMerchantDescription(updateMerchantInfoRequest.getMerchantDescription());
+        merchant.setCityName(updateMerchantInfoRequest.getCityName());
+        merchant.setDistrictName(updateMerchantInfoRequest.getDistrictName());
+        merchant.setWardName(updateMerchantInfoRequest.getWardName());
+        merchant.setCityCode(updateMerchantInfoRequest.getCityCode());
+        merchant.setDistrictId(updateMerchantInfoRequest.getDistrictId());
+        merchant.setWardCode(updateMerchantInfoRequest.getWardCode());
+        merchant.setPhoneNumber(updateMerchantInfoRequest.getPhoneNumber());
+
+        CompletableFuture.runAsync(() -> {
+            if (avatarFile != null) {
+                threadService.uploadMerchantAvatar(merchant.getMerchantId(), avatarFile);
+            }
+
+            if (coverImageFile != null) {
+                threadService.uploadMerchantCover(merchant.getMerchantId(), coverImageFile);
+            }
+        });
+
+        merchantDAO.saveAndFlushMerchant(merchant);
+        return toDTO(merchant);
     }
 }
