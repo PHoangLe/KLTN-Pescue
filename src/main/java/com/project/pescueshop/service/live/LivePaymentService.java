@@ -222,13 +222,13 @@ public class LivePaymentService {
 
         if (paymentType == EnumPaymentType.CREDIT_CARD){
             return CheckoutResultDTO.builder()
-                    .invoiceId(invoice.getLiveInvoiceId())
+                    .invoiceIdList(List.of(invoice.getLiveInvoiceId()))
                     .paymentUrl(paymentService.createPaymentLink("Invoice ID: " + invoice.getLiveInvoiceId(), paymentInfo.getReturnUrl(), invoice.getFinalPrice()))
                     .build();
         }
         invoiceService.saveAndFlushLiveInvoice(invoice);
         return CheckoutResultDTO.builder()
-                .invoiceId(invoice.getLiveInvoiceId())
+                .invoiceIdList(List.of(invoice.getLiveInvoiceId()))
                 .build();
     }
 
@@ -236,6 +236,7 @@ public class LivePaymentService {
         if (paymentType == EnumPaymentType.CREDIT_CARD){
             try {
                 return CheckoutResultDTO.builder()
+                        .invoiceIdList(List.of(liveInvoice.getLiveInvoiceId()))
                         .paymentUrl(paymentService.createPaymentLink("InvoiceId: " + liveInvoice.getLiveInvoiceId(), paymentInfo.getReturnUrl(), liveInvoice.getFinalPrice()))
                         .cartId(cartCheckOutInfoDTO.getCartId())
                         .build();

@@ -12,6 +12,7 @@ import lombok.*;
 @Name(noun = "invoiceItem", pluralNoun = "itemList")
 public class InvoiceItemDTO {
     private String userId;
+    private String merchantUserId;
     private String invoiceId;
     private String merchantId;
     private Integer quantity;

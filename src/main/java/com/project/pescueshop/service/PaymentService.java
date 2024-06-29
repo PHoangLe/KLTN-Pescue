@@ -12,6 +12,7 @@ import com.project.pescueshop.util.constant.EnumPaymentType;
 import com.project.pescueshop.util.constant.EnumResponseCode;
 import com.project.pescueshop.util.constant.EnumVoucherType;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.io.UnsupportedEncodingException;
@@ -25,6 +26,7 @@ import java.util.concurrent.CompletableFuture;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class PaymentService {
     private final static long MEMBER_POINT_RATE = 20L;
     private final PaymentDAO paymentDAO;
@@ -179,12 +181,14 @@ public class PaymentService {
 
         if (paymentType == EnumPaymentType.CREDIT_CARD){
             try {
+                String content = invoiceList.stream().map(Invoice::getInvoiceId).reduce("", (a, b) -> a + "," + b);
                 return CheckoutResultDTO.builder()
-                        .paymentUrl(createPaymentLink("Cart ID: " + cartCheckOutInfoDTO.getCartId(), paymentInfo.getReturnUrl(), totalCartValue))
+                        .invoiceIdList(invoiceList.stream().map(Invoice::getInvoiceId).toList())
+                        .paymentUrl(createPaymentLink("InvoiceList:" + content, paymentInfo.getReturnUrl(), totalCartValue))
                         .cartId(cartCheckOutInfoDTO.getCartId())
                         .build();
             } catch (UnsupportedEncodingException e) {
-                e.printStackTrace();
+                log.error("Error when create payment link", e);
             }
         }
         return CheckoutResultDTO.builder()
@@ -267,13 +271,13 @@ public class PaymentService {
 
         if (paymentType == EnumPaymentType.CREDIT_CARD){
             return CheckoutResultDTO.builder()
-                    .invoiceId(invoice.getInvoiceId())
+                    .invoiceIdList(List.of(invoice.getInvoiceId()))
                     .paymentUrl(createPaymentLink("Invoice ID: " + invoice.getInvoiceId(), paymentInfo.getReturnUrl(), invoice.getFinalPrice()))
                     .build();
         }
         paymentDAO.saveAndFlushInvoice(invoice);
         return CheckoutResultDTO.builder()
-                .invoiceId(invoice.getInvoiceId())
+                .invoiceIdList(List.of(invoice.getInvoiceId()))
                 .build();
     }
 

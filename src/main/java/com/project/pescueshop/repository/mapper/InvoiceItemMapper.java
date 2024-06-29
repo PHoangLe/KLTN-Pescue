@@ -13,6 +13,7 @@ public class InvoiceItemMapper implements RowMapper<InvoiceItemDTO> {
     public InvoiceItemDTO mapRow(ResultSet rs, int rowNum) throws SQLException {
         return InvoiceItemDTO.builder()
                 .userId(rs.getString("user_id"))
+                .merchantUserId(rs.getString("merchant_user_id"))
                 .invoiceId(rs.getString("invoice_id"))
                 .quantity(rs.getInt("quantity"))
                 .totalPrice(rs.getLong("total_price"))

@@ -1,7 +1,9 @@
 package com.project.pescueshop.service;
 
+import com.project.pescueshop.model.dto.MerchantInfo;
 import com.project.pescueshop.model.entity.ChatMessage;
 import com.project.pescueshop.model.entity.ChatRoom;
+import com.project.pescueshop.model.entity.Merchant;
 import com.project.pescueshop.model.entity.User;
 import com.project.pescueshop.model.exception.FriendlyException;
 import com.project.pescueshop.repository.dao.ChatDAO;
@@ -13,6 +15,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 @Service
 @RequiredArgsConstructor
@@ -20,6 +24,8 @@ import java.util.Optional;
 public class ChatRoomService {
     private final ChatDAO chatDAO;
     private final UserService userService;
+    private final MerchantService merchantService;
+
     public Optional<String> getChatId(String senderId, String recipientId, boolean createIfNotExist){
         User sender = userService.findById(senderId);
         User recipient = userService.findById(recipientId);
@@ -43,7 +49,36 @@ public class ChatRoomService {
     }
 
     public List<ChatRoom> findAllChatRoomByUserID(String userID) {
-        return chatDAO.findAllRoomByUser(userID);
+        List<ChatRoom> chatRooms = chatDAO.findAllRoomByUser(userID);
+        ExecutorService executorService = Executors.newFixedThreadPool(10);
+
+        for (ChatRoom chatRoom : chatRooms) {
+            executorService.submit(() -> {
+                User firstUser = chatRoom.getFirstUser();
+                User secondUser = chatRoom.getSecondUser();
+
+                if (firstUser.isMerchant()) {
+                    Merchant merchant = merchantService.getMerchantByUserId(firstUser.getUserId());
+                    chatRoom.setMerchantInfo(MerchantInfo.builder()
+                            .merchantAvatar(merchant.getMerchantAvatar())
+                            .merchantName(merchant.getMerchantName())
+                            .userId(merchant.getUserId())
+                            .build());
+                }
+
+                if (secondUser.isMerchant()) {
+                    Merchant merchant = merchantService.getMerchantByUserId(secondUser.getUserId());
+                    chatRoom.setMerchantInfo(MerchantInfo.builder()
+                            .merchantAvatar(merchant.getMerchantAvatar())
+                            .merchantName(merchant.getMerchantName())
+                            .userId(merchant.getUserId())
+                            .build());
+                }
+            });
+        }
+
+        executorService.shutdown();
+        return chatRooms;
     }
 
     public List<ChatMessage> findAllChatMessageByChatRoomID(String chatRoomID, String senderID, String recipientID) {
@@ -53,11 +88,6 @@ public class ChatRoomService {
 
     public void updateStatus(String senderId, String recipientId, String status) {
         chatDAO.updateChatStatus(senderId, recipientId, status);
-    }
-
-    public List<ChatMessage> findAllMessageBySenderIDAndRecipientID(String senderId, String recipientId) {
-        updateStatus(recipientId, senderId, EnumMessageStatus.RECEIVED.getValue());
-        return chatDAO.findAllMessageBySenderIdAndRecipientId(senderId, recipientId);
     }
 
     @Transactional
