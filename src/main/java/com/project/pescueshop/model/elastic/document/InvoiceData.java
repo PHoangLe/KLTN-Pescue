@@ -5,7 +5,6 @@ import lombok.*;
 @Getter
 @Setter
 @Builder
-@RequiredArgsConstructor
 public class InvoiceData {
     private String invoiceId;
     private String productId;
