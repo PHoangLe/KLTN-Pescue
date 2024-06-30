@@ -74,7 +74,7 @@ public class ProductService extends BaseService {
                 throw new RuntimeException(e);
             }
 
-            pushProductToElasticSearch(product);
+            pushOrUpdateProductToElasticSearch(product);
         });
 
         return transformProductToDTO(product);
@@ -176,7 +176,7 @@ public class ProductService extends BaseService {
         productDAO.saveAndFlushProduct(product);
 
         CompletableFuture.runAsync(() -> {
-            updateProductInElasticSearch(product);
+            pushOrUpdateProductToElasticSearch(product);
         });
 
         return transformProductToDTO(product);
@@ -200,7 +200,7 @@ public class ProductService extends BaseService {
         productDAO.saveAndFlushProduct(product);
 
         CompletableFuture.runAsync(() -> {
-            updateProductInElasticSearch(product);
+            pushOrUpdateProductToElasticSearch(product);
         });
 
         return product.getImages();
@@ -234,7 +234,7 @@ public class ProductService extends BaseService {
         return productDAO.getListProduct(categoryId, subCategoryId, brandId, merchantId, minPrice, maxPrice, page, size);
     }
 
-    private void pushProductToElasticSearch(Product product) {
+    private void pushOrUpdateProductToElasticSearch(Product product) {
         ProductData productData = ProductData.fromProduct(product);
 
         IndexRequest<ProductData> request = IndexRequest.of(i -> i
@@ -246,21 +246,6 @@ public class ProductService extends BaseService {
             log.info("Push product to elastic search: {}", productData);
         } catch (IOException e) {
             log.error("Error when push product to elastic search", e);
-        }
-    }
-
-    private void updateProductInElasticSearch(Product product) {
-        ProductData productData = ProductData.fromProduct(product);
-
-        IndexRequest<ProductData> request = IndexRequest.of(i -> i
-                .index(EnumElasticIndex.PRODUCT_DATA.getName())
-                .id(productData.getProductId())
-                .document(productData));
-        try {
-            IndexResponse response = ElasticClient.get().index(request);
-            log.info("Update product in elastic search response: {} document: {}", response, productData);
-        } catch (IOException e) {
-            log.error("Error when update product in elastic search document: {} error: ", productData, e);
         }
     }
 }
