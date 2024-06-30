@@ -18,7 +18,6 @@ import com.project.pescueshop.util.constant.EnumResponseCode;
 import com.project.pescueshop.util.constant.EnumRoleId;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.hc.core5.concurrent.CompletedFuture;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -87,7 +86,7 @@ public class MerchantService extends BaseService {
         merchantDAO.saveAndFlushMerchant(merchant);
 
         CompletableFuture.runAsync(() -> {
-            pushMerchantToElasticsearch(merchant);
+            pushOrUpdateMerchantToElasticsearch(merchant);
         });
 
         return toDTO(merchant);
@@ -104,7 +103,7 @@ public class MerchantService extends BaseService {
         merchantDAO.saveAndFlushMerchant(merchant);
 
         CompletableFuture.runAsync(() -> {
-            updateMerchantInElasticsearch(merchant);
+            pushOrUpdateMerchantToElasticsearch(merchant);
         });
     }
 
@@ -120,7 +119,7 @@ public class MerchantService extends BaseService {
 
 
         CompletableFuture.runAsync(() -> {
-            updateMerchantInElasticsearch(merchant);
+            pushOrUpdateMerchantToElasticsearch(merchant);
         });
     }
 
@@ -143,7 +142,7 @@ public class MerchantService extends BaseService {
         merchantDAO.saveAndFlushMerchant(merchant);
 
         CompletableFuture.runAsync(() -> {
-            updateMerchantInElasticsearch(merchant);
+            pushOrUpdateMerchantToElasticsearch(merchant);
         });
     }
 
@@ -245,7 +244,7 @@ public class MerchantService extends BaseService {
         return toDTO(merchant);
     }
 
-    private void pushMerchantToElasticsearch(Merchant merchant) {
+    private void pushOrUpdateMerchantToElasticsearch(Merchant merchant) {
         MerchantData merchantData = MerchantData.fromMerchant(merchant);
 
         IndexRequest<MerchantData> req = IndexRequest.of(i -> i
@@ -260,24 +259,6 @@ public class MerchantService extends BaseService {
         }
         catch (IOException e) {
             log.error("Error pushing merchant to elastic document: {} error: ", merchantData, e);
-        }
-    }
-
-    private void updateMerchantInElasticsearch(Merchant merchant) {
-        MerchantData merchantData = MerchantData.fromMerchant(merchant);
-
-        IndexRequest<MerchantData> req = IndexRequest.of(i -> i
-                .index(EnumElasticIndex.MERCHANT_DATA.getName())
-                .id(merchantData.getMerchantId())
-                .document(merchantData)
-        );
-
-        try {
-            IndexResponse resp = ElasticClient.get().index(req);
-            log.info("Updated merchant in elasticsearch: {} document: {}", resp, merchantData);
-        }
-        catch (IOException e) {
-            log.error("Error updating merchant in elastic document: {} error: ", merchantData, e);
         }
     }
 
