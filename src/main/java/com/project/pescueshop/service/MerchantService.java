@@ -1,15 +1,23 @@
 package com.project.pescueshop.service;
 
+import co.elastic.clients.elasticsearch.core.DeleteRequest;
+import co.elastic.clients.elasticsearch.core.DeleteResponse;
+import co.elastic.clients.elasticsearch.core.IndexRequest;
+import co.elastic.clients.elasticsearch.core.IndexResponse;
 import com.project.pescueshop.model.dto.CreateMerchantRequest;
 import com.project.pescueshop.model.dto.MerchantDTO;
 import com.project.pescueshop.model.dto.UpdateMerchantInfoRequest;
+import com.project.pescueshop.model.elastic.ElasticClient;
+import com.project.pescueshop.model.elastic.document.MerchantData;
 import com.project.pescueshop.model.entity.Merchant;
 import com.project.pescueshop.model.entity.User;
 import com.project.pescueshop.model.exception.FriendlyException;
 import com.project.pescueshop.repository.dao.MerchantDAO;
+import com.project.pescueshop.util.constant.EnumElasticIndex;
 import com.project.pescueshop.util.constant.EnumResponseCode;
 import com.project.pescueshop.util.constant.EnumRoleId;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.hc.core5.concurrent.CompletedFuture;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -17,6 +25,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -24,6 +33,7 @@ import java.util.concurrent.CompletableFuture;
 
 @RequiredArgsConstructor
 @Service
+@Slf4j
 public class MerchantService extends BaseService {
     private final MerchantDAO merchantDAO;
     private final ThreadService threadService;
@@ -76,6 +86,10 @@ public class MerchantService extends BaseService {
         threadService.uploadMerchantFiles(merchant, List.of(relatedDocumentsFile), avatarFile, coverImageFile);
         merchantDAO.saveAndFlushMerchant(merchant);
 
+        CompletableFuture.runAsync(() -> {
+            pushMerchantToElasticsearch(merchant);
+        });
+
         return toDTO(merchant);
     }
 
@@ -88,6 +102,10 @@ public class MerchantService extends BaseService {
 
         merchant.setIsSuspended(true);
         merchantDAO.saveAndFlushMerchant(merchant);
+
+        CompletableFuture.runAsync(() -> {
+            updateMerchantInElasticsearch(merchant);
+        });
     }
 
     public void unsuspendMerchant(String merchantId) throws FriendlyException {
@@ -99,6 +117,11 @@ public class MerchantService extends BaseService {
 
         merchant.setIsSuspended(false);
         merchantDAO.saveAndFlushMerchant(merchant);
+
+
+        CompletableFuture.runAsync(() -> {
+            updateMerchantInElasticsearch(merchant);
+        });
     }
 
     public void approveMerchant(String merchantId) throws FriendlyException {
@@ -118,6 +141,10 @@ public class MerchantService extends BaseService {
 
         merchant.setIsApproved(true);
         merchantDAO.saveAndFlushMerchant(merchant);
+
+        CompletableFuture.runAsync(() -> {
+            updateMerchantInElasticsearch(merchant);
+        });
     }
 
     public void unapproveMerchant(String merchantId) throws FriendlyException {
@@ -128,6 +155,10 @@ public class MerchantService extends BaseService {
         }
 
         merchantDAO.deleteMerchant(merchantId);
+
+        CompletableFuture.runAsync(() -> {
+            deleteMerchantFromElasticsearch(merchantId);
+        });
     }
 
     public Merchant getMerchantById(String merchantId) {
@@ -212,5 +243,56 @@ public class MerchantService extends BaseService {
 
         merchantDAO.saveAndFlushMerchant(merchant);
         return toDTO(merchant);
+    }
+
+    private void pushMerchantToElasticsearch(Merchant merchant) {
+        MerchantData merchantData = MerchantData.fromMerchant(merchant);
+
+        IndexRequest<MerchantData> req = IndexRequest.of(i -> i
+                .index(EnumElasticIndex.MERCHANT_DATA.getName())
+                .id(merchantData.getMerchantId())
+                .document(merchantData)
+        );
+
+        try {
+            IndexResponse resp = ElasticClient.get().index(req);
+            log.info("Pushed merchant to elasticsearch: {} document: {}", resp, merchantData);
+        }
+        catch (IOException e) {
+            log.error("Error pushing merchant to elastic document: {} error: ", merchantData, e);
+        }
+    }
+
+    private void updateMerchantInElasticsearch(Merchant merchant) {
+        MerchantData merchantData = MerchantData.fromMerchant(merchant);
+
+        IndexRequest<MerchantData> req = IndexRequest.of(i -> i
+                .index(EnumElasticIndex.MERCHANT_DATA.getName())
+                .id(merchantData.getMerchantId())
+                .document(merchantData)
+        );
+
+        try {
+            IndexResponse resp = ElasticClient.get().index(req);
+            log.info("Updated merchant in elasticsearch: {} document: {}", resp, merchantData);
+        }
+        catch (IOException e) {
+            log.error("Error updating merchant in elastic document: {} error: ", merchantData, e);
+        }
+    }
+
+    private void deleteMerchantFromElasticsearch(String merchantId) {
+        DeleteRequest req = DeleteRequest.of(i -> i
+                .index(EnumElasticIndex.MERCHANT_DATA.getName())
+                .id(merchantId)
+        );
+
+        try {
+            DeleteResponse resp = ElasticClient.get().delete(req);
+            log.info("Deleted merchant from elasticsearch: {} id: {}", resp, merchantId);
+        }
+        catch (IOException e) {
+            log.error("Error deleting merchant from elastic id: {} error: ", merchantId, e);
+        }
     }
 }
