@@ -29,7 +29,7 @@ public class TestController {
     private final PaymentService paymentService;
 
     @GetMapping("")
-    public ResponseEntity<ResponseDTO<List<ReportResultDTO>>> report() throws IOException {
+    public ResponseEntity<ResponseDTO<Invoice>> report() throws IOException {
         Invoice invoice = Invoice.builder().build();
 
         paymentService.pushDataToElastic(invoice, List.of(InvoiceItemDTO.builder()
@@ -38,7 +38,7 @@ public class TestController {
                         .productId("3")
                 .build()));
 
-        ResponseDTO<List<ReportResultDTO>> result = new ResponseDTO<>(EnumResponseCode.SUCCESS, null);
+        ResponseDTO<Invoice> result = new ResponseDTO<>(EnumResponseCode.SUCCESS, invoice);
         return ResponseEntity.ok(result);
     }
 }

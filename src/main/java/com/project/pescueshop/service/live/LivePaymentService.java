@@ -263,7 +263,7 @@ public class LivePaymentService {
     }
 
     public void pushDataToElastic(LiveInvoice invoice, List<LiveInvoiceItem> invoiceItems) throws IOException {
-        ElasticsearchClient esClient = new ElasticClient().get();
+        ElasticsearchClient esClient = ElasticClient.get();
 
         BulkRequest.Builder br = new BulkRequest.Builder();
         for (LiveInvoiceItem invoiceItem : invoiceItems){

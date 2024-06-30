@@ -16,10 +16,7 @@ import com.project.pescueshop.model.exception.FriendlyException;
 import com.project.pescueshop.repository.dao.CartDAO;
 import com.project.pescueshop.repository.dao.PaymentDAO;
 import com.project.pescueshop.util.Util;
-import com.project.pescueshop.util.constant.EnumInvoiceStatus;
-import com.project.pescueshop.util.constant.EnumPaymentType;
-import com.project.pescueshop.util.constant.EnumResponseCode;
-import com.project.pescueshop.util.constant.EnumVoucherType;
+import com.project.pescueshop.util.constant.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.hc.core5.concurrent.CompletedFuture;
@@ -323,13 +320,13 @@ public class PaymentService {
     }
 
     public void pushDataToElastic(Invoice invoice, List<InvoiceItemDTO> invoiceItems) throws IOException {
-        ElasticsearchClient esClient = new ElasticClient().get();
+        ElasticsearchClient esClient = ElasticClient.get();
 
         BulkRequest.Builder br = new BulkRequest.Builder();
         for (InvoiceItemDTO invoiceItem : invoiceItems){
             br.operations(op -> op
                     .index(idx -> idx
-                            .index("test")
+                            .index(EnumElasticIndex.INVOICE_DATA.getName())
                             .id(invoiceItem.getInvoiceId())
                             .document(InvoiceData.builder()
                                     .productId(invoiceItem.getProductId())
