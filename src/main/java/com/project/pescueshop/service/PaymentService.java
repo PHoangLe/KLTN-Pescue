@@ -321,32 +321,32 @@ public class PaymentService {
         return singleItemCheckOut(user, singleItemCheckOutInfoDTO);
     }
 
-    private void pushDataToElastic(Invoice invoice, List<InvoiceItemDTO> invoiceItems) throws IOException {
-//        ElasticsearchClient esClient = new ElasticClient().get();
-//
-//        BulkRequest.Builder br = new BulkRequest.Builder();
-//        for (InvoiceItemDTO invoiceItem : invoiceItems){
-//            br.operations(op -> op
-//                    .index(idx -> idx
-//                            .index(Index.getIndexName(Index.Name.INVOICE_DATA))
-//                            .id(invoiceItem.getInvoiceId())
-//                            .document(InvoiceData.builder()
-//                                    .productId(invoiceItem.getProductId())
-//                                    .invoiceId(invoiceItem.getInvoiceId())
-//                                    .userId(invoice.getUserId()).build()
-//                            )
-//                    )
-//            );
-//        }
-//
-//        BulkResponse result = esClient.bulk(br.build());
-//        if (result.errors()) {
-//            log .error("Bulk had errors");
-//            for (BulkResponseItem item: result.items()) {
-//                if (item.error() != null) {
-//                    log.error(item.error().reason());
-//                }
-//            }
-//        }
+    public void pushDataToElastic(Invoice invoice, List<InvoiceItemDTO> invoiceItems) throws IOException {
+        ElasticsearchClient esClient = new ElasticClient().get();
+
+        BulkRequest.Builder br = new BulkRequest.Builder();
+        for (InvoiceItemDTO invoiceItem : invoiceItems){
+            br.operations(op -> op
+                    .index(idx -> idx
+                            .index("test")
+                            .id(invoiceItem.getInvoiceId())
+                            .document(InvoiceData.builder()
+                                    .productId(invoiceItem.getProductId())
+                                    .invoiceId(invoiceItem.getInvoiceId())
+                                    .userId(invoice.getUserId()).build()
+                            )
+                    )
+            );
+        }
+
+        BulkResponse result = esClient.bulk(br.build());
+        if (result.errors()) {
+            log .error("Bulk had errors");
+            for (BulkResponseItem item: result.items()) {
+                if (item.error() != null) {
+                    log.error(item.error().reason());
+                }
+            }
+        }
     }
 }
