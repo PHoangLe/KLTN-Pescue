@@ -1,12 +1,11 @@
 package com.project.pescueshop.model.elastic.document;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
-@Getter
-@Setter
+@AllArgsConstructor
+@RequiredArgsConstructor
 @Builder
+@Data
 public class ViewAuditLogData {
     private String viewAuditLogId;
     private String objectId;

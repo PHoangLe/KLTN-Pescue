@@ -1,14 +1,13 @@
 package com.project.pescueshop.model.elastic.document;
 
 import com.project.pescueshop.model.entity.Product;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import org.apache.commons.lang3.ArrayUtils;
 
-@Getter
-@Setter
+@AllArgsConstructor
+@RequiredArgsConstructor
 @Builder
+@Data
 public class ProductData {
     private String productId;
     private String image;
