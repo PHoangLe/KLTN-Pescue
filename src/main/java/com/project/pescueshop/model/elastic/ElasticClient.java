@@ -21,7 +21,7 @@ public class ElasticClient {
     private static void init() {
         String url = System.getenv("ELASTIC_URL");
         RestClient restClient = RestClient
-                .builder(HttpHost.create(url))
+                .builder(new HttpHost(url, 443, "https"))
                 .build();
 
         ElasticsearchTransport transport = new RestClientTransport(
