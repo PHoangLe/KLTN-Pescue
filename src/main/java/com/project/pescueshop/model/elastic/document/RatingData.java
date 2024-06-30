@@ -1,13 +1,12 @@
 package com.project.pescueshop.model.elastic.document;
 
 import com.project.pescueshop.model.entity.Rating;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
-@Getter
-@Setter
+@AllArgsConstructor
+@RequiredArgsConstructor
 @Builder
+@Data
 public class RatingData{
     private String ratingId;
     private String productId;

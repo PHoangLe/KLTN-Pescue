@@ -1,15 +1,14 @@
 package com.project.pescueshop.model.elastic.document;
 
 import com.project.pescueshop.model.entity.Merchant;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.Date;
 
-@Getter
-@Setter
+@AllArgsConstructor
+@RequiredArgsConstructor
 @Builder
+@Data
 public class MerchantData {
     private String merchantId;
     private String userId;

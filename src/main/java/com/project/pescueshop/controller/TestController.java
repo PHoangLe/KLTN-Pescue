@@ -3,6 +3,7 @@ package com.project.pescueshop.controller;
 import com.project.pescueshop.model.dto.*;
 import com.project.pescueshop.model.dto.general.ResponseDTO;
 import com.project.pescueshop.model.elastic.document.InvoiceData;
+import com.project.pescueshop.model.elastic.document.RatingData;
 import com.project.pescueshop.model.entity.Invoice;
 import com.project.pescueshop.model.entity.live.LiveInvoice;
 import com.project.pescueshop.model.exception.FriendlyException;
@@ -31,10 +32,10 @@ public class TestController {
     private final DataService dataService;
 
     @GetMapping("")
-    public ResponseEntity<ResponseDTO<List<InvoiceData>>> report() throws IOException, FriendlyException {
-        List<InvoiceData> data = dataService.getInvoiceData();
+    public ResponseEntity<ResponseDTO<List<RatingData>>> report() throws IOException, FriendlyException {
+        List<RatingData> data = dataService.getRatingData();
 
-        ResponseDTO<List<InvoiceData>> result = new ResponseDTO<>(EnumResponseCode.SUCCESS, data);
+        ResponseDTO<List<RatingData>> result = new ResponseDTO<>(EnumResponseCode.SUCCESS, data);
         return ResponseEntity.ok(result);
     }
 }
