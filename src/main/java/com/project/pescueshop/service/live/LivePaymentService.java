@@ -245,6 +245,7 @@ public class LivePaymentService {
             }
         }
         return CheckoutResultDTO.builder()
+                .invoiceIdList(List.of(liveInvoice.getLiveInvoiceId()))
                 .cartId(cartCheckOutInfoDTO.getCartId())
                 .build();
     }

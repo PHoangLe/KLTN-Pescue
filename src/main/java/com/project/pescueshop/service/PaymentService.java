@@ -210,6 +210,7 @@ public class PaymentService {
             }
         }
         return CheckoutResultDTO.builder()
+                .invoiceIdList(invoiceList.stream().map(Invoice::getInvoiceId).toList())
                 .cartId(cartCheckOutInfoDTO.getCartId())
                 .build();
     }
