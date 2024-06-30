@@ -6,13 +6,11 @@ import co.elastic.clients.transport.ElasticsearchTransport;
 import co.elastic.clients.transport.rest_client.RestClientTransport;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
+
 import org.apache.http.HttpHost;
 import org.elasticsearch.client.RestClient;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 
 @Service
 @RequiredArgsConstructor
@@ -22,9 +20,9 @@ public class ElasticClient {
     private ElasticsearchClient esClient;
 
     @PostConstruct
-    private void init() throws UnknownHostException {
+    private void init() {
         RestClient restClient = RestClient
-                .builder(new HttpHost(InetAddress.getByName(ELASTIC_URL), 80))
+                .builder(HttpHost.create(ELASTIC_URL))
                 .build();
 
         ElasticsearchTransport transport = new RestClientTransport(
