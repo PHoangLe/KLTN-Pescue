@@ -262,32 +262,32 @@ public class LivePaymentService {
         return singleItemCheckOut(user, singleItemCheckOutInfoDTO);
     }
 
-    private void pushDataToElastic(LiveInvoice invoice, List<LiveInvoiceItem> invoiceItems) throws IOException {
-//        ElasticsearchClient esClient = new ElasticClient().get();
-//
-//        BulkRequest.Builder br = new BulkRequest.Builder();
-//        for (LiveInvoiceItem invoiceItem : invoiceItems){
-//            br.operations(op -> op
-//                    .index(idx -> idx
-//                            .index(Index.getIndexName(Index.Name.INVOICE_DATA))
-//                            .id(invoiceItem.getLiveInvoiceId())
-//                            .document(InvoiceData.builder()
-//                                    .productId(invoiceItem.getLiveItem().getProductId())
-//                                    .invoiceId(invoiceItem.getLiveInvoiceId())
-//                                    .userId(invoice.getUserId()).build()
-//                            )
-//                    )
-//            );
-//        }
-//
-//        BulkResponse result = esClient.bulk(br.build());
-//        if (result.errors()) {
-//            log .error("Bulk had errors");
-//            for (BulkResponseItem item: result.items()) {
-//                if (item.error() != null) {
-//                    log.error(item.error().reason());
-//                }
-//            }
-//        }
+    public void pushDataToElastic(LiveInvoice invoice, List<LiveInvoiceItem> invoiceItems) throws IOException {
+        ElasticsearchClient esClient = ElasticClient.get();
+
+        BulkRequest.Builder br = new BulkRequest.Builder();
+        for (LiveInvoiceItem invoiceItem : invoiceItems){
+            br.operations(op -> op
+                    .index(idx -> idx
+                            .index(Index.getIndexName(Index.Name.INVOICE_DATA))
+                            .id(invoiceItem.getLiveInvoiceId())
+                            .document(InvoiceData.builder()
+                                    .productId(invoiceItem.getLiveItem().getProductId())
+                                    .invoiceId(invoiceItem.getLiveInvoiceId())
+                                    .userId(invoice.getUserId()).build()
+                            )
+                    )
+            );
+        }
+
+        BulkResponse result = esClient.bulk(br.build());
+        if (result.errors()) {
+            log .error("Bulk had errors");
+            for (BulkResponseItem item: result.items()) {
+                if (item.error() != null) {
+                    log.error(item.error().reason());
+                }
+            }
+        }
     }
 }
