@@ -9,7 +9,9 @@ import java.util.Map;
 public enum EnumElasticIndex {
     INVOICE_DATA("invoice_data"),
     PRODUCT_DATA("product_data"),
-    MERCHANT_DATA("merchant_data");
+    MERCHANT_DATA("merchant_data"),
+    VIEW_AUDIT_LOG("views_audit_log_data"),
+    RATING_DATA("rating_data");
 
     private static final Map<String, EnumElasticIndex> BY_NAME = new HashMap<>();
 

@@ -3,6 +3,8 @@ package com.project.pescueshop.controller.data;
 import com.cloudinary.utils.StringUtils;
 import com.project.pescueshop.model.dto.InvoiceDataDTO;
 import com.project.pescueshop.model.dto.general.ResponseDTO;
+import com.project.pescueshop.model.elastic.document.InvoiceData;
+import com.project.pescueshop.model.elastic.document.RatingData;
 import com.project.pescueshop.model.entity.ViewAuditLog;
 import com.project.pescueshop.model.exception.FriendlyException;
 import com.project.pescueshop.service.data.DataService;
@@ -37,17 +39,31 @@ public class DataController {
         return ResponseEntity.ok(new ResponseDTO<>(EnumResponseCode.SUCCESS, resp, "views"));
     }
 
-    @GetMapping("/invoice-data")
-    public ResponseEntity<ResponseDTO<List<InvoiceDataDTO>>> getInvoiceData(@RequestHeader("client-id") String clientId, @RequestHeader("client-key") String clientKey) throws FriendlyException {
-        if(StringUtils.isEmpty(clientId) || StringUtils.isEmpty(clientKey)){
+    @GetMapping("/invoice")
+    public ResponseEntity<ResponseDTO<List<InvoiceData>>> getInvoiceData(@RequestHeader("client-id") String clientId, @RequestHeader("client-key") String clientKey) throws FriendlyException {
+        if (!validatingClient(clientId, clientKey)){
             throw new FriendlyException(EnumResponseCode.CLIENT_ID_OR_CLIENT_KEY_INVALID);
         }
 
-        if (!clientKey.equals("opIGrWw2u0WBmZHVIyDRqM6t0P2NKE1c") || !clientId.equals("PqescSU7WscLlNRvHK2Ew397vBa0b7dr")){
-            throw new FriendlyException(EnumResponseCode.CLIENT_ID_OR_CLIENT_KEY_INVALID);
-        }
-
-        List<InvoiceDataDTO> resp = dataService.getInvoiceData();
+        List<InvoiceData> resp = dataService.getInvoiceData();
         return ResponseEntity.ok(new ResponseDTO<>(EnumResponseCode.SUCCESS, resp, "invoiceData"));
+    }
+
+    @GetMapping("/rating")
+    public ResponseEntity<ResponseDTO<List<RatingData>>> getRatingData(@RequestHeader("client-id") String clientId, @RequestHeader("client-key") String clientKey) throws FriendlyException {
+        if (!validatingClient(clientId, clientKey)){
+            throw new FriendlyException(EnumResponseCode.CLIENT_ID_OR_CLIENT_KEY_INVALID);
+        }
+
+        List<RatingData> resp = dataService.getRatingData();
+        return ResponseEntity.ok(new ResponseDTO<>(EnumResponseCode.SUCCESS, resp, "ratingData"));
+    }
+
+    private Boolean validatingClient(String clientId, String clientKey) {
+        if(StringUtils.isEmpty(clientId) || StringUtils.isEmpty(clientKey)){
+            return false;
+        }
+
+        return clientKey.equals("opIGrWw2u0WBmZHVIyDRqM6t0P2NKE1c") && clientId.equals("PqescSU7WscLlNRvHK2Ew397vBa0b7dr");
     }
 }

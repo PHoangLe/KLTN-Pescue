@@ -8,5 +8,7 @@ import lombok.*;
 public class InvoiceData {
     private String invoiceId;
     private String productId;
+    private Integer avgRating;
+    private String categoryId;
     private String userId;
 }
