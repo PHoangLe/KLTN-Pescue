@@ -37,6 +37,7 @@ public class RatingService {
                 .productId(dto.getProductId())
                 .date(Util.getCurrentDate())
                 .user(user)
+                .userId(user.getUserId())
                 .message(dto.getMessage())
                 .isBought(true)
                 .build();
