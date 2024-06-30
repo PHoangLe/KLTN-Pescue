@@ -19,4 +19,8 @@ public class RatingDAO {
     public List<Rating> getRatingByProductId(String productId){
         return ratingRepository.findRatingByProductId(productId);
     }
+
+    public Rating getRatingByProductIdAndUserId(String productId, String userId) {
+        return ratingRepository.findRatingByProductIdAndUserId(productId, userId).orElse(null);
+    }
 }

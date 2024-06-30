@@ -1,12 +1,12 @@
 package com.project.pescueshop.service;
 
 import co.elastic.clients.elasticsearch.core.IndexRequest;
-import co.elastic.clients.elasticsearch.core.IndexResponse;
 import com.project.pescueshop.model.dto.ProductDTO;
 import com.project.pescueshop.model.dto.ProductDashboardResult;
 import com.project.pescueshop.model.dto.ProductListDTO;
 import com.project.pescueshop.model.elastic.ElasticClient;
 import com.project.pescueshop.model.elastic.document.ProductData;
+import com.project.pescueshop.model.elastic.document.ViewAuditLogData;
 import com.project.pescueshop.model.entity.*;
 import com.project.pescueshop.model.exception.FriendlyException;
 import com.project.pescueshop.repository.dao.ProductDAO;
