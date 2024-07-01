@@ -2,11 +2,14 @@ package com.project.pescueshop.controller;
 
 import com.project.pescueshop.model.dto.*;
 import com.project.pescueshop.model.dto.general.ResponseDTO;
+import com.project.pescueshop.model.elastic.document.InvoiceData;
+import com.project.pescueshop.model.elastic.document.RatingData;
 import com.project.pescueshop.model.entity.Invoice;
 import com.project.pescueshop.model.entity.live.LiveInvoice;
 import com.project.pescueshop.model.exception.FriendlyException;
 import com.project.pescueshop.repository.dao.PaymentDAO;
 import com.project.pescueshop.service.*;
+import com.project.pescueshop.service.data.DataService;
 import com.project.pescueshop.util.constant.EnumResponseCode;
 import io.swagger.annotations.Api;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -26,19 +29,13 @@ import java.util.List;
 @CrossOrigin
 @Api
 public class TestController {
-    private final PaymentService paymentService;
+    private final DataService dataService;
 
     @GetMapping("")
-    public ResponseEntity<ResponseDTO<Invoice>> report() throws IOException {
-        Invoice invoice = Invoice.builder().build();
+    public ResponseEntity<ResponseDTO<List<RatingData>>> report() throws IOException, FriendlyException {
+        List<RatingData> data = dataService.getRatingData();
 
-        paymentService.pushDataToElastic(invoice, List.of(InvoiceItemDTO.builder()
-                        .userId("1")
-                        .invoiceId("1")
-                        .productId("3")
-                .build()));
-
-        ResponseDTO<Invoice> result = new ResponseDTO<>(EnumResponseCode.SUCCESS, invoice);
+        ResponseDTO<List<RatingData>> result = new ResponseDTO<>(EnumResponseCode.SUCCESS, data);
         return ResponseEntity.ok(result);
     }
 }

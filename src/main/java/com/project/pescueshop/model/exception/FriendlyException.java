@@ -9,6 +9,7 @@ public class FriendlyException extends Exception{
 
     public FriendlyException(String message) {
         super(message);
+        this.statusCode = EnumResponseCode.BAD_REQUEST;
     }
     public FriendlyException(EnumResponseCode enumResponseCode){
         super(enumResponseCode.getMessage());

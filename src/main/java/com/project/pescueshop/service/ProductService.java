@@ -1,12 +1,17 @@
 package com.project.pescueshop.service;
 
+import co.elastic.clients.elasticsearch.core.IndexRequest;
 import com.project.pescueshop.model.dto.ProductDTO;
 import com.project.pescueshop.model.dto.ProductDashboardResult;
 import com.project.pescueshop.model.dto.ProductListDTO;
+import com.project.pescueshop.model.elastic.ElasticClient;
+import com.project.pescueshop.model.elastic.document.ProductData;
+import com.project.pescueshop.model.elastic.document.ViewAuditLogData;
 import com.project.pescueshop.model.entity.*;
 import com.project.pescueshop.model.exception.FriendlyException;
 import com.project.pescueshop.repository.dao.ProductDAO;
 import com.project.pescueshop.repository.dao.VarietyAttributeDAO;
+import com.project.pescueshop.util.constant.EnumElasticIndex;
 import com.project.pescueshop.util.constant.EnumPetType;
 import com.project.pescueshop.util.constant.EnumResponseCode;
 import com.project.pescueshop.util.constant.EnumStatus;
@@ -16,6 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.stream.Collectors;
@@ -67,6 +73,8 @@ public class ProductService extends BaseService {
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
+
+            pushOrUpdateProductToElasticSearch(product);
         });
 
         return transformProductToDTO(product);
@@ -167,6 +175,10 @@ public class ProductService extends BaseService {
         product.setPetType(dto.getPetType());
         productDAO.saveAndFlushProduct(product);
 
+        CompletableFuture.runAsync(() -> {
+            pushOrUpdateProductToElasticSearch(product);
+        });
+
         return transformProductToDTO(product);
     }
 
@@ -186,6 +198,10 @@ public class ProductService extends BaseService {
         );
 
         productDAO.saveAndFlushProduct(product);
+
+        CompletableFuture.runAsync(() -> {
+            pushOrUpdateProductToElasticSearch(product);
+        });
 
         return product.getImages();
     }
@@ -222,5 +238,20 @@ public class ProductService extends BaseService {
         });
 
         return listProduct;
+    }
+
+    private void pushOrUpdateProductToElasticSearch(Product product) {
+        ProductData productData = ProductData.fromProduct(product);
+
+        IndexRequest<ProductData> request = IndexRequest.of(i -> i
+                .index(EnumElasticIndex.PRODUCT_DATA.getName())
+                .id(productData.getProductId())
+                .document(productData));
+        try {
+            ElasticClient.get().index(request);
+            log.info("Push product to elastic search: {}", productData);
+        } catch (IOException e) {
+            log.error("Error when push product to elastic search", e);
+        }
     }
 }

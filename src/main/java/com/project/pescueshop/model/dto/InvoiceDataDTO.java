@@ -9,9 +9,11 @@ import lombok.*;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Name(noun = "data", pluralNoun = "datas")
+@Name(noun = "data", pluralNoun = "data")
 public class InvoiceDataDTO {
     private String invoiceId;
-    private String userId;
     private String productId;
+    private Integer avgRating;
+    private String categoryId;
+    private String userId;
 }
