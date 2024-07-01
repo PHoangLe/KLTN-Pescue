@@ -11,6 +11,7 @@ import com.project.pescueshop.service.data.DataService;
 import com.project.pescueshop.util.constant.EnumResponseCode;
 import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,6 +21,7 @@ import java.util.List;
 @RequestMapping("/api/v1/data")
 @RequiredArgsConstructor
 @CrossOrigin
+@Slf4j
 @Api
 public class DataController {
     private final DataService dataService;
@@ -27,11 +29,8 @@ public class DataController {
     @GetMapping("/views-audit-log/{objectId}")
     public ResponseEntity<ResponseDTO<List<ViewAuditLog>>> getViewsAudiLogData(@PathVariable String objectId,
                                                                                @RequestHeader("client-id") String clientId, @RequestHeader("client-key") String clientKey) throws FriendlyException {
-        if(StringUtils.isEmpty(clientId) || StringUtils.isEmpty(clientKey)){
-            throw new FriendlyException(EnumResponseCode.CLIENT_ID_OR_CLIENT_KEY_INVALID);
-        }
-
-        if (!clientKey.equals("opIGrWw2u0WBmZHVIyDRqM6t0P2NKE1c") || !clientId.equals("PqescSU7WscLlNRvHK2Ew397vBa0b7dr")){
+        if (!validatingClient(clientId, clientKey)){
+            log.info("method: GET path: /api/v1/data/views-audit-logs/{} client id or client key invalid", objectId);
             throw new FriendlyException(EnumResponseCode.CLIENT_ID_OR_CLIENT_KEY_INVALID);
         }
 
@@ -42,6 +41,7 @@ public class DataController {
     @GetMapping("/invoice")
     public ResponseEntity<ResponseDTO<List<InvoiceData>>> getInvoiceData(@RequestHeader("client-id") String clientId, @RequestHeader("client-key") String clientKey) throws FriendlyException {
         if (!validatingClient(clientId, clientKey)){
+            log.info("method: GET path: /api/v1/data/invoice client id or client key invalid");
             throw new FriendlyException(EnumResponseCode.CLIENT_ID_OR_CLIENT_KEY_INVALID);
         }
 
@@ -52,6 +52,7 @@ public class DataController {
     @GetMapping("/rating")
     public ResponseEntity<ResponseDTO<List<RatingData>>> getRatingData(@RequestHeader("client-id") String clientId, @RequestHeader("client-key") String clientKey) throws FriendlyException {
         if (!validatingClient(clientId, clientKey)){
+            log.info("method: GET path: /api/v1/data/rating client id or client key invalid");
             throw new FriendlyException(EnumResponseCode.CLIENT_ID_OR_CLIENT_KEY_INVALID);
         }
 
