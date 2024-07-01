@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 @RestController
 @RequestMapping("/api/v1/merchant")
@@ -63,7 +64,7 @@ public class MerchantController {
     public ResponseEntity<ResponseDTO<String>> updateMerchantInfo(
             @RequestPart("updateMerchantInfoRequest") UpdateMerchantInfoRequest updateMerchantInfoRequest,
             @RequestPart(value = "avatar", required = false) MultipartFile avatarFile,
-            @RequestPart(value = "coverImage", required = false) MultipartFile coverImageFile) throws FriendlyException {
+            @RequestPart(value = "coverImage", required = false) MultipartFile coverImageFile) throws FriendlyException, ExecutionException, InterruptedException {
         MerchantDTO dto = merchantService.updateMerchantInfo(updateMerchantInfoRequest, avatarFile, coverImageFile);
         ResponseDTO<String> result = new ResponseDTO<>(EnumResponseCode.SUCCESS, "Success", "message");
         return ResponseEntity.ok(result);

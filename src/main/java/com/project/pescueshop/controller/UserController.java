@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 @RestController
 @RequestMapping("/api/v1/user")
@@ -65,7 +66,7 @@ public class UserController {
     @SecurityRequirement(name = "Bearer Authentication")
     public ResponseEntity<ResponseDTO<UserDTO>> updateUserInfo(
             @RequestPart UpdateUserProfileDTO updateUserProfileDTO,
-            @RequestPart(required = false) MultipartFile userAvatar) throws FriendlyException {
+            @RequestPart(required = false) MultipartFile userAvatar) throws FriendlyException, ExecutionException, InterruptedException {
         UserDTO user = userService.updateUserProfile(updateUserProfileDTO, userAvatar);
         ResponseDTO<UserDTO> result = new ResponseDTO<>(EnumResponseCode.SUCCESS, user, "userInfo");
         return ResponseEntity.ok(result);
