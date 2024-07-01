@@ -11,7 +11,7 @@ import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/openvidu/webhook")
+@RequestMapping("/openvidu/webhooks")
 @Slf4j
 public class OpenviduWebHookController {
     private final LiveService liveService;
