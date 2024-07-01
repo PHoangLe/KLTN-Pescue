@@ -162,12 +162,45 @@ public class LiveService {
             Session session = openvidu.getActiveSession(liveSession.getSessionKey());
             session.close();
         } catch (OpenViduHttpException | OpenViduJavaClientException e) {
-            log.error("Error ending session: " + e.getMessage());
+            log.error("Error ending session: {}", e.getMessage());
             throw e;
         }
 
         liveSession.setStatus(EnumLiveStatus.DONE.getValue());
         liveSession.setEndTime(new Date());
+
+        liveSessionService.saveAndFlushLiveSession(liveSession);
+    }
+
+    public void processWebHooks(Map<String, Object> bodyMap) {
+        String event = bodyMap.get("event").toString();
+        switch (event) {
+            case "sessionDestroyed" -> processLiveDestroyed(bodyMap);
+            case "sessionCreated" -> processLiveCreated(bodyMap);
+        }
+    }
+
+    private void processLiveCreated(Map<String, Object> bodyMap) {
+        int timestamp = Integer.parseInt(bodyMap.get("timestamp").toString());
+        String sessionKey = bodyMap.get("sessionId").toString();
+
+        log.info("openvidu webhook: processLiveCreated: sessionKey {} timestamp {}", sessionKey, timestamp);
+    }
+
+    private void processLiveDestroyed(Map<String, Object> bodyMap) {
+        int timestamp = Integer.parseInt(bodyMap.get("timestamp").toString());
+        String sessionKey = bodyMap.get("sessionId").toString();
+        String reason = bodyMap.get("reason").toString();
+
+        LiveSession liveSession = liveSessionService.findBySessionKey(sessionKey);
+        if (liveSession == null){
+            log.error("openvidu webhook: processLiveDestroyed: liveSession NotFound sessionKey: {}", sessionKey);
+            return;
+        }
+        log.info("openvidu webhook: processLiveDestroyed: sessionKey {} timestamp {} reason {}", sessionKey, timestamp, reason);
+
+        liveSession.setStatus(EnumLiveStatus.DONE.getValue());
+        liveSession.setEndTime(new Date(timestamp));
 
         liveSessionService.saveAndFlushLiveSession(liveSession);
     }
