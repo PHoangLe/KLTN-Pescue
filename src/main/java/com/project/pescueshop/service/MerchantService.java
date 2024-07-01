@@ -214,8 +214,8 @@ public class MerchantService extends BaseService {
 
     public MerchantDTO updateMerchantInfo(
             UpdateMerchantInfoRequest updateMerchantInfoRequest,
-            MultipartFile avatarFile,
-            MultipartFile coverImageFile) throws FriendlyException, ExecutionException, InterruptedException {
+            MultipartFile avatar,
+            MultipartFile coverImage) throws FriendlyException, ExecutionException, InterruptedException {
         Merchant merchant = getMerchantById(updateMerchantInfoRequest.getMerchantId());
         if (merchant == null) {
             throw new FriendlyException(EnumResponseCode.MERCHANT_NOT_FOUND);
@@ -223,8 +223,8 @@ public class MerchantService extends BaseService {
 
         CompletableFuture<String> avatarFuture = CompletableFuture.supplyAsync(() -> {
             try {
-                if (avatarFile != null) {
-                    return threadService.uploadMerchantAvatar(merchant.getMerchantId(), avatarFile);
+                if (avatar != null) {
+                    return threadService.uploadMerchantAvatar(merchant.getMerchantId(), avatar);
                 }
             } catch (Exception e) {
                 log.error("Error when upload avatar for merchant: {}", merchant.getMerchantId(), e);
@@ -234,8 +234,8 @@ public class MerchantService extends BaseService {
 
         CompletableFuture<String> coverFuture = CompletableFuture.supplyAsync(() -> {
             try {
-                if (coverImageFile != null) {
-                    return threadService.uploadMerchantCover(merchant.getMerchantId(), coverImageFile);
+                if (coverImage != null) {
+                    return threadService.uploadMerchantCover(merchant.getMerchantId(), coverImage);
                 }
             } catch (Exception e) {
                 log.error("Error when upload cover image for merchant: {}", merchant.getMerchantId(), e);

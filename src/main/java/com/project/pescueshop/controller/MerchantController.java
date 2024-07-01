@@ -63,9 +63,9 @@ public class MerchantController {
     @SecurityRequirement(name = "Bearer Authentication")
     public ResponseEntity<ResponseDTO<String>> updateMerchantInfo(
             @RequestPart("updateMerchantInfoRequest") UpdateMerchantInfoRequest updateMerchantInfoRequest,
-            @RequestPart(value = "avatar", required = false) MultipartFile avatarFile,
-            @RequestPart(value = "coverImage", required = false) MultipartFile coverImageFile) throws FriendlyException, ExecutionException, InterruptedException {
-        MerchantDTO dto = merchantService.updateMerchantInfo(updateMerchantInfoRequest, avatarFile, coverImageFile);
+            @RequestPart(required = false) MultipartFile avatar,
+            @RequestPart(required = false) MultipartFile coverImage) throws FriendlyException, ExecutionException, InterruptedException {
+        MerchantDTO dto = merchantService.updateMerchantInfo(updateMerchantInfoRequest, avatar, coverImage);
         ResponseDTO<String> result = new ResponseDTO<>(EnumResponseCode.SUCCESS, "Success", "message");
         return ResponseEntity.ok(result);
     }
