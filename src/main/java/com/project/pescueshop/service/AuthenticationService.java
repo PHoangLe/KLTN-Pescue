@@ -176,6 +176,9 @@ public class AuthenticationService {
     }
 
     public boolean isMerchant(User user){
+        if (user.getUserRoles() == null){
+            return false;
+        }
         return user.getUserRoles().stream().anyMatch(role -> role.getRoleName().equals("ROLE_MERCHANT"));
     }
 }
