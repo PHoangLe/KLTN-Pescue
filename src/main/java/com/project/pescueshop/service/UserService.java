@@ -21,6 +21,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 @Service
 @RequiredArgsConstructor
@@ -94,8 +95,19 @@ public class UserService extends BaseService {
         userDAO.saveAndFlushUser(user);
     }
 
-    public UserDTO updateUserProfile(UpdateUserProfileDTO dto, MultipartFile userAvatar) throws FriendlyException {
+    public UserDTO updateUserProfile(UpdateUserProfileDTO dto, MultipartFile userAvatar) throws FriendlyException, ExecutionException, InterruptedException {
         User user = findById(dto.getUserId());
+
+        CompletableFuture<String> avatarPathFuture = CompletableFuture.supplyAsync(() -> {
+            try {
+                if (userAvatar != null){
+                    return fileUploadService.uploadFile(userAvatar, "avatar", user.getUserId());
+                }
+            } catch (Exception e){
+                log.error("Error when upload avatar for user: {}", user.getUserId(), e);
+            }
+            return null;
+        });
 
         if (user == null){
             throw new FriendlyException(EnumResponseCode.ACCOUNT_NOT_FOUND);
@@ -104,20 +116,11 @@ public class UserService extends BaseService {
         user.setUserFirstName(dto.getUserFirstName());
         user.setUserLastName(dto.getUserLastName());
         user.setUserPhoneNumber(dto.getUserPhoneNumber());
+        if (avatarPathFuture.get() != null){
+            user.setUserAvatar(avatarPathFuture.join());
+        }
 
         userDAO.saveAndFlushUser(user);
-
-        CompletableFuture.runAsync(() -> {
-            try {
-                if (userAvatar != null){
-                    String avatarPath = fileUploadService.uploadFile(userAvatar, "avatar", user.getUserId());
-                    user.setUserAvatar(avatarPath);
-                    userDAO.saveAndFlushUser(user);
-                }
-            } catch (Exception e){
-                log.error("Error when upload avatar for user: {}", user.getUserId(), e);
-            }
-        });
 
         return new UserDTO(user);
     }

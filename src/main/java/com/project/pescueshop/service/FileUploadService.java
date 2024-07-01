@@ -1,6 +1,7 @@
 package com.project.pescueshop.service;
 
 import com.cloudinary.Cloudinary;
+import com.project.pescueshop.model.exception.FriendlyException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -29,6 +30,7 @@ public class FileUploadService extends BaseService {
                 log.trace("File doesn't exist");
             return  uploadResult.get("url").toString();
         } catch (Exception e) {
+            log.error("Error occurred while uploading file path: {} prefix: {}", file, prefix, e);
             throw new RuntimeException(e);
         }
     }
