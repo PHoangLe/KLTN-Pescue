@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 @RequiredArgsConstructor
 @Service
@@ -214,11 +215,33 @@ public class MerchantService extends BaseService {
     public MerchantDTO updateMerchantInfo(
             UpdateMerchantInfoRequest updateMerchantInfoRequest,
             MultipartFile avatarFile,
-            MultipartFile coverImageFile) throws FriendlyException {
+            MultipartFile coverImageFile) throws FriendlyException, ExecutionException, InterruptedException {
         Merchant merchant = getMerchantById(updateMerchantInfoRequest.getMerchantId());
         if (merchant == null) {
             throw new FriendlyException(EnumResponseCode.MERCHANT_NOT_FOUND);
         }
+
+        CompletableFuture<String> avatarFuture = CompletableFuture.supplyAsync(() -> {
+            try {
+                if (avatarFile != null) {
+                    return threadService.uploadMerchantAvatar(merchant.getMerchantId(), avatarFile);
+                }
+            } catch (Exception e) {
+                log.error("Error when upload avatar for merchant: {}", merchant.getMerchantId(), e);
+            }
+            return null;
+        });
+
+        CompletableFuture<String> coverFuture = CompletableFuture.supplyAsync(() -> {
+            try {
+                if (coverImageFile != null) {
+                    return threadService.uploadMerchantCover(merchant.getMerchantId(), coverImageFile);
+                }
+            } catch (Exception e) {
+                log.error("Error when upload cover image for merchant: {}", merchant.getMerchantId(), e);
+            }
+            return null;
+        });
 
         merchant.setMerchantName(updateMerchantInfoRequest.getMerchantName());
         merchant.setMerchantDescription(updateMerchantInfoRequest.getMerchantDescription());
@@ -230,15 +253,13 @@ public class MerchantService extends BaseService {
         merchant.setWardCode(updateMerchantInfoRequest.getWardCode());
         merchant.setPhoneNumber(updateMerchantInfoRequest.getPhoneNumber());
 
-        CompletableFuture.runAsync(() -> {
-            if (avatarFile != null) {
-                threadService.uploadMerchantAvatar(merchant.getMerchantId(), avatarFile);
-            }
+        if (avatarFuture.get() != null){
+            merchant.setMerchantAvatar(avatarFuture.get());
+        }
 
-            if (coverImageFile != null) {
-                threadService.uploadMerchantCover(merchant.getMerchantId(), coverImageFile);
-            }
-        });
+        if (coverFuture.get() != null){
+            merchant.setMerchantCover(coverFuture.get());
+        }
 
         merchantDAO.saveAndFlushMerchant(merchant);
         return toDTO(merchant);

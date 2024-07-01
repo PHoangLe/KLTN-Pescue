@@ -231,7 +231,13 @@ public class ProductService extends BaseService {
     }
 
     public List<ProductListDTO> getListProduct(String categoryId, String subCategoryId, String brandId, String merchantId, Long minPrice, Long maxPrice, Integer page, Integer size){
-        return productDAO.getListProduct(categoryId, subCategoryId, brandId, merchantId, minPrice, maxPrice, page, size);
+        List<ProductListDTO> listProduct = productDAO.getListProduct(categoryId, subCategoryId, brandId, merchantId, minPrice, maxPrice, page, size);
+
+        listProduct.forEach(product -> {
+            product.setTotalRecord((long) listProduct.size());
+        });
+
+        return listProduct;
     }
 
     private void pushOrUpdateProductToElasticSearch(Product product) {
