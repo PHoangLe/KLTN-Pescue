@@ -7,6 +7,8 @@ import com.project.pescueshop.repository.jpa.InvoiceItemRepository;
 import com.project.pescueshop.repository.jpa.InvoiceRepository;
 import com.project.pescueshop.repository.mapper.InvoiceItemMapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.stereotype.Repository;
 
@@ -50,16 +52,8 @@ public class PaymentDAO extends BaseDAO{
         return jdbcTemplate.query(sql, parameters, invoiceItemMapper);
     }
 
-    public List<InvoiceListResultDTO> findAllInvoice(){
-        List<Object[]> invoices = invoiceRepository.findAllInvoice();
-
-        List<InvoiceListResultDTO> results = new ArrayList<>();
-
-        for (Object[] object : invoices){
-            results.add(new InvoiceListResultDTO((Invoice) object[0], object[1] + " " + object[2]));
-        }
-
-        return results;
+    public Page<Invoice> findAllInvoice(Date fromDate, Date toDate, Pageable pageable, String merchantId){
+        return invoiceRepository.findAllInvoice(fromDate, toDate, pageable, merchantId);
     }
 
     public List<Invoice> findAllInvoiceByUserId(String userId) {

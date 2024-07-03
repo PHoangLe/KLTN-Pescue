@@ -13,7 +13,10 @@ import com.project.pescueshop.repository.dao.LiveInvoiceDAO;
 import com.project.pescueshop.repository.dao.PaymentDAO;
 import com.project.pescueshop.util.constant.EnumInvoiceStatus;
 import com.project.pescueshop.util.constant.EnumResponseCode;
+import io.swagger.models.auth.In;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -28,14 +31,15 @@ public class InvoiceService {
     private final LiveInvoiceDAO liveInvoiceDAO;
     private final AuthenticationService authenticationService;
 
-    public List<InvoiceListResultDTO> findAllInvoice(Date fromDate, Date toDate) throws FriendlyException {
-        List<InvoiceListResultDTO> resp = paymentDAO.findAllInvoice().stream()
-                .filter(invoice -> invoice.getCreatedDate().before(toDate) && invoice.getCreatedDate().after(fromDate))
-                .toList();
+    public Page<Invoice> findAllInvoice(Date fromDate, Date toDate, Integer page, Integer size) throws FriendlyException {
+        Pageable pageable = Pageable.ofSize(size).withPage(page);
+        Page<Invoice> resp;
 
         if (!AuthenticationService.isCurrentAdmin()){
             Merchant merchant = authenticationService.getCurrentMerchant();
-            return resp.stream().filter(invoice -> invoice.getMerchantId().equals(merchant.getMerchantId())).toList();
+            resp = paymentDAO.findAllInvoice(fromDate, toDate, pageable, merchant.getMerchantId());
+        } else {
+            resp = paymentDAO.findAllInvoice(fromDate, toDate, pageable, null);
         }
 
         return resp;
