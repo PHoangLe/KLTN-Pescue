@@ -37,14 +37,10 @@ public class ChatRoomService {
                     if(!createIfNotExist)
                         return Optional.empty();
 
-                    return chatDAO.findRoomByUser1AndUser2(recipientId, senderId)
-                            .map(ChatRoom::getChatRoomId)
-                            .or(() -> {
-                                ChatRoom newChatRoom = new ChatRoom(sender, recipient);
+                    ChatRoom newChatRoom = new ChatRoom(sender, recipient);
 
-                                chatDAO.saveAndFlushRoom(newChatRoom);
-                                return Optional.of(newChatRoom.getChatRoomId());
-                            });
+                    chatDAO.saveAndFlushRoom(newChatRoom);
+                    return Optional.of(newChatRoom.getChatRoomId());
                 });
     }
 

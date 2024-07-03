@@ -119,8 +119,8 @@ public class MerchantController {
     public ResponseEntity<ResponseDTO<Page<MerchantDTO>>> getAllMerchantAdmin(@RequestParam(required = false) Boolean isApproved,
                                                                               @RequestParam(required = false) Boolean isSuspended,
                                                                               @RequestParam(required = false) Boolean isLiveable,
-                                                                              @RequestParam(defaultValue = "1") int offset, @RequestParam(defaultValue = "10") int limit) {
-        Page<MerchantDTO> merchants = merchantService.getListMerchantForAdmin(isApproved, isSuspended, isLiveable, offset, limit);
+                                                                              @RequestParam(defaultValue = "1") int page, @RequestParam(defaultValue = "10") int size) {
+        Page<MerchantDTO> merchants = merchantService.getListMerchantForAdmin(isApproved, isSuspended, isLiveable, page, size);
         ResponseDTO<Page<MerchantDTO>> result = new ResponseDTO<>(EnumResponseCode.SUCCESS, merchants, "merchantList");
         return ResponseEntity.ok(result);
     }

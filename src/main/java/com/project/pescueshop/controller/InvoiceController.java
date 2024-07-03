@@ -13,6 +13,7 @@ import com.project.pescueshop.util.constant.EnumResponseCode;
 import io.swagger.annotations.Api;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -50,12 +51,16 @@ public class InvoiceController {
     @GetMapping("")
     @PreAuthorize("hasAuthority('ROLE_MERCHANT')")
     @SecurityRequirement(name = "Bearer Authentication")
-    public ResponseEntity<ResponseDTO<List<InvoiceListResultDTO>>> getAllInvoice(@RequestParam(required = false) Date fromDate, @RequestParam(required = false) Date toDate) throws FriendlyException {
+    public ResponseEntity<ResponseDTO<Page<Invoice>>> getAllInvoice(
+            @RequestParam(required = false) Date fromDate,
+            @RequestParam(required = false) Date toDate,
+            @RequestParam(defaultValue = "1") Integer page,
+            @RequestParam(defaultValue = "10") Integer size) throws FriendlyException {
         fromDate = fromDate == null ? new Date(BASE_EPOCH_TIME) : fromDate;
         toDate = toDate == null ? new Date() : toDate;
 
-        List<InvoiceListResultDTO> invoice = invoiceService.findAllInvoice(fromDate, toDate);
-        ResponseDTO<List<InvoiceListResultDTO>> result = new ResponseDTO<>(EnumResponseCode.SUCCESS, invoice, "invoiceList");
+        Page<Invoice> invoice = invoiceService.findAllInvoice(fromDate, toDate, page, size);
+        ResponseDTO<Page<Invoice>> result = new ResponseDTO<>(EnumResponseCode.SUCCESS, invoice, "invoiceList");
         return ResponseEntity.ok(result);
     }
 
