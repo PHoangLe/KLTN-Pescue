@@ -1,12 +1,12 @@
 package com.project.pescueshop.model.dto;
 
-import lombok.Builder;
-import lombok.Data;
-import lombok.RequiredArgsConstructor;
+import lombok.*;
 
-@Data
 @Builder
-@RequiredArgsConstructor
+@NoArgsConstructor
+@Setter
+@Getter
+@AllArgsConstructor
 public class ShippingFeeDTO {
     private String merchantId;
     private Long shippingFee;
