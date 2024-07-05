@@ -38,7 +38,23 @@ public class ProductService extends BaseService {
     private final ThreadService threadService;
 
     public ProductDTO transformProductToDTO(Product product){
-        return new ProductDTO(product);
+        return ProductDTO.builder()
+                .avgRating(product.getAvgRating())
+                .brand(product.getBrand())
+                .description(product.getDescription())
+                .detail(product.getDetail())
+                .images(product.getImages())
+                .length(product.getLength())
+                .height(product.getHeight())
+                .name(product.getName())
+                .petType(product.getPetType())
+                .price(product.getPrice())
+                .productId(product.getProductId())
+                .status(product.getStatus())
+                .subCategory(product.getSubCategory())
+                .weight(product.getWeight())
+                .merchantId(product.getMerchantId())
+                .build();
     }
 
     public Product findById(String id){
@@ -175,9 +191,7 @@ public class ProductService extends BaseService {
         product.setPetType(dto.getPetType());
         productDAO.saveAndFlushProduct(product);
 
-        CompletableFuture.runAsync(() -> {
-            pushOrUpdateProductToElasticSearch(product);
-        });
+        pushOrUpdateProductToElasticSearch(product);
 
         return transformProductToDTO(product);
     }
