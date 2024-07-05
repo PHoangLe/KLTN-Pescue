@@ -1,9 +1,6 @@
 package com.project.pescueshop.controller;
 
-import com.project.pescueshop.model.dto.CartCheckOutInfoDTO;
-import com.project.pescueshop.model.dto.CheckoutResultDTO;
-import com.project.pescueshop.model.dto.CreatePaymentLinkDTO;
-import com.project.pescueshop.model.dto.SingleItemCheckOutInfoDTO;
+import com.project.pescueshop.model.dto.*;
 import com.project.pescueshop.model.dto.general.ResponseDTO;
 import com.project.pescueshop.model.entity.User;
 import com.project.pescueshop.model.exception.FriendlyException;
@@ -18,6 +15,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.UnsupportedEncodingException;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/payment")
@@ -58,6 +56,13 @@ public class PaymentController {
     public ResponseEntity<ResponseDTO<CheckoutResultDTO>> singleItemCheckoutUnAuthenticate(@RequestBody SingleItemCheckOutInfoDTO singleItemCheckOutInfoDTO) throws FriendlyException, UnsupportedEncodingException {
         CheckoutResultDTO paymentInfo = paymentService.singleItemCheckOutUnAuthenticate(singleItemCheckOutInfoDTO);
         ResponseDTO<CheckoutResultDTO> result = new ResponseDTO<>(EnumResponseCode.SUCCESS, paymentInfo, "output");
+        return ResponseEntity.ok(result);
+    }
+
+    @GetMapping("/shipping-fee")
+    public ResponseEntity<ResponseDTO<List<ShippingFeeDTO>>> singleItemCheckoutUnAuthenticate(@RequestBody GetCartShippingFeeRequest request) throws FriendlyException {
+        List<ShippingFeeDTO> shippingFee = paymentService.getShippingFeeByCartId(request);
+        ResponseDTO<List<ShippingFeeDTO>> result = new ResponseDTO<>(EnumResponseCode.SUCCESS, shippingFee, "shippingFees");
         return ResponseEntity.ok(result);
     }
 }

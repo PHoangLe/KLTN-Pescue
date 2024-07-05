@@ -39,6 +39,7 @@ public class PaymentService {
     private final static long MEMBER_POINT_RATE = 20L;
     private final PaymentDAO paymentDAO;
     private final CartDAO cartDAO;
+    private final CartService cartService;
     private final VarietyService varietyService;
     private final InvoiceService invoiceService;
     private final ShippingFeeService shippingFeeService;
@@ -346,5 +347,34 @@ public class PaymentService {
                 }
             }
         }
+    }
+
+    public List<ShippingFeeDTO> getShippingFeeByCartId(GetCartShippingFeeRequest request) throws FriendlyException {
+        Map<String, List<InvoiceItemDTO>> invoiceItemGroupByMerchantId = invoiceService.getAllInvoicesGroupedByMerchantInCart(request.getCartId());
+        List<ShippingFeeDTO> shippingFeeDTOS = new ArrayList<>();
+
+        if (invoiceItemGroupByMerchantId == null){
+            throw new FriendlyException(EnumResponseCode.CART_NOT_FOUND);
+        }
+
+        if (invoiceItemGroupByMerchantId.isEmpty()){
+            throw new FriendlyException(EnumResponseCode.EMPTY_CART);
+        }
+
+        invoiceItemGroupByMerchantId.forEach((merchantId, invoiceItemDTOs) -> {
+            Address address = Address.builder()
+                    .wardCode(request.getWardCode())
+                    .districtId(request.getDistrictId())
+                    .build();
+            Merchant merchant = merchantService.getMerchantById(merchantId);
+            long shippingFee = shippingFeeService.calculateShippingFee(invoiceItemDTOs, address, merchant);
+
+            shippingFeeDTOS.add(ShippingFeeDTO.builder()
+                    .merchantId(merchantId)
+                    .shippingFee(shippingFee)
+                    .build());
+        });
+
+        return shippingFeeDTOS;
     }
 }
