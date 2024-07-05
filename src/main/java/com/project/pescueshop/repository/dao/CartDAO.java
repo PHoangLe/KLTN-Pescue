@@ -1,6 +1,7 @@
 package com.project.pescueshop.repository.dao;
 
 import com.project.pescueshop.model.dto.CartItemDTO;
+import com.project.pescueshop.model.entity.Cart;
 import com.project.pescueshop.model.entity.CartItem;
 import com.project.pescueshop.model.entity.Invoice;
 import com.project.pescueshop.repository.jpa.CartItemRepository;

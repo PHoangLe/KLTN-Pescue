@@ -15,6 +15,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.UnsupportedEncodingException;
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -40,6 +41,14 @@ public class LivePaymentController {
         User user = AuthenticationService.getCurrentLoggedInUser();
         CheckoutResultDTO paymentInfo = paymentService.singleItemCheckOutAuthenticate(user, singleItemCheckOutInfoDTO);
         ResponseDTO<CheckoutResultDTO> result = new ResponseDTO<>(EnumResponseCode.SUCCESS, paymentInfo, "output");
+        return ResponseEntity.ok(result);
+    }
+
+
+    @GetMapping("/shipping-fee")
+    public ResponseEntity<ResponseDTO<List<ShippingFeeDTO>>> singleItemCheckoutUnAuthenticate(@RequestBody GetCartShippingFeeRequest request) throws FriendlyException {
+        List<ShippingFeeDTO> shippingFee = paymentService.getShippingFeeByCartId(request);
+        ResponseDTO<List<ShippingFeeDTO>> result = new ResponseDTO<>(EnumResponseCode.SUCCESS, shippingFee, "shippingFees");
         return ResponseEntity.ok(result);
     }
 }

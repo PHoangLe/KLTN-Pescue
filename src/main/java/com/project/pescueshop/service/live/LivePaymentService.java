@@ -290,4 +290,25 @@ public class LivePaymentService {
             }
         }
     }
+
+    public List<ShippingFeeDTO> getShippingFeeByCartId(GetCartShippingFeeRequest request) throws FriendlyException {
+        LiveCart cart = cartService.findCartByCartId(request.getCartId());
+
+        if (cart == null){
+            throw new FriendlyException(EnumResponseCode.CART_NOT_FOUND);
+        }
+
+        if (cart.getLiveCartItemList().isEmpty()){
+            throw new FriendlyException(EnumResponseCode.EMPTY_CART);
+        }
+
+        List<LiveCartItem> liveCartItems = cart.getLiveCartItemList();
+        Merchant merchant = merchantService.getMerchantById(cart.getMerchantId());
+        Address address = Address.builder().build();
+
+        return List.of(ShippingFeeDTO.builder()
+                        .merchantId(merchant.getMerchantId())
+                        .shippingFee(shippingFeeService.calculateShippingFeeForLive(liveCartItems, address, merchant))
+                        .build());
+    }
 }
