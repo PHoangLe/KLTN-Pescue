@@ -119,7 +119,7 @@ public class ProductDAO extends BaseDAO{
     }
 
     public void addNewProductImages(String productId, List<String> productImages) {
-        String sql = "INSERT INTO products_images (product_product_id, images) VALUES (:p_product_id, :p_images);";
+        String sql = "INSERT INTO product_images (product_product_id, images) VALUES (:p_product_id, :p_images);";
 
          for (String image : productImages){
             MapSqlParameterSource parameters = new MapSqlParameterSource()
