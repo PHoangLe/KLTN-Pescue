@@ -166,7 +166,7 @@ public class ProductController {
     @PutMapping("/product-images/{productId}")
     @PreAuthorize("hasAuthority('ROLE_MERCHANT')")
     @SecurityRequirement(name = "Bearer Authentication")
-    public ResponseEntity<ResponseDTO<List<String>>> updateProductImage(@RequestPart("newImages") List<MultipartFile> newImages, @RequestPart List<String> deletedImages, @PathVariable String productId) throws FriendlyException {
+    public ResponseEntity<ResponseDTO<List<String>>> updateProductImage(@RequestPart(required = false) List<MultipartFile> newImages, @RequestPart(required = false) List<String> deletedImages, @PathVariable String productId) throws FriendlyException {
         List<String> imagesUrl = productService.updateProductImage(productId, newImages, deletedImages);
         ResponseDTO<List<String>> result = new ResponseDTO<>(EnumResponseCode.SUCCESS, imagesUrl, "images");
 
