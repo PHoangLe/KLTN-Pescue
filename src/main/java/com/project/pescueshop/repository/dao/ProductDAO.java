@@ -117,4 +117,25 @@ public class ProductDAO extends BaseDAO{
 
         return jdbcTemplate.query(sql, parameters, listProductMapper);
     }
+
+    public void addNewProductImages(String productId, List<String> productImages) {
+        String sql = "INSERT INTO products_images (product_product_id, images) VALUES (:p_product_id, :p_images);";
+
+         for (String image : productImages){
+            MapSqlParameterSource parameters = new MapSqlParameterSource()
+                    .addValue("p_product_id", productId)
+                    .addValue("p_images", image);
+
+            jdbcTemplate.update(sql, parameters);
+        }
+    }
+
+    public void removeProductImages(List<String> productImages) {
+        String sql = "DELETE FROM products_images WHERE images IN (:p_images);";
+
+        MapSqlParameterSource parameters = new MapSqlParameterSource()
+                .addValue("p_images", productImages);
+
+        jdbcTemplate.update(sql, parameters);
+    }
 }
