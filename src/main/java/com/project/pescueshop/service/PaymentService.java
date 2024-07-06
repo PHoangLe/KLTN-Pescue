@@ -328,7 +328,7 @@ public class PaymentService {
             br.operations(op -> op
                     .index(idx -> idx
                             .index(EnumElasticIndex.INVOICE_DATA.getName())
-                            .id(invoice.getInvoiceId())
+                            .id(invoice.getInvoiceId() + "_" + invoiceItem.getProductId())
                             .document(InvoiceData.builder()
                                     .productId(invoiceItem.getProductId())
                                     .invoiceId(invoiceItem.getInvoiceId())

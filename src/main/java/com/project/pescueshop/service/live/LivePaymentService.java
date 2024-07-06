@@ -270,7 +270,7 @@ public class LivePaymentService {
             br.operations(op -> op
                     .index(idx -> idx
                             .index(Index.getIndexName(Index.Name.INVOICE_DATA))
-                            .id(invoiceItem.getLiveInvoiceId())
+                            .id(invoiceItem.getLiveInvoiceId() + "_" + invoiceItem.getLiveItem().getProductId())
                             .document(InvoiceData.builder()
                                     .productId(invoiceItem.getLiveItem().getProductId())
                                     .merchantId(invoice.getMerchantId())
