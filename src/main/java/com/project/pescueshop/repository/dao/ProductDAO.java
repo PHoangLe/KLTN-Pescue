@@ -131,7 +131,7 @@ public class ProductDAO extends BaseDAO{
     }
 
     public void removeProductImages(List<String> productImages) {
-        String sql = "DELETE FROM products_images WHERE images IN (:p_images);";
+        String sql = "DELETE FROM product_images WHERE images IN (:p_images);";
 
         MapSqlParameterSource parameters = new MapSqlParameterSource()
                 .addValue("p_images", productImages);
