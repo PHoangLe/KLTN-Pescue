@@ -201,23 +201,30 @@ public class ProductService extends BaseService {
         if (product == null){
             throw new FriendlyException(EnumResponseCode.PRODUCT_NOT_FOUND);
         }
-        List<String> currentImages = product.getImages();
 
-        List<String> newImagesUrl = uploadProductImages(productId, newImages);
-        currentImages.addAll(newImagesUrl);
+        if (newImages != null && newImages.isEmpty()){
+            List<String> newImagesUrl = uploadProductImages(productId, newImages);
+            addNewProductImages(productId, newImagesUrl);
+        }
 
-        product.setImages(currentImages.stream()
-                .filter(image -> !deletedImages.contains(image))
-                .toList()
-        );
-
-        productDAO.saveAndFlushProduct(product);
+        if (deletedImages != null && !deletedImages.isEmpty()){
+            removeProductImages(deletedImages);
+        }
 
         CompletableFuture.runAsync(() -> {
-            pushOrUpdateProductToElasticSearch(product);
+            Product newProduct = findById(productId);
+            pushOrUpdateProductToElasticSearch(newProduct);
         });
 
         return product.getImages();
+    }
+
+    private void addNewProductImages(String productId, List<String> productImages){
+        productDAO.addNewProductImages(productId, productImages);
+    }
+
+    private void removeProductImages(List<String> productImages){
+        productDAO.removeProductImages(productImages);
     }
 
     public void deleteAttribute(String productId, String attributeId){
