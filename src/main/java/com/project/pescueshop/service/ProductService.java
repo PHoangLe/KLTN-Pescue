@@ -202,7 +202,7 @@ public class ProductService extends BaseService {
             throw new FriendlyException(EnumResponseCode.PRODUCT_NOT_FOUND);
         }
 
-        if (newImages != null && newImages.isEmpty()){
+        if (newImages != null && !newImages.isEmpty()){
             List<String> newImagesUrl = uploadProductImages(productId, newImages);
             addNewProductImages(productId, newImagesUrl);
         }
