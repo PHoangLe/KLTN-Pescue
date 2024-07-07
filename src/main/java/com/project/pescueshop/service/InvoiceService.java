@@ -1,19 +1,18 @@
 package com.project.pescueshop.service;
 
 import com.project.pescueshop.model.dto.InvoiceItemDTO;
-import com.project.pescueshop.model.dto.InvoiceListResultDTO;
 import com.project.pescueshop.model.dto.InvoicesListDTO;
 import com.project.pescueshop.model.entity.Invoice;
 import com.project.pescueshop.model.entity.InvoiceItem;
 import com.project.pescueshop.model.entity.Merchant;
 import com.project.pescueshop.model.entity.User;
 import com.project.pescueshop.model.entity.live.LiveInvoice;
+import com.project.pescueshop.model.entity.live.LiveInvoiceItem;
 import com.project.pescueshop.model.exception.FriendlyException;
 import com.project.pescueshop.repository.dao.LiveInvoiceDAO;
 import com.project.pescueshop.repository.dao.PaymentDAO;
 import com.project.pescueshop.util.constant.EnumInvoiceStatus;
 import com.project.pescueshop.util.constant.EnumResponseCode;
-import io.swagger.models.auth.In;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -108,5 +107,13 @@ public class InvoiceService {
 
     public List<InvoiceItemDTO> getLiveInvoiceDetail(String liveInvoiceId) {
         return liveInvoiceDAO.getLiveInvoiceDetail(liveInvoiceId);
+    }
+
+    public LiveInvoice findById(String invoiceId){
+        return liveInvoiceDAO.findById(invoiceId);
+    }
+
+    public List<LiveInvoiceItem> getAllInvoiceItem(){
+        return liveInvoiceDAO.findAllLiveInvoiceItem();
     }
 }
