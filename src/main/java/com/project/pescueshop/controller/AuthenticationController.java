@@ -32,7 +32,7 @@ public class AuthenticationController {
     }
 
     @PostMapping("/authenticateGoogleUser")
-    public ResponseEntity<ResponseDTO<UserDTO>> googleUserAuthenticate(@RequestBody RegisterDTO request){
+    public ResponseEntity<ResponseDTO<UserDTO>> googleUserAuthenticate(@RequestBody RegisterDTO request) throws FriendlyException {
         request.setIsSocial(true);
         return authenticationService.googleUserAuthenticate(request);
     }

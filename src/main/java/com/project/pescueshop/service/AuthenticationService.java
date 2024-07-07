@@ -10,6 +10,7 @@ import com.project.pescueshop.model.exception.FriendlyException;
 import com.project.pescueshop.model.exception.UnauthenticatedException;
 import com.project.pescueshop.config.security.JwtService;
 import com.project.pescueshop.util.constant.EnumResponseCode;
+import com.project.pescueshop.util.constant.EnumRoleId;
 import com.project.pescueshop.util.constant.EnumStatus;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -93,6 +94,7 @@ public class AuthenticationService {
         user.setStatus(EnumStatus.INACTIVE.getValue());
 
         userService.addUser(user);
+        userService.addUserRole(user.getUserId(), EnumRoleId.CUSTOMER);
 
         threadService.createNeededInfoForNewUser(user, false);
 
@@ -150,7 +152,7 @@ public class AuthenticationService {
         }
     }
 
-    public ResponseEntity<ResponseDTO<UserDTO>> googleUserAuthenticate(RegisterDTO request){
+    public ResponseEntity<ResponseDTO<UserDTO>> googleUserAuthenticate(RegisterDTO request) throws FriendlyException {
         User user = userService.findByEmail(request.getUserEmail());
 
         if (user == null){
@@ -159,6 +161,9 @@ public class AuthenticationService {
             user.setIsSocial(true);
             user.setMemberPoint(0L);
             user.setStatus(EnumStatus.ACTIVE.getValue());
+
+            userService.addUser(user);
+            userService.addUserRole(user.getUserId(), EnumRoleId.CUSTOMER);
 
             threadService.createNeededInfoForNewUser(user, true);
         }
