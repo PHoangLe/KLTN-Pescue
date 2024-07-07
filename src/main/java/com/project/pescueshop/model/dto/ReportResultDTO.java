@@ -15,5 +15,4 @@ import java.util.Date;
 public class ReportResultDTO {
     private Date reportTime;
     private Long totalSell;
-    private Long totalImport;
 }

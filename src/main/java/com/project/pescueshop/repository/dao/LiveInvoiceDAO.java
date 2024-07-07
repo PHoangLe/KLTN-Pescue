@@ -59,4 +59,8 @@ public class LiveInvoiceDAO extends BaseDAO {
 
         return jdbcTemplate.query(sql, parameters, invoiceItemMapper);
     }
+
+    public List<LiveInvoiceItem> findAllLiveInvoiceItem() {
+        return liveInvoiceItemRepository.findAll();
+    }
 }
