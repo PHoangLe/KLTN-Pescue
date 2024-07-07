@@ -48,13 +48,13 @@ public class ProductDAO extends BaseDAO{
         return productRepository.getRandomNProduct(pageable);
     }
 
-    public List<ProductDashboardResult> getMostViewsProducts(Integer n, Long daysAmount){
+    public List<ProductDashboardResult> getMostViewsProducts(Integer n, Long daysAmount, String merchantId){
         n = n == null ? 5 : n;
         daysAmount = daysAmount == null ? 30 : daysAmount;
 
         Pageable pageable = PageRequest.of(0, n);
 
-        List<Object[]> products = productRepository.getMostViewsProducts(pageable, Util.getCurrentDateMinusDays(daysAmount));
+        List<Object[]> products = productRepository.getMostViewsProducts(pageable, Util.getCurrentDateMinusDays(daysAmount), merchantId);
 
         List<ProductDashboardResult> results = new ArrayList<>();
 
@@ -65,13 +65,13 @@ public class ProductDAO extends BaseDAO{
         return results;
     }
 
-    public List<ProductDashboardResult> getMostBuyProducts(Integer n, Long daysAmount){
+    public List<ProductDashboardResult> getMostBuyProducts(Integer n, Long daysAmount, String merchantId){
         n = n == null ? 5 : n;
         daysAmount = daysAmount == null ? 30 : daysAmount;
 
         Pageable pageable = PageRequest.of(0, n);
 
-        List<Object[]> products = productRepository.getMostBuyProduct(pageable, Util.getCurrentDateMinusDays(daysAmount));
+        List<Object[]> products = productRepository.getMostBuyProduct(pageable, Util.getCurrentDateMinusDays(daysAmount), merchantId);
 
         List<ProductDashboardResult> results = new ArrayList<>();
 

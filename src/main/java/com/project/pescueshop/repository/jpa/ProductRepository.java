@@ -25,9 +25,10 @@ public interface ProductRepository extends JpaRepository<Product, String> {
             "JOIN ViewAuditLog val ON p.productId = val.objectId " +
             "WHERE val.objectType = 'PRODUCT' " +
             "AND val.date >= :afterDate " +
+            "and (p.merchantId = :merchantId or :merchantId is null) " +
             "GROUP BY p.productId " +
             "ORDER BY COUNT(val.viewAuditLogId) DESC")
-    List<Object[]> getMostViewsProducts(Pageable pageable,@Param("afterDate") Date afterDate);
+    List<Object[]> getMostViewsProducts(Pageable pageable, @Param("afterDate") Date afterDate, @Param("merchantId") String merchantId);
 
 
     @Query(
@@ -37,10 +38,11 @@ public interface ProductRepository extends JpaRepository<Product, String> {
                     "join InvoiceItem ii on ii.varietyId = v.varietyId " +
                     "join Invoice i on i.invoiceId = ii.invoiceId " +
                     "where i.createdDate >= :afterDate " +
+                    "and (i.merchantId = :merchantId or :merchantId is null) " +
                     "group by p.productId " +
                     "order by sum(ii.quantity) desc "
     )
-    List<Object[]> getMostBuyProduct(Pageable pageable, @Param("afterDate") Date afterDate);
+    List<Object[]> getMostBuyProduct(Pageable pageable, @Param("afterDate") Date afterDate, @Param("merchantId") String merchantId);
 
     @Query(value = "SELECT p" +
             "    FROM Product p" +

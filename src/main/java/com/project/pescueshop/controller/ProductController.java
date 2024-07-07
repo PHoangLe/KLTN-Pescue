@@ -196,8 +196,12 @@ public class ProductController {
     }
 
     @GetMapping("/most-views")
-    public ResponseEntity<ResponseDTO<List<ProductDashboardResult>>> getMostViewsProduct(@RequestParam(required = false) Integer quantity, @RequestParam(required = false) Long daysAmount) {
-        List<ProductDashboardResult> productList = productService.getMostViewsProducts(quantity, daysAmount);
+    public ResponseEntity<ResponseDTO<List<ProductDashboardResult>>> getMostViewsProduct(
+            @RequestParam(required = false) Integer quantity,
+            @RequestParam(required = false) Long daysAmount,
+            @RequestParam(required = false) String merchantId
+    ) {
+        List<ProductDashboardResult> productList = productService.getMostViewsProducts(quantity, daysAmount, merchantId);
 
         ResponseDTO<List<ProductDashboardResult>> result = new ResponseDTO<>(EnumResponseCode.SUCCESS, productList, "productList");
 
@@ -205,8 +209,11 @@ public class ProductController {
     }
 
     @GetMapping("/most-buy")
-    public ResponseEntity<ResponseDTO<List<ProductDashboardResult>>> getMostBuyProduct(@RequestParam(required = false) Integer quantity, @RequestParam(required = false) Long daysAmount) {
-        List<ProductDashboardResult> productList = productService.getMostBuyProducts(quantity, daysAmount);
+    public ResponseEntity<ResponseDTO<List<ProductDashboardResult>>> getMostBuyProduct(
+            @RequestParam(required = false) Integer quantity,
+            @RequestParam(required = false) Long daysAmount,
+            @RequestParam(required = false) String merchantId) {
+        List<ProductDashboardResult> productList = productService.getMostBuyProducts(quantity, daysAmount, merchantId);
 
         ResponseDTO<List<ProductDashboardResult>> result = new ResponseDTO<>(EnumResponseCode.SUCCESS, productList, "productList");
 

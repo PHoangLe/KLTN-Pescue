@@ -235,12 +235,12 @@ public class ProductService extends BaseService {
         return productDAO.getRandomNProduct(n);
     }
 
-    public List<ProductDashboardResult> getMostViewsProducts(Integer n, Long daysAmount) {
-        return productDAO.getMostViewsProducts(n, daysAmount);
+    public List<ProductDashboardResult> getMostViewsProducts(Integer n, Long daysAmount, String merchantId) {
+        return productDAO.getMostViewsProducts(n, daysAmount, merchantId);
     }
 
-    public List<ProductDashboardResult> getMostBuyProducts(Integer n, Long daysAmount) {
-        return productDAO.getMostBuyProducts(n, daysAmount);
+    public List<ProductDashboardResult> getMostBuyProducts(Integer n, Long daysAmount, String merchantId) {
+        return productDAO.getMostBuyProducts(n, daysAmount, merchantId);
     }
 
     public List<Product> getProductByBrandId(String brandId) {
