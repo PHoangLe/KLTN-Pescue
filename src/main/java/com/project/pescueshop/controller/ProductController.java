@@ -4,10 +4,7 @@ import com.project.pescueshop.model.dto.*;
 import com.project.pescueshop.model.dto.general.ResponseDTO;
 import com.project.pescueshop.model.entity.*;
 import com.project.pescueshop.model.exception.FriendlyException;
-import com.project.pescueshop.service.BrandService;
-import com.project.pescueshop.service.CategoryService;
-import com.project.pescueshop.service.ProductService;
-import com.project.pescueshop.service.VarietyService;
+import com.project.pescueshop.service.*;
 import com.project.pescueshop.util.constant.EnumResponseCode;
 import io.swagger.annotations.Api;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -30,6 +27,7 @@ public class ProductController {
     private final BrandService brandService;
     private final ProductService productService;
     private final VarietyService varietyService;
+    private final RecommendService recommendService;
 
     //<editor-fold desc="Category">
     @PreAuthorize("hasAuthority('ROLE_MERCHANT')")
@@ -216,6 +214,15 @@ public class ProductController {
         List<ProductDashboardResult> productList = productService.getMostBuyProducts(quantity, daysAmount, merchantId);
 
         ResponseDTO<List<ProductDashboardResult>> result = new ResponseDTO<>(EnumResponseCode.SUCCESS, productList, "productList");
+
+        return ResponseEntity.ok(result);
+    }
+
+    @GetMapping("/recommend/{productId}")
+    public ResponseEntity<ResponseDTO<List<Product>>> recommendProducts(
+            @PathVariable String productId) {
+        List<Product> productList = recommendService.getReccomendProductId(productId);
+        ResponseDTO<List<Product>> result = new ResponseDTO<>(EnumResponseCode.SUCCESS, productList, "productList");
 
         return ResponseEntity.ok(result);
     }

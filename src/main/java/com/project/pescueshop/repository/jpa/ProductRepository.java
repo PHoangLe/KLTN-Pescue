@@ -48,4 +48,7 @@ public interface ProductRepository extends JpaRepository<Product, String> {
             "    FROM Product p" +
             "    ORDER BY RANDOM() ")
     List<Product> getRandomNProduct(Pageable pageable);
+
+    @Query(value = "SELECT p FROM Product p WHERE p.productId IN :listProduct")
+    List<Product> getProductByList(List<String> listProduct);
 }

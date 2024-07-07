@@ -138,4 +138,8 @@ public class ProductDAO extends BaseDAO{
 
         jdbcTemplate.update(sql, parameters);
     }
+
+    public List<Product> getProductByList(List<String> listProduct) {
+        return productRepository.getProductByList(listProduct);
+    }
 }
