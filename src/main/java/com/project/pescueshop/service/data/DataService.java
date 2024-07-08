@@ -32,6 +32,7 @@ public class DataService {
         try {
             SearchResponse<InvoiceData> resp = ElasticClient.get().search(s -> s
                     .index(EnumElasticIndex.INVOICE_DATA.getName())
+                    .size(9999)
                     , InvoiceData.class);
 
             return fromHitsToData(resp.hits().hits());
@@ -45,6 +46,7 @@ public class DataService {
         try {
             SearchResponse<RatingData> resp = ElasticClient.get().search(s -> s
                             .index(EnumElasticIndex.RATING_DATA.getName())
+                            .size(9999)
                     , RatingData.class);
 
             return fromHitsToData(resp.hits().hits());
