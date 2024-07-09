@@ -11,7 +11,8 @@ public enum EnumInvoiceStatus {
     COMPLETED(2, "COMPLETED"),
     CANCEL(3, "CANCEL"),
     PAID(4, "PAID"),
-    RETURN(5, "RETURN");
+    RETURN(5, "RETURN"),
+    DELIVERING(6, "DELIVERING");
 
     private static final Map<Integer, EnumInvoiceStatus> BY_ID = new HashMap<>();
     private static final Map<String, EnumInvoiceStatus> BY_LABEL = new HashMap<>();
