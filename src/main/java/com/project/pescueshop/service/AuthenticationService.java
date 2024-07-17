@@ -159,7 +159,6 @@ public class AuthenticationService {
     public ResponseEntity<ResponseDTO<UserDTO>> googleUserAuthenticate(RegisterDTO request) throws FriendlyException {
         readWriteLock.readLock().lock();
         User user = userService.findByEmail(request.getUserEmail());
-        readWriteLock.readLock().unlock();
 
         if (user == null){
             user = new User(request);
@@ -172,6 +171,8 @@ public class AuthenticationService {
 
             threadService.createNeededInfoForNewUser(user, true);
         }
+
+        readWriteLock.readLock().unlock();
 
         var jwtToken = jwtService.generateJwtToken(user);
         log.trace("Successfully authenticate user: " + request.getUserEmail());
