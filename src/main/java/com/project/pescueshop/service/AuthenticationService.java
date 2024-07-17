@@ -21,6 +21,8 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -155,8 +157,8 @@ public class AuthenticationService {
         }
     }
 
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
     public synchronized ResponseEntity<ResponseDTO<UserDTO>> googleUserAuthenticate(RegisterDTO request) throws FriendlyException {
-
         User user = userService.findByEmail(request.getUserEmail());
 
         if (user == null){
