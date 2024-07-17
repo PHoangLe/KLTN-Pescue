@@ -35,7 +35,6 @@ public class AuthenticationService {
     private final PasswordEncoder passwordEncoder;
     private final MerchantService merchantService;
     private final ThreadService threadService;
-    private final ReadWriteLock readWriteLock = new ReentrantReadWriteLock();
 
     public static User getCurrentLoggedInUser() throws FriendlyException {
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -156,8 +155,8 @@ public class AuthenticationService {
         }
     }
 
-    public ResponseEntity<ResponseDTO<UserDTO>> googleUserAuthenticate(RegisterDTO request) throws FriendlyException {
-        readWriteLock.writeLock().lock();
+    public synchronized ResponseEntity<ResponseDTO<UserDTO>> googleUserAuthenticate(RegisterDTO request) throws FriendlyException {
+
         User user = userService.findByEmail(request.getUserEmail());
 
         if (user == null){
@@ -171,8 +170,6 @@ public class AuthenticationService {
 
             threadService.createNeededInfoForNewUser(user, true);
         }
-
-        readWriteLock.writeLock().unlock();
 
         var jwtToken = jwtService.generateJwtToken(user);
         log.trace("Successfully authenticate user: " + request.getUserEmail());
