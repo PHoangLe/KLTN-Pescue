@@ -22,6 +22,9 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
+
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -32,6 +35,7 @@ public class AuthenticationService {
     private final PasswordEncoder passwordEncoder;
     private final MerchantService merchantService;
     private final ThreadService threadService;
+    private final ReadWriteLock readWriteLock = new ReentrantReadWriteLock();
 
     public static User getCurrentLoggedInUser() throws FriendlyException {
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -153,7 +157,9 @@ public class AuthenticationService {
     }
 
     public ResponseEntity<ResponseDTO<UserDTO>> googleUserAuthenticate(RegisterDTO request) throws FriendlyException {
+        readWriteLock.readLock().lock();
         User user = userService.findByEmail(request.getUserEmail());
+        readWriteLock.readLock().unlock();
 
         if (user == null){
             user = new User(request);
@@ -163,7 +169,6 @@ public class AuthenticationService {
             user.setStatus(EnumStatus.ACTIVE.getValue());
 
             userService.addUser(user);
-            userService.addUserRole(user.getUserId(), EnumRoleId.CUSTOMER);
 
             threadService.createNeededInfoForNewUser(user, true);
         }
