@@ -106,6 +106,24 @@ public class MerchantController {
         return ResponseEntity.ok(result);
     }
 
+    @PutMapping("/ban/live/{merchantId}")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    @SecurityRequirement(name = "Bearer Authentication")
+    public ResponseEntity<ResponseDTO<String>> banLiveMerchant(@PathVariable String merchantId) throws FriendlyException {
+        merchantService.banLiveMerchant(merchantId);
+        ResponseDTO<String> result = new ResponseDTO<>(EnumResponseCode.SUCCESS, "Success", "message");
+        return ResponseEntity.ok(result);
+    }
+
+    @PutMapping("/un-ban/live/{merchantId}")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    @SecurityRequirement(name = "Bearer Authentication")
+    public ResponseEntity<ResponseDTO<String>> unbanLiveMerchant(@PathVariable String merchantId) throws FriendlyException {
+        merchantService.unbanLiveMerchant(merchantId);
+        ResponseDTO<String> result = new ResponseDTO<>(EnumResponseCode.SUCCESS, "Success", "message");
+        return ResponseEntity.ok(result);
+    }
+
     @GetMapping("")
     public ResponseEntity<ResponseDTO<List<MerchantDTO>>> getAllMerchant() {
         List<MerchantDTO> merchants = merchantService.getApproveMerchant();
