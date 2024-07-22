@@ -153,31 +153,33 @@ public class AuthenticationService {
     }
 
     public ResponseEntity<ResponseDTO<UserDTO>> googleUserAuthenticate(RegisterDTO request) throws FriendlyException {
-        User user = userService.findByEmail(request.getUserEmail());
+        synchronized (AuthenticationService.class) {
+            User user = userService.findByEmail(request.getUserEmail());
 
-        if (user == null){
-            user = new User(request);
+            if (user == null) {
+                user = new User(request);
 
-            user.setIsSocial(true);
-            user.setMemberPoint(0L);
-            user.setStatus(EnumStatus.ACTIVE.getValue());
+                user.setIsSocial(true);
+                user.setMemberPoint(0L);
+                user.setStatus(EnumStatus.ACTIVE.getValue());
 
-            userService.addUser(user);
-            userService.addUserRole(user.getUserId(), EnumRoleId.CUSTOMER);
+                userService.addUser(user);
+                userService.addUserRole(user.getUserId(), EnumRoleId.CUSTOMER);
 
-            threadService.createNeededInfoForNewUser(user, true);
+                threadService.createNeededInfoForNewUser(user, true);
+            }
+
+            var jwtToken = jwtService.generateJwtToken(user);
+            log.trace("Successfully authenticate user: " + request.getUserEmail());
+
+            UserDTO dto = new UserDTO(user, jwtToken);
+            if (isMerchant(user)) {
+                dto.setMerchantId(merchantService.getMerchantByUserId(user.getUserId()).getMerchantId());
+            }
+
+            ResponseDTO<UserDTO> response = new ResponseDTO<>(EnumResponseCode.AUTHENTICATE_SUCCESSFUL, dto);
+            return ResponseEntity.ok(response);
         }
-
-        var jwtToken = jwtService.generateJwtToken(user);
-        log.trace("Successfully authenticate user: " + request.getUserEmail());
-
-        UserDTO dto = new UserDTO(user, jwtToken);
-        if (isMerchant(user)){
-            dto.setMerchantId(merchantService.getMerchantByUserId(user.getUserId()).getMerchantId());
-        }
-
-        ResponseDTO<UserDTO> response = new ResponseDTO<>(EnumResponseCode.AUTHENTICATE_SUCCESSFUL, dto);
-        return ResponseEntity.ok(response);
     }
 
     public boolean isMerchant(User user){

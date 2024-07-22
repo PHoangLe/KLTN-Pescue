@@ -1,9 +1,7 @@
 package com.project.pescueshop.service;
 
 import co.elastic.clients.elasticsearch._types.aggregations.HistogramBucket;
-import co.elastic.clients.elasticsearch._types.query_dsl.BoolQuery;
-import co.elastic.clients.elasticsearch._types.query_dsl.Query;
-import co.elastic.clients.elasticsearch._types.query_dsl.RangeQuery;
+import co.elastic.clients.elasticsearch._types.query_dsl.*;
 import co.elastic.clients.elasticsearch.core.SearchResponse;
 import co.elastic.clients.json.JsonData;
 import com.project.pescueshop.model.dto.ReportResultDTO;
@@ -55,20 +53,20 @@ public class StatisticService {
     private List<ReportResultDTO> revenueStatistic(long startTime, long endTime, String merchantId, Double interval) throws IOException {
         final Query boolQuery;
         if (merchantId != null) {
+            List<Query> must = new ArrayList<>();
+            must.add(MatchQuery.of(q -> q
+                    .field("merchantId")
+                    .query(merchantId)
+            )._toQuery());
+
+            must.add(RangeQuery.of(q -> q
+                    .field("timestamp")
+                    .gte(JsonData.of(startTime))
+                    .lte(JsonData.of(endTime))
+            )._toQuery());
+
             boolQuery = BoolQuery.of(q -> q
-                    .filter(q2 -> q2
-                            .term(t -> t
-                                    .field("merchantId")
-                                    .value(merchantId)
-                            )
-                    )
-                    .filter(q2 -> q2
-                            .range(r -> r
-                                    .field("timestamp")
-                                    .gte(JsonData.of(startTime))
-                                    .lte(JsonData.of(endTime))
-                            )
-                    )
+                    .must(must)
             )._toQuery();
         } else {
             boolQuery = RangeQuery.of(q -> q
