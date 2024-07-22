@@ -161,6 +161,38 @@ public class MerchantService extends BaseService {
         });
     }
 
+    public void banLiveMerchant(String merchantId) throws FriendlyException {
+        Merchant merchant = merchantDAO.getMerchantById(merchantId);
+
+        if (merchant == null) {
+            throw new FriendlyException(EnumResponseCode.MERCHANT_NOT_FOUND);
+        }
+
+        merchant.setIsLiveable(false);
+        merchantDAO.saveAndFlushMerchant(merchant);
+
+
+        CompletableFuture.runAsync(() -> {
+            pushOrUpdateMerchantToElasticsearch(merchant);
+        });
+    }
+
+    public void unbanLiveMerchant(String merchantId) throws FriendlyException {
+        Merchant merchant = merchantDAO.getMerchantById(merchantId);
+
+        if (merchant == null) {
+            throw new FriendlyException(EnumResponseCode.MERCHANT_NOT_FOUND);
+        }
+
+        merchant.setIsLiveable(true);
+        merchantDAO.saveAndFlushMerchant(merchant);
+
+
+        CompletableFuture.runAsync(() -> {
+            pushOrUpdateMerchantToElasticsearch(merchant);
+        });
+    }
+
     public Merchant getMerchantById(String merchantId) {
         return merchantDAO.getMerchantById(merchantId);
     }
