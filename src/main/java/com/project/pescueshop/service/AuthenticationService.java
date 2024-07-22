@@ -164,8 +164,6 @@ public class AuthenticationService {
                 user.setStatus(EnumStatus.ACTIVE.getValue());
 
                 userService.addUser(user);
-                userService.addUserRole(user.getUserId(), EnumRoleId.CUSTOMER);
-
                 threadService.createNeededInfoForNewUser(user, true);
             }
 
