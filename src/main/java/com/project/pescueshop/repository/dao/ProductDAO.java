@@ -103,7 +103,27 @@ public class ProductDAO extends BaseDAO{
     }
 
     public List<ProductListDTO> getListProduct(String categoryId, String subCategoryId, String brandId, String merchantId, Long minPrice, Long maxPrice, Integer page, Integer size){
-        String sql = "SELECT * FROM get_products(:p_brand_id, :p_category_id, :p_sub_category_id, :p_min_price, :p_max_price, :p_merchant_id, :p_page_number, :p_page_size);";
+        String sql = "        SELECT p.product_id, " +
+                "               (SELECT pi.images FROM product_images pi WHERE p.product_id = pi.product_product_id LIMIT 1) as product_image, " +
+                "               p.name, " +
+                "               p.description, " +
+                "               p.avg_rating, " +
+                "               p.price, " +
+                "               b.name as brand_name, " +
+                "               c.name as category_name, " +
+                "               count(*) over() as total_products " +
+                "        FROM product p " +
+                "        JOIN brand b ON p.brand_id = b.brand_id " +
+                "        JOIN sub_category sc ON p.sub_category_id = sc.sub_category_id " +
+                "        JOIN category c ON c.category_id = sc.category_id " +
+                "        WHERE (:p_brand_id IS NULL or p.brand_id = :p_brand_id) " +
+                "        and (:p_category_id IS NULL or sc.category_id = :p_category_id) " +
+                "        and (:p_sub_category_id IS NULL or p.sub_category_id = :p_sub_category_id) " +
+                "        and (:p_min_price IS NULL or p.price >= :p_min_price) " +
+                "        and (:p_max_price IS NULL or p.price <= :p_max_price) " +
+                "        and (:p_merchant_id IS NULL or p.merchant_id = :p_merchant_id) " +
+                "        group by p.product_id, p.name, p.description, p.avg_rating, p.price, b.name, c.name " +
+                "        LIMIT COALESCE(:p_page_size, 10000) OFFSET COALESCE((:p_page_number - 1) * :p_page_size, 0); ";
 
         MapSqlParameterSource parameters = new MapSqlParameterSource()
                 .addValue("p_brand_id", brandId, Types.VARCHAR)
