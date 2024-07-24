@@ -52,8 +52,8 @@ public class PaymentDAO extends BaseDAO{
         return jdbcTemplate.query(sql, parameters, invoiceItemMapper);
     }
 
-    public Page<Invoice> findAllInvoice(Date fromDate, Date toDate, Pageable pageable, String merchantId){
-        return invoiceRepository.findAllInvoice(fromDate, toDate, pageable, merchantId);
+    public Page<Invoice> findAllInvoice(Date fromDate, Date toDate, Pageable pageable, String merchantId, String status, String paymentType){
+        return invoiceRepository.findAllInvoice(fromDate, toDate, merchantId, status, paymentType, pageable);
     }
 
     public List<Invoice> findAllInvoiceByUserId(String userId) {

@@ -8,9 +8,12 @@ import com.project.pescueshop.repository.jpa.LiveInvoiceRepository;
 import com.project.pescueshop.repository.mapper.InvoiceItemMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.stereotype.Repository;
 
+import java.util.Date;
 import java.util.List;
 
 @Repository
@@ -63,4 +66,8 @@ public class LiveInvoiceDAO extends BaseDAO {
     public List<LiveInvoiceItem> findAllLiveInvoiceItem() {
         return liveInvoiceItemRepository.findAll();
     }
+
+  public Page<LiveInvoice> getAllLiveInvoice(Date fromDate, Date toDate, Pageable pageable, String status, String paymentType, String merchantId) {
+        return liveInvoiceRepository.findAllByStatusAndPaymentStatus(fromDate, toDate, merchantId, status, paymentType, pageable);
+  }
 }
