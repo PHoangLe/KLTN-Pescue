@@ -55,11 +55,13 @@ public class InvoiceController {
             @RequestParam(required = false) Date fromDate,
             @RequestParam(required = false) Date toDate,
             @RequestParam(defaultValue = "1") Integer page,
-            @RequestParam(defaultValue = "10") Integer size) throws FriendlyException {
+            @RequestParam(defaultValue = "10") Integer size,
+            @RequestParam(required = false) String status,
+            @RequestParam(required = false) String paymentType) throws FriendlyException {
         fromDate = fromDate == null ? new Date(BASE_EPOCH_TIME) : fromDate;
         toDate = toDate == null ? new Date() : toDate;
 
-        Page<Invoice> invoice = invoiceService.findAllInvoice(fromDate, toDate, page, size);
+        Page<Invoice> invoice = invoiceService.findAllInvoice(fromDate, toDate, page, size, status, paymentType);
         ResponseDTO<Page<Invoice>> result = new ResponseDTO<>(EnumResponseCode.SUCCESS, invoice, "invoiceList");
         return ResponseEntity.ok(result);
     }
@@ -74,7 +76,6 @@ public class InvoiceController {
         return ResponseEntity.ok(result);
     }
 
-
     @GetMapping("/user-invoice-info")
     @PreAuthorize("hasAuthority('ROLE_CUSTOMER')")
     @SecurityRequirement(name = "Bearer Authentication")
@@ -84,5 +85,4 @@ public class InvoiceController {
         ResponseDTO<InvoicesListDTO> result = new ResponseDTO<>(EnumResponseCode.SUCCESS, invoiceList, "invoiceList");
         return ResponseEntity.ok(result);
     }
-
 }

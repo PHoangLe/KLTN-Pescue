@@ -30,15 +30,15 @@ public class InvoiceService {
     private final LiveInvoiceDAO liveInvoiceDAO;
     private final AuthenticationService authenticationService;
 
-    public Page<Invoice> findAllInvoice(Date fromDate, Date toDate, Integer page, Integer size) throws FriendlyException {
+    public Page<Invoice> findAllInvoice(Date fromDate, Date toDate, Integer page, Integer size, String status, String paymentType) throws FriendlyException {
         Pageable pageable = Pageable.ofSize(size).withPage(page);
         Page<Invoice> resp;
 
         if (!AuthenticationService.isCurrentAdmin()){
             Merchant merchant = authenticationService.getCurrentMerchant();
-            resp = paymentDAO.findAllInvoice(fromDate, toDate, pageable, merchant.getMerchantId());
+            resp = paymentDAO.findAllInvoice(fromDate, toDate, pageable, merchant.getMerchantId(), status, paymentType);
         } else {
-            resp = paymentDAO.findAllInvoice(fromDate, toDate, pageable, null);
+            resp = paymentDAO.findAllInvoice(fromDate, toDate, pageable, null, status, paymentType);
         }
 
         return resp;
