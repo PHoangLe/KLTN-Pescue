@@ -171,7 +171,6 @@ public class PaymentService {
             }
 
             paymentDAO.saveAndFlushInvoice(invoice);
-            threadService.sendReceiptEmail(invoice);
 
             invoiceList.add(invoice);
             paymentDAO.saveAndFlushInvoice(invoice);
@@ -180,6 +179,7 @@ public class PaymentService {
                 addInvoiceItemsToInvoice(invoice, invoiceItemDTOs);
                 userService.addMemberPoint(user, invoice.getFinalPrice() / MEMBER_POINT_RATE);
                 cartDAO.removeSelectedCartItem(cartCheckOutInfoDTO.getCartId());
+                threadService.sendReceiptEmail(invoice);
 
                 try {
                     pushDataToElastic(invoice, invoiceItemDTOs);
@@ -270,10 +270,9 @@ public class PaymentService {
 
         paymentDAO.saveAndFlushInvoice(invoice);
 
-        threadService.sendReceiptEmail(invoice);
-
         CompletableFuture.runAsync(() -> {
             userService.addMemberPoint(user, invoice.getFinalPrice() / MEMBER_POINT_RATE);
+            threadService.sendReceiptEmail(invoice);
 
             InvoiceItem item = InvoiceItem.builder()
                     .variety(variety)

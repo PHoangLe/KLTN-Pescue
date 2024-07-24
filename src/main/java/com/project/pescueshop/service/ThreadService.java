@@ -190,24 +190,11 @@ public class ThreadService extends BaseService {
     }
 
     public void sendReceiptEmail(Invoice invoice) {
-        ExecutorService executorService = Executors.newFixedThreadPool(2);
-
-        Future<List<InvoiceItemDTO>> invoiceItemListFuture = executorService.submit(() -> invoiceService.getInvoiceDetail(invoice.getInvoiceId()));
-
-        try {
-            List<InvoiceItemDTO> invoiceItemList = invoiceItemListFuture.get();
-
-            executorService.submit(() -> {
-                try {
-                    emailService.sendInvoiceEmail(invoiceItemList, invoice);
-                } catch (FriendlyException e) {
-                    log.trace(e.getMessage());
-                    throw new RuntimeException(e);
-                }
-            });
-        }
-        catch (Exception e){
-            log.trace(e.getMessage());
+        List<InvoiceItemDTO> invoiceItemList = invoiceService.getInvoiceDetail(invoice.getInvoiceId());
+        try{
+            emailService.sendInvoiceEmail(invoiceItemList, invoice);
+        } catch (Exception e){
+            log.error("sending mail: {}", e.getMessage());
         }
     }
 
