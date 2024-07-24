@@ -124,13 +124,18 @@ public class LivePaymentService {
         }
 
         invoiceService.saveAndFlushLiveInvoice(liveInvoice);
-        threadService.sendReceiptEmail(liveInvoice);
 
         invoiceService.saveAndFlushLiveInvoice(liveInvoice);
         CompletableFuture.runAsync(() -> addInvoiceItemsToInvoice(liveInvoice, liveInvoiceItems));
         CompletableFuture.runAsync(() -> userService.addMemberPoint(user, liveInvoice.getFinalPrice() / MEMBER_POINT_RATE));
         CompletableFuture.runAsync(() -> cartService.removeSelectedCartItem(cartCheckOutInfoDTO.getCartId()));
         CompletableFuture.runAsync(() -> {
+            try {
+                threadService.sendReceiptEmail(liveInvoice);
+            } catch (FriendlyException e) {
+                throw new RuntimeException(e);
+            }
+
             try {
                 pushDataToElastic(liveInvoice, liveInvoiceItems);
             } catch (IOException e) {
@@ -199,12 +204,16 @@ public class LivePaymentService {
 
         invoiceService.saveAndFlushLiveInvoice(invoice);
 
-        threadService.sendReceiptEmail(invoice);
 
         CompletableFuture.runAsync(() -> {
             userService.addMemberPoint(user, invoice.getFinalPrice() / MEMBER_POINT_RATE);
+          try {
+            threadService.sendReceiptEmail(invoice);
+          } catch (FriendlyException e) {
+            throw new RuntimeException(e);
+          }
 
-            LiveInvoiceItem item = LiveInvoiceItem.builder()
+          LiveInvoiceItem item = LiveInvoiceItem.builder()
                     .liveItem(liveItem)
                     .quantity(info.getQuantity())
                     .liveInvoiceId(invoice.getLiveInvoiceId())
