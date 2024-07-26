@@ -103,10 +103,10 @@ public class AuthenticationService {
     }
 
     public ResponseEntity<ResponseDTO<UserDTO>> authenticate(AuthenticationDTO request) throws FriendlyException {
-        try{
+        try {
             User user = userService.findByEmail(request.getUserEmail());
 
-            if (user == null){
+            if (user == null) {
                 throw new UnauthenticatedException(EnumResponseCode.ACCOUNT_NOT_FOUND, request.getUserEmail());
             }
 
@@ -132,27 +132,22 @@ public class AuthenticationService {
             );
 
             var jwtToken = jwtService.generateJwtToken(user);
-            log.trace("Successfully authenticate user: " + request.getUserEmail());
-
             UserDTO userDTO = new UserDTO(user, jwtToken);
 
-            if (isMerchant(user)){
-                userDTO.setMerchantId(merchantService.getMerchantByUserId(user.getUserId()).getMerchantId());
+            if (isMerchant(user)) {
+                return ResponseEntity.ok(merchantAuthenticate(userDTO));
             }
 
             ResponseDTO<UserDTO> response = new ResponseDTO<>(EnumResponseCode.AUTHENTICATE_SUCCESSFUL, userDTO);
-
-
             return ResponseEntity.ok(response);
-        }
-        catch (AuthenticationException e){
+        } catch (AuthenticationException e) {
             log.trace(e.getMessage());
             ResponseDTO<UserDTO> response = new ResponseDTO<>(EnumResponseCode.BAD_CREDENTIAL);
             return ResponseEntity.ok(response);
         }
     }
 
-    public ResponseEntity<ResponseDTO<UserDTO>> googleUserAuthenticate(RegisterDTO request) throws FriendlyException {
+    public ResponseEntity<ResponseDTO<UserDTO>> googleUserAuthenticate(RegisterDTO request) throws UnauthenticatedException {
         synchronized (AuthenticationService.class) {
             User user = userService.findByEmail(request.getUserEmail());
 
@@ -168,16 +163,25 @@ public class AuthenticationService {
             }
 
             var jwtToken = jwtService.generateJwtToken(user);
-            log.trace("Successfully authenticate user: " + request.getUserEmail());
 
             UserDTO dto = new UserDTO(user, jwtToken);
             if (isMerchant(user)) {
-                dto.setMerchantId(merchantService.getMerchantByUserId(user.getUserId()).getMerchantId());
+                return ResponseEntity.ok(merchantAuthenticate(dto));
             }
 
             ResponseDTO<UserDTO> response = new ResponseDTO<>(EnumResponseCode.AUTHENTICATE_SUCCESSFUL, dto);
             return ResponseEntity.ok(response);
         }
+    }
+
+    private ResponseDTO<UserDTO> merchantAuthenticate(UserDTO userDTO) throws UnauthenticatedException {
+        Merchant merchant = merchantService.getMerchantByUserId(userDTO.getUserId());
+        if (merchant.getIsSuspended()) {
+            throw new UnauthenticatedException(EnumResponseCode.ACCOUNT_LOCKED);
+        }
+
+        userDTO.setMerchantId(merchant.getMerchantId());
+        return new ResponseDTO<>(EnumResponseCode.AUTHENTICATE_SUCCESSFUL, userDTO);
     }
 
     public boolean isMerchant(User user){
