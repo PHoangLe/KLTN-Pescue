@@ -10,12 +10,15 @@ import com.project.pescueshop.model.dto.UpdateMerchantInfoRequest;
 import com.project.pescueshop.model.elastic.ElasticClient;
 import com.project.pescueshop.model.elastic.document.MerchantData;
 import com.project.pescueshop.model.entity.Merchant;
+import com.project.pescueshop.model.entity.Product;
 import com.project.pescueshop.model.entity.User;
 import com.project.pescueshop.model.exception.FriendlyException;
 import com.project.pescueshop.repository.dao.MerchantDAO;
+import com.project.pescueshop.repository.dao.ProductDAO;
 import com.project.pescueshop.util.constant.EnumElasticIndex;
 import com.project.pescueshop.util.constant.EnumResponseCode;
 import com.project.pescueshop.util.constant.EnumRoleId;
+import com.project.pescueshop.util.constant.EnumStatus;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -36,6 +39,7 @@ import java.util.concurrent.ExecutionException;
 @Slf4j
 public class MerchantService extends BaseService {
     private final MerchantDAO merchantDAO;
+    private final ProductDAO productDAO;
     private final ThreadService threadService;
     private final UserService userService;
 
@@ -105,6 +109,7 @@ public class MerchantService extends BaseService {
 
         CompletableFuture.runAsync(() -> {
             pushOrUpdateMerchantToElasticsearch(merchant);
+            updateProductStatus(merchantId, EnumStatus.INACTIVE);
         });
     }
 
@@ -121,7 +126,13 @@ public class MerchantService extends BaseService {
 
         CompletableFuture.runAsync(() -> {
             pushOrUpdateMerchantToElasticsearch(merchant);
+            updateProductStatus(merchantId, EnumStatus.ACTIVE);
         });
+    }
+
+    private void updateProductStatus(String merchantId, EnumStatus enumStatus) {
+        List<Product> products = productDAO.getProductsByMerchantId(merchantId);
+        productDAO.bulkUpdateProductStatus(products, enumStatus);
     }
 
     public void approveMerchant(String merchantId) throws FriendlyException {

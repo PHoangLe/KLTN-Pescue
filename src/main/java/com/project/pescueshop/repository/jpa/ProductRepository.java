@@ -51,4 +51,7 @@ public interface ProductRepository extends JpaRepository<Product, String> {
 
     @Query(value = "SELECT p FROM Product p WHERE p.productId IN :listProduct")
     List<Product> getProductByList(List<String> listProduct);
+
+    @Query(value = "SELECT p FROM Product p WHERE p.merchantId = :merchantId")
+    List<Product> getProductsByMerchantId(String merchantId);
 }

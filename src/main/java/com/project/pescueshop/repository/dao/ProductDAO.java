@@ -1,23 +1,32 @@
 package com.project.pescueshop.repository.dao;
 
+import co.elastic.clients.elasticsearch.core.IndexRequest;
 import com.project.pescueshop.model.dto.ProductDashboardResult;
 import com.project.pescueshop.model.dto.ProductListDTO;
+import com.project.pescueshop.model.elastic.ElasticClient;
+import com.project.pescueshop.model.elastic.document.ProductData;
 import com.project.pescueshop.model.entity.Product;
 import com.project.pescueshop.repository.jpa.ProductRepository;
 import com.project.pescueshop.repository.mapper.ListProductMapper;
 import com.project.pescueshop.util.Util;
+import com.project.pescueshop.util.constant.EnumElasticIndex;
+import com.project.pescueshop.util.constant.EnumStatus;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.stereotype.Repository;
 
+import java.io.IOException;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.*;
 
 @RequiredArgsConstructor
 @Repository
+@Slf4j
 public class ProductDAO extends BaseDAO{
     private final ProductRepository productRepository;
     private final ListProductMapper listProductMapper;
@@ -121,7 +130,8 @@ public class ProductDAO extends BaseDAO{
                 "        and (:p_sub_category_id IS NULL or p.sub_category_id = :p_sub_category_id) " +
                 "        and (:p_min_price IS NULL or p.price >= :p_min_price) " +
                 "        and (:p_max_price IS NULL or p.price <= :p_max_price) " +
-                "        and (:p_merchant_id IS NULL or p.merchant_id = :p_merchant_id) " +
+                "        and (:p_merchant_id IS NULL or p.merchant_id = :p_merchant_id)" +
+                "        and p.status = 'ACTIVE' " +
                 "        group by p.product_id, p.name, p.description, p.avg_rating, p.price, b.name, c.name " +
                 "        LIMIT COALESCE(:p_page_size, 10000) OFFSET COALESCE((:p_page_number - 1) * :p_page_size, 0); ";
 
@@ -161,5 +171,52 @@ public class ProductDAO extends BaseDAO{
 
     public List<Product> getProductByList(List<String> listProduct) {
         return productRepository.getProductByList(listProduct);
+    }
+
+    public List<Product> getProductsByMerchantId(String merchantId) {
+        return productRepository.getProductsByMerchantId(merchantId);
+    }
+
+    public void bulkUpdateProductStatus(List<Product> products, EnumStatus status) {
+        ExecutorService executorService = Executors.newFixedThreadPool(10);
+        List<Future<Product>> futures = new ArrayList<>();
+
+        for (Product product : products) {
+            Callable<Product> task = () -> {
+                product.setStatus(status.getValue());
+                productRepository.save(product);
+                pushOrUpdateProductToElasticSearch(product);
+                return product;
+            };
+
+            Future<Product> future = executorService.submit(task);
+            futures.add(future);
+        }
+
+        executorService.shutdown();
+
+        for (Future<Product> future : futures) {
+            try {
+                Product p = future.get();
+                log.info("Updated product status(productId: {}, newStatus: {})", p.getProductId(), p.getStatus());
+            } catch (InterruptedException | ExecutionException e) {
+                log.error("Error while updating product status", e);
+            }
+        }
+    }
+
+    public void pushOrUpdateProductToElasticSearch(Product product) {
+        ProductData productData = ProductData.fromProduct(product);
+
+        IndexRequest<ProductData> request = IndexRequest.of(i -> i
+                .index(EnumElasticIndex.PRODUCT_DATA.getName())
+                .id(productData.getProductId())
+                .document(productData));
+        try {
+            ElasticClient.get().index(request);
+            log.info("Push product to elastic search: {}", productData);
+        } catch (IOException e) {
+            log.error("Error when push product to elastic search", e);
+        }
     }
 }

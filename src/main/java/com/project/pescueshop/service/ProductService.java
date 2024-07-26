@@ -90,7 +90,7 @@ public class ProductService extends BaseService {
                 throw new RuntimeException(e);
             }
 
-            pushOrUpdateProductToElasticSearch(product);
+            productDAO.pushOrUpdateProductToElasticSearch(product);
         });
 
         return transformProductToDTO(product);
@@ -191,7 +191,7 @@ public class ProductService extends BaseService {
         product.setPetType(dto.getPetType());
         productDAO.saveAndFlushProduct(product);
 
-        pushOrUpdateProductToElasticSearch(product);
+        productDAO.pushOrUpdateProductToElasticSearch(product);
 
         return transformProductToDTO(product);
     }
@@ -213,7 +213,7 @@ public class ProductService extends BaseService {
 
         CompletableFuture.runAsync(() -> {
             Product newProduct = findById(productId);
-            pushOrUpdateProductToElasticSearch(newProduct);
+            productDAO.pushOrUpdateProductToElasticSearch(newProduct);
         });
 
         return product.getImages();
@@ -253,20 +253,5 @@ public class ProductService extends BaseService {
 
     public List<ProductListDTO> getListProduct(String categoryId, String subCategoryId, String brandId, String merchantId, Long minPrice, Long maxPrice, Integer page, Integer size){
         return productDAO.getListProduct(categoryId, subCategoryId, brandId, merchantId, minPrice, maxPrice, page, size);
-    }
-
-    private void pushOrUpdateProductToElasticSearch(Product product) {
-        ProductData productData = ProductData.fromProduct(product);
-
-        IndexRequest<ProductData> request = IndexRequest.of(i -> i
-                .index(EnumElasticIndex.PRODUCT_DATA.getName())
-                .id(productData.getProductId())
-                .document(productData));
-        try {
-            ElasticClient.get().index(request);
-            log.info("Push product to elastic search: {}", productData);
-        } catch (IOException e) {
-            log.error("Error when push product to elastic search", e);
-        }
     }
 }
