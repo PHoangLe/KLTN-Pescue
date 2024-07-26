@@ -4,8 +4,10 @@ import com.project.pescueshop.model.entity.Merchant;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -17,6 +19,8 @@ public interface MerchantRepository extends JpaRepository<Merchant, String>{
     @Query("select m from Merchant m where m.userId = ?1")
     Merchant findByUserId(String userId);
 
+    @Modifying
+    @Transactional
     @Query("delete from Merchant m where m.merchantId = ?1")
     void deleteByMerchantId(String merchantId);
 
