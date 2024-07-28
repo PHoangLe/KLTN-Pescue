@@ -50,7 +50,7 @@ public class LivePaymentController {
     }
 
 
-    @GetMapping("/shipping-fee")
+    @PostMapping("/shipping-fee")
     public ResponseEntity<ResponseDTO<List<ShippingFeeDTO>>> singleItemCheckoutUnAuthenticate(@RequestBody GetCartShippingFeeRequest request) throws FriendlyException {
         List<ShippingFeeDTO> shippingFee = paymentService.getShippingFeeByCartId(request);
         ResponseDTO<List<ShippingFeeDTO>> result = new ResponseDTO<>(EnumResponseCode.SUCCESS, shippingFee, "shippingFees");
