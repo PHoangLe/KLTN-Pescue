@@ -163,7 +163,6 @@ public class LiveService {
             session.close();
         } catch (OpenViduHttpException | OpenViduJavaClientException e) {
             log.error("Error ending session: {}", e.getMessage());
-            throw e;
         }
 
         liveSession.setStatus(EnumLiveStatus.DONE.getValue());
