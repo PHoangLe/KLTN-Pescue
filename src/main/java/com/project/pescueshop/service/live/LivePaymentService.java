@@ -311,12 +311,15 @@ public class LivePaymentService {
         }
 
         if (cart.getLiveCartItemList().isEmpty()){
-            throw new FriendlyException(EnumResponseCode.EMPTY_CART);
+            throw new FriendlyException(EnumResponseCode.NO_ITEM_TO_CHECKOUT);
         }
 
         List<LiveCartItem> liveCartItems = cart.getLiveCartItemList();
         Merchant merchant = merchantService.getMerchantById(cart.getMerchantId());
-        Address address = Address.builder().build();
+        Address address = Address.builder()
+                .districtId(request.getDistrictId())
+                .wardCode(request.getWardCode())
+                .build();
 
         return List.of(ShippingFeeDTO.builder()
                         .merchantId(merchant.getMerchantId())
