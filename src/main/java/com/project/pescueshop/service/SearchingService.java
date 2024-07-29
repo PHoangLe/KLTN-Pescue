@@ -31,7 +31,7 @@ public class SearchingService {
                         .index("merchant_data")
                         .size(size)
                         .query(q -> q
-                                .queryString(qs -> qs.query(keyword))
+                                .queryString(qs -> qs.query("*" + keyword + "*"))
                         ), MerchantData.class).hits().hits().stream()
                         .map(Hit::source)
                         .toList();
@@ -47,7 +47,7 @@ public class SearchingService {
                         .index("product_data")
                         .size(size)
                         .query(q -> q
-                                .queryString(qs -> qs.query(keyword))
+                                .queryString(qs -> qs.query("*" + keyword + "*"))
                         ), ProductData.class).hits().hits().stream()
                         .map(Hit::source)
                         .toList();
